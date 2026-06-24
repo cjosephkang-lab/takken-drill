@@ -1,0 +1,23 @@
+.DS_Store
+node_modules
+dist
+dist-ssr
+.npm-cache
+tsconfig.tsbuildinfo
+*.local
+
+# Local source artifacts
+build
+source-pdfs
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
