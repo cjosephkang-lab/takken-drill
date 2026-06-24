@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { takkenExams, takkenQuestions, type TakkenQuestion } from "./data/questions";
 
 type AnswerRecord = {
@@ -17,6 +17,15 @@ const STORAGE_KEY = "takken-drill.progress.v1";
 const ALL = "all";
 const UNANSWERED = "unanswered";
 const WRONG = "wrong";
+const DAILY_TARGET = 10;
+
+const localDateKey = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
 const loadProgress = (): ProgressState => {
   const fallback: ProgressState = {
@@ -112,6 +121,7 @@ function App() {
   const [examFilter, setExamFilter] = useState(ALL);
   const [categoryFilter, setCategoryFilter] = useState(ALL);
   const [statusFilter, setStatusFilter] = useState(ALL);
+  const feedbackRef = useRef<HTMLElement | null>(null);
 
   const categories = useMemo(() => {
     return Array.from(new Set(takkenQuestions.map((question) => question.category)));
@@ -152,7 +162,13 @@ function App() {
   const currentNote = progress.notes[currentQuestion.id] ?? "";
   const totalAnswered = Object.keys(progress.answers).length;
   const totalCorrect = Object.values(progress.answers).filter((answer) => answer.correct).length;
+  const totalWrong = Object.values(progress.answers).filter((answer) => !answer.correct).length;
+  const todayKey = localDateKey(new Date());
+  const todayAnswered = Object.values(progress.answers).filter((answer) =>
+    localDateKey(new Date(answer.answeredAt)) === todayKey,
+  ).length;
   const accuracy = totalAnswered ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+  const completion = Math.round((totalAnswered / takkenQuestions.length) * 100);
 
   const updateProgress = (updater: (previous: ProgressState) => ProgressState) => {
     setProgress((previous) => {
@@ -165,6 +181,39 @@ function App() {
   const goToQuestion = (questionId: string) => {
     updateProgress((previous) => ({ ...previous, currentId: questionId }));
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const findFirstQuestion = (status: string) => {
+    return takkenQuestions.find((question) => {
+      const record = progress.answers[question.id];
+
+      if (examFilter !== ALL && question.examId !== examFilter) {
+        return false;
+      }
+
+      if (categoryFilter !== ALL && question.category !== categoryFilter) {
+        return false;
+      }
+
+      if (status === UNANSWERED) {
+        return !record;
+      }
+
+      if (status === WRONG) {
+        return Boolean(record && !record.correct);
+      }
+
+      return true;
+    });
+  };
+
+  const applyStatusShortcut = (status: string) => {
+    setStatusFilter(status);
+    const first = findFirstQuestion(status);
+
+    if (first) {
+      goToQuestion(first.id);
+    }
   };
 
   const answerQuestion = (choice: number) => {
@@ -182,6 +231,10 @@ function App() {
       },
       currentId: currentQuestion.id,
     }));
+
+    window.setTimeout(() => {
+      feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
   };
 
   const saveNote = (value: string) => {
@@ -214,6 +267,12 @@ function App() {
   };
 
   const resetProgress = () => {
+    const shouldReset = window.confirm("回答履歴とメモを初期化します。よろしいですか？");
+
+    if (!shouldReset) {
+      return;
+    }
+
     const next: ProgressState = {
       answers: {},
       notes: {},
@@ -225,12 +284,12 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#0F1117] text-slate-100">
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-[#0F1117]/95 px-4 py-3 backdrop-blur">
+      <header className="border-b border-white/10 bg-[#0F1117] px-4 py-3">
         <div className="mx-auto max-w-3xl">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-cyan-200">
-                {totalAnswered}/250 回答済み / 正答率 {accuracy}%
+                今日 {Math.min(todayAnswered, DAILY_TARGET)}/{DAILY_TARGET} / 正答率 {accuracy}%
               </p>
               <h1 className="text-xl font-bold tracking-normal text-white">
                 宅建過去問ドリル
@@ -290,10 +349,58 @@ function App() {
               <option value={WRONG}>間違い</option>
             </select>
           </div>
+
+          <div className="mt-3 h-2 rounded-full bg-slate-800">
+            <div
+              className="h-2 rounded-full bg-cyan-300"
+              style={{ width: `${completion}%` }}
+            />
+          </div>
+
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            <button
+              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
+              onClick={() => applyStatusShortcut(UNANSWERED)}
+              type="button"
+            >
+              未回答
+            </button>
+            <button
+              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
+              onClick={() => applyStatusShortcut(WRONG)}
+              type="button"
+            >
+              間違い {totalWrong}
+            </button>
+            <button
+              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
+              onClick={() => applyStatusShortcut(ALL)}
+              type="button"
+            >
+              全問
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 pb-10 pt-5">
+        <section className="mb-4 rounded-lg border border-white/10 bg-slate-950 p-3">
+          <div className="grid grid-cols-3 gap-2 text-center text-sm">
+            <div className="rounded-lg bg-slate-900 p-2">
+              <p className="font-bold text-white">{totalAnswered}/250</p>
+              <p className="text-slate-400">回答済み</p>
+            </div>
+            <div className="rounded-lg bg-slate-900 p-2">
+              <p className="font-bold text-white">{completion}%</p>
+              <p className="text-slate-400">進捗</p>
+            </div>
+            <div className="rounded-lg bg-slate-900 p-2">
+              <p className="font-bold text-white">{todayAnswered}</p>
+              <p className="text-slate-400">今日</p>
+            </div>
+          </div>
+        </section>
+
         <section className="rounded-lg border border-white/10 bg-slate-950 shadow-2xl shadow-black/20">
           <div className="border-b border-white/10 bg-slate-900 p-4">
             <div className="flex flex-wrap items-center gap-2">
@@ -342,6 +449,7 @@ function App() {
 
             {currentAnswer ? (
               <section
+                ref={feedbackRef}
                 className={`rounded-lg border p-4 ${
                   currentAnswer.correct
                     ? "border-emerald-300/40 bg-emerald-300/10"
@@ -368,14 +476,34 @@ function App() {
                     詳細解説を開く（{currentQuestion.externalExplanationName}）
                   </a>
                   {currentQuestion.aiExplanation ? (
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      {currentQuestion.aiExplanation}
-                    </p>
+                    <div className="mt-3 rounded-lg border border-amber-200/20 bg-amber-200/10 p-3">
+                      <p className="text-sm font-bold text-amber-100">AI補足メモ</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-200">
+                        {currentQuestion.aiExplanation}
+                      </p>
+                    </div>
                   ) : (
                     <p className="mt-2 text-sm leading-6 text-slate-400">
                       詳細な法律理由は、公開されている外部解説ページで確認できます。本文は転載せず、出典ページに直接リンクしています。
                     </p>
                   )}
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <a
+                    className="flex min-h-12 items-center justify-center rounded-lg border border-white/15 bg-slate-900 px-3 text-center text-sm font-bold text-cyan-100"
+                    href={currentQuestion.externalExplanationUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    外部詳細
+                  </a>
+                  <button
+                    className="min-h-12 rounded-lg bg-white px-4 text-base font-bold text-slate-950"
+                    onClick={goNext}
+                    type="button"
+                  >
+                    次へ
+                  </button>
                 </div>
               </section>
             ) : null}
