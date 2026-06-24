@@ -15,30 +15,35 @@ EXAMS = [
         'pdf': 'R7_question_answer.pdf',
         'url': 'https://www.retio.or.jp/wp-content/uploads/2025/12/R7_question_answer.pdf',
         'mode': 'text', 'passScore': 33,
+        'explanationBaseUrl': 'https://takken-success.info/2025kakomon/r07-',
     },
     {
         'id': 'r6', 'year': '令和6年度', 'label': '2024 / 令和6年度',
         'pdf': 'R6_question_answer.pdf',
         'url': 'https://www.retio.or.jp/wp-content/uploads/2025/03/R6_question_answer.pdf',
         'mode': 'text', 'passScore': 37,
+        'explanationBaseUrl': 'https://takken-success.info/2024kakomon/r06-',
     },
     {
         'id': 'r5', 'year': '令和5年度', 'label': '2023 / 令和5年度',
         'pdf': 'R5_question_answer.pdf',
         'url': 'https://www.retio.or.jp/wp-content/uploads/2025/03/R5_qestion_answer%E3%80%80.pdf',
         'mode': 'text', 'passScore': 36,
+        'explanationBaseUrl': 'https://takken-success.info/2023kakomon/r05-',
     },
     {
         'id': 'r4', 'year': '令和4年度', 'label': '2022 / 令和4年度',
         'pdf': 'R4_question_answer.pdf',
         'url': 'https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf',
         'mode': 'ocr', 'passScore': 36,
+        'explanationBaseUrl': 'https://takken-success.info/2022kakomon/r04-',
     },
     {
         'id': 'r3_12', 'year': '令和3年度12月', 'label': '2021 / 令和3年度12月',
         'pdf': 'R3_12_question_answer.pdf',
         'url': 'https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf',
         'mode': 'ocr', 'passScore': 34,
+        'explanationBaseUrl': 'https://takken-success.info/2021-12kakomon/r032-',
     },
 ]
 
@@ -190,6 +195,8 @@ for exam in EXAMS:
             'number': n,
             'category': category_for(n),
             'sourceUrl': exam['url'],
+            'externalExplanationName': '宅建レトス',
+            'externalExplanationUrl': f"{exam['explanationBaseUrl']}{n}/",
             'questionText': q['text'],
             'correctChoices': ans,
             'isAllCorrect': len(ans) == 4,
@@ -204,7 +211,7 @@ for exam in EXAMS:
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 content = "export type TakkenQuestion = {\n"
-content += "  id: string;\n  examId: string;\n  year: string;\n  label: string;\n  number: number;\n  category: string;\n  sourceUrl: string;\n  questionText: string;\n  correctChoices: number[];\n  isAllCorrect: boolean;\n  officialExplanation: string;\n  aiExplanation: string;\n};\n\n"
+content += "  id: string;\n  examId: string;\n  year: string;\n  label: string;\n  number: number;\n  category: string;\n  sourceUrl: string;\n  externalExplanationName: string;\n  externalExplanationUrl: string;\n  questionText: string;\n  correctChoices: number[];\n  isAllCorrect: boolean;\n  officialExplanation: string;\n  aiExplanation: string;\n};\n\n"
 content += "export type TakkenExam = {\n  id: string;\n  year: string;\n  label: string;\n  sourceUrl: string;\n  passScore: number;\n  questionCount: number;\n  extractedCount: number;\n};\n\n"
 content += "export const takkenExams: TakkenExam[] = " + json.dumps(exam_summaries, ensure_ascii=False, indent=2) + ";\n\n"
 content += "export const takkenQuestions: TakkenQuestion[] = " + json.dumps(all_questions, ensure_ascii=False, indent=2) + ";\n"

@@ -359,13 +359,21 @@ function App() {
                   <p className="mt-2 text-sm leading-6 text-slate-200">
                     {currentQuestion.officialExplanation}
                   </p>
+                  <a
+                    className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-cyan-200/30 bg-cyan-200/10 px-3 py-2 text-sm font-bold text-cyan-100"
+                    href={currentQuestion.externalExplanationUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    詳細解説を開く（{currentQuestion.externalExplanationName}）
+                  </a>
                   {currentQuestion.aiExplanation ? (
                     <p className="mt-2 text-sm leading-6 text-slate-300">
                       {currentQuestion.aiExplanation}
                     </p>
                   ) : (
                     <p className="mt-2 text-sm leading-6 text-slate-400">
-                      詳細な法律理由は公式PDFに掲載がないため、公式資料だけを根拠にする版では正解番号の確認までに留めています。
+                      詳細な法律理由は、公開されている外部解説ページで確認できます。本文は転載せず、出典ページに直接リンクしています。
                     </p>
                   )}
                 </div>
