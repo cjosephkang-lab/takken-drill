@@ -354,9 +354,21 @@ function App() {
                 <p className="mt-1 text-base leading-7 text-slate-100">
                   {resultText(currentQuestion)}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
-                  解説根拠: 公式PDFの正解番号表。公式PDFには詳細解説がないため、ここではAI生成解説を混ぜていません。
-                </p>
+                <div className="mt-3 rounded-lg border border-white/10 bg-[#0F1117] p-3">
+                  <p className="text-sm font-bold text-cyan-100">解答解説（公式根拠）</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-200">
+                    {currentQuestion.officialExplanation}
+                  </p>
+                  {currentQuestion.aiExplanation ? (
+                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                      {currentQuestion.aiExplanation}
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                      詳細な法律理由は公式PDFに掲載がないため、公式資料だけを根拠にする版では正解番号の確認までに留めています。
+                    </p>
+                  )}
+                </div>
               </section>
             ) : null}
 

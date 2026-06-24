@@ -9,6 +9,8 @@ export type TakkenQuestion = {
   questionText: string;
   correctChoices: number[];
   isAllCorrect: boolean;
+  officialExplanation: string;
+  aiExplanation: string;
 };
 
 export type TakkenExam = {
@@ -82,7 +84,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-02",
@@ -96,7 +100,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-03",
@@ -110,7 +116,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-04",
@@ -124,7 +132,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-05",
@@ -138,7 +148,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-06",
@@ -152,7 +164,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-07",
@@ -166,7 +180,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-08",
@@ -180,7 +196,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-09",
@@ -194,7 +212,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-10",
@@ -208,7 +228,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-11",
@@ -222,7 +244,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-12",
@@ -236,7 +260,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-13",
@@ -250,7 +276,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-14",
@@ -264,7 +292,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-15",
@@ -278,7 +308,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-16",
@@ -292,7 +324,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-17",
@@ -306,7 +340,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-18",
@@ -320,7 +356,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-19",
@@ -334,7 +372,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-20",
@@ -348,7 +388,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-21",
@@ -362,7 +404,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-22",
@@ -376,7 +420,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-23",
@@ -390,7 +436,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-24",
@@ -404,7 +452,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-25",
@@ -418,7 +468,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-26",
@@ -432,7 +484,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-27",
@@ -446,7 +500,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-28",
@@ -460,7 +516,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-29",
@@ -474,7 +532,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-30",
@@ -488,7 +548,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-31",
@@ -502,7 +564,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-32",
@@ -516,7 +580,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-33",
@@ -530,7 +596,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-34",
@@ -544,7 +612,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-35",
@@ -558,7 +628,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-36",
@@ -572,7 +644,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-37",
@@ -586,7 +660,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-38",
@@ -600,7 +676,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-39",
@@ -614,7 +692,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-40",
@@ -628,7 +708,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-41",
@@ -642,7 +724,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-42",
@@ -656,7 +740,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-43",
@@ -670,7 +756,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-44",
@@ -684,7 +772,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-45",
@@ -698,7 +788,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-46",
@@ -712,7 +804,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-47",
@@ -726,7 +820,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-48",
@@ -740,7 +836,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-49",
@@ -754,7 +852,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r7-50",
@@ -768,7 +868,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-01",
@@ -782,7 +884,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-02",
@@ -796,7 +900,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-03",
@@ -810,7 +916,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-04",
@@ -824,7 +932,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-05",
@@ -838,7 +948,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-06",
@@ -852,7 +964,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-07",
@@ -866,7 +980,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-08",
@@ -880,7 +996,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-09",
@@ -894,7 +1012,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-10",
@@ -908,7 +1028,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-11",
@@ -922,7 +1044,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-12",
@@ -936,7 +1060,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-13",
@@ -950,7 +1076,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-14",
@@ -964,7 +1092,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-15",
@@ -978,7 +1108,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-16",
@@ -992,7 +1124,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-17",
@@ -1006,7 +1140,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-18",
@@ -1020,7 +1156,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-19",
@@ -1034,7 +1172,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-20",
@@ -1048,7 +1188,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-21",
@@ -1062,7 +1204,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-22",
@@ -1076,7 +1220,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-23",
@@ -1090,7 +1236,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-24",
@@ -1104,7 +1252,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-25",
@@ -1118,7 +1268,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-26",
@@ -1132,7 +1284,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-27",
@@ -1146,7 +1300,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-28",
@@ -1160,7 +1316,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-29",
@@ -1174,7 +1332,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-30",
@@ -1188,7 +1348,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-31",
@@ -1202,7 +1364,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-32",
@@ -1216,7 +1380,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-33",
@@ -1230,7 +1396,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-34",
@@ -1244,7 +1412,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-35",
@@ -1258,7 +1428,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-36",
@@ -1272,7 +1444,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-37",
@@ -1286,7 +1460,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-38",
@@ -1300,7 +1476,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-39",
@@ -1314,7 +1492,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-40",
@@ -1328,7 +1508,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-41",
@@ -1342,7 +1524,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-42",
@@ -1356,7 +1540,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-43",
@@ -1370,7 +1556,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-44",
@@ -1384,7 +1572,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-45",
@@ -1398,7 +1588,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-46",
@@ -1412,7 +1604,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-47",
@@ -1426,7 +1620,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-48",
@@ -1440,7 +1636,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-49",
@@ -1454,7 +1652,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r6-50",
@@ -1468,7 +1668,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-01",
@@ -1482,7 +1684,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-02",
@@ -1496,7 +1700,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-03",
@@ -1510,7 +1716,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-04",
@@ -1524,7 +1732,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-05",
@@ -1538,7 +1748,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-06",
@@ -1552,7 +1764,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-07",
@@ -1566,7 +1780,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-08",
@@ -1580,7 +1796,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-09",
@@ -1594,7 +1812,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-10",
@@ -1608,7 +1828,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-11",
@@ -1622,7 +1844,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-12",
@@ -1636,7 +1860,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-13",
@@ -1650,7 +1876,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-14",
@@ -1664,7 +1892,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-15",
@@ -1678,7 +1908,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-16",
@@ -1692,7 +1924,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-17",
@@ -1706,7 +1940,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-18",
@@ -1720,7 +1956,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-19",
@@ -1734,7 +1972,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-20",
@@ -1748,7 +1988,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-21",
@@ -1762,7 +2004,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-22",
@@ -1776,7 +2020,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-23",
@@ -1790,7 +2036,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-24",
@@ -1804,7 +2052,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-25",
@@ -1818,7 +2068,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-26",
@@ -1832,7 +2084,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-27",
@@ -1846,7 +2100,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-28",
@@ -1860,7 +2116,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-29",
@@ -1874,7 +2132,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-30",
@@ -1888,7 +2148,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-31",
@@ -1902,7 +2164,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-32",
@@ -1916,7 +2180,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-33",
@@ -1930,7 +2196,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-34",
@@ -1944,7 +2212,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-35",
@@ -1958,7 +2228,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-36",
@@ -1972,7 +2244,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-37",
@@ -1986,7 +2260,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-38",
@@ -2000,7 +2276,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-39",
@@ -2014,7 +2292,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-40",
@@ -2028,7 +2308,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-41",
@@ -2042,7 +2324,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-42",
@@ -2056,7 +2340,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-43",
@@ -2070,7 +2356,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-44",
@@ -2084,7 +2372,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-45",
@@ -2098,7 +2388,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-46",
@@ -2112,7 +2404,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-47",
@@ -2126,7 +2420,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-48",
@@ -2140,7 +2436,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-49",
@@ -2154,7 +2452,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r5-50",
@@ -2168,7 +2468,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-01",
@@ -2182,7 +2484,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-02",
@@ -2196,7 +2500,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-03",
@@ -2210,7 +2516,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-04",
@@ -2224,7 +2532,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-05",
@@ -2238,7 +2548,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-06",
@@ -2252,7 +2564,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-07",
@@ -2266,7 +2580,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-08",
@@ -2280,7 +2596,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-09",
@@ -2294,7 +2612,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-10",
@@ -2308,7 +2628,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-11",
@@ -2322,7 +2644,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-12",
@@ -2336,7 +2660,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-13",
@@ -2350,7 +2676,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-14",
@@ -2364,7 +2692,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-15",
@@ -2378,7 +2708,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-16",
@@ -2392,7 +2724,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-17",
@@ -2406,7 +2740,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-18",
@@ -2420,7 +2756,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-19",
@@ -2434,7 +2772,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-20",
@@ -2448,7 +2788,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-21",
@@ -2462,7 +2804,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-22",
@@ -2476,7 +2820,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-23",
@@ -2490,7 +2836,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-24",
@@ -2504,7 +2852,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-25",
@@ -2518,7 +2868,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-26",
@@ -2532,7 +2884,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-27",
@@ -2546,7 +2900,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-28",
@@ -2560,7 +2916,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-29",
@@ -2574,7 +2932,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-30",
@@ -2588,7 +2948,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-31",
@@ -2602,7 +2964,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-32",
@@ -2616,7 +2980,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-33",
@@ -2630,7 +2996,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-34",
@@ -2644,7 +3012,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-35",
@@ -2658,7 +3028,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-36",
@@ -2672,7 +3044,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-37",
@@ -2686,7 +3060,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-38",
@@ -2700,7 +3076,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-39",
@@ -2714,7 +3092,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-40",
@@ -2728,7 +3108,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-41",
@@ -2742,7 +3124,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-42",
@@ -2756,7 +3140,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-43",
@@ -2770,7 +3156,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-44",
@@ -2784,7 +3172,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-45",
@@ -2798,7 +3188,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-46",
@@ -2812,7 +3204,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-47",
@@ -2826,7 +3220,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-48",
@@ -2843,7 +3239,9 @@ export const takkenQuestions: TakkenQuestion[] = [
       3,
       4
     ],
-    "isAllCorrect": true
+    "isAllCorrect": true,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は全ての選択肢として扱われています。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-49",
@@ -2857,7 +3255,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r4-50",
@@ -2871,7 +3271,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-01",
@@ -2885,7 +3287,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-02",
@@ -2899,7 +3303,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-03",
@@ -2913,7 +3319,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-04",
@@ -2927,7 +3335,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-05",
@@ -2941,7 +3351,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-06",
@@ -2955,7 +3367,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-07",
@@ -2969,7 +3383,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-08",
@@ -2983,7 +3399,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-09",
@@ -2997,7 +3415,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-10",
@@ -3011,7 +3431,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-11",
@@ -3025,7 +3447,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-12",
@@ -3039,7 +3463,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-13",
@@ -3053,7 +3479,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-14",
@@ -3067,7 +3495,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-15",
@@ -3081,7 +3511,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-16",
@@ -3095,7 +3527,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-17",
@@ -3109,7 +3543,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-18",
@@ -3123,7 +3559,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-19",
@@ -3137,7 +3575,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-20",
@@ -3151,7 +3591,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-21",
@@ -3165,7 +3607,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-22",
@@ -3179,7 +3623,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-23",
@@ -3193,7 +3639,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-24",
@@ -3207,7 +3655,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-25",
@@ -3221,7 +3671,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-26",
@@ -3235,7 +3687,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-27",
@@ -3249,7 +3703,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-28",
@@ -3263,7 +3719,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-29",
@@ -3277,7 +3735,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-30",
@@ -3291,7 +3751,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-31",
@@ -3305,7 +3767,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-32",
@@ -3319,7 +3783,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-33",
@@ -3333,7 +3799,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-34",
@@ -3347,7 +3815,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-35",
@@ -3361,7 +3831,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-36",
@@ -3375,7 +3847,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-37",
@@ -3389,7 +3863,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-38",
@@ -3403,7 +3879,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-39",
@@ -3417,7 +3895,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-40",
@@ -3431,7 +3911,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-41",
@@ -3445,7 +3927,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-42",
@@ -3459,7 +3943,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-43",
@@ -3473,7 +3959,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-44",
@@ -3488,7 +3976,9 @@ export const takkenQuestions: TakkenQuestion[] = [
       2,
       3
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 / 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-45",
@@ -3502,7 +3992,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-46",
@@ -3516,7 +4008,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       1
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-47",
@@ -3530,7 +4024,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-48",
@@ -3544,7 +4040,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-49",
@@ -3558,7 +4056,9 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       2
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   },
   {
     "id": "r3_12-50",
@@ -3572,6 +4072,8 @@ export const takkenQuestions: TakkenQuestion[] = [
     "correctChoices": [
       4
     ],
-    "isAllCorrect": false
+    "isAllCorrect": false,
+    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
+    "aiExplanation": ""
   }
 ];

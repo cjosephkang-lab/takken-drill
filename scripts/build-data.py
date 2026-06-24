@@ -193,11 +193,18 @@ for exam in EXAMS:
             'questionText': q['text'],
             'correctChoices': ans,
             'isAllCorrect': len(ans) == 4,
+            'officialExplanation': (
+                '公式PDFの正解番号表では、この問題の正解は全ての選択肢として扱われています。'
+                if len(ans) == 4 else
+                ('公式PDFの正解番号表では、この問題の正解は ' + ' / '.join(map(str, ans)) + ' です。'
+                 + ' 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。')
+            ),
+            'aiExplanation': '',
         })
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 content = "export type TakkenQuestion = {\n"
-content += "  id: string;\n  examId: string;\n  year: string;\n  label: string;\n  number: number;\n  category: string;\n  sourceUrl: string;\n  questionText: string;\n  correctChoices: number[];\n  isAllCorrect: boolean;\n};\n\n"
+content += "  id: string;\n  examId: string;\n  year: string;\n  label: string;\n  number: number;\n  category: string;\n  sourceUrl: string;\n  questionText: string;\n  correctChoices: number[];\n  isAllCorrect: boolean;\n  officialExplanation: string;\n  aiExplanation: string;\n};\n\n"
 content += "export type TakkenExam = {\n  id: string;\n  year: string;\n  label: string;\n  sourceUrl: string;\n  passScore: number;\n  questionCount: number;\n  extractedCount: number;\n};\n\n"
 content += "export const takkenExams: TakkenExam[] = " + json.dumps(exam_summaries, ensure_ascii=False, indent=2) + ";\n\n"
 content += "export const takkenQuestions: TakkenQuestion[] = " + json.dumps(all_questions, ensure_ascii=False, indent=2) + ";\n"
