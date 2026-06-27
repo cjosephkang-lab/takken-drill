@@ -1,5 +1,10 @@
 import { useMemo, useRef, useState } from "react";
-import { takkenExams, takkenQuestions, type TakkenQuestion } from "./data/questions";
+import {
+  takkenExams,
+  takkenQuestions,
+  type TakkenQuestion,
+} from "./data/questions";
+import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
 
 type AnswerRecord = {
   selected: number;
@@ -49,8 +54,12 @@ const loadProgress = (): ProgressState => {
         : fallback.currentId;
 
     return {
-      answers: parsed.answers && typeof parsed.answers === "object" ? parsed.answers : {},
-      notes: parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
+      answers:
+        parsed.answers && typeof parsed.answers === "object"
+          ? parsed.answers
+          : {},
+      notes:
+        parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
       currentId,
     };
   } catch (error) {
@@ -121,14 +130,18 @@ function App() {
   const [examFilter, setExamFilter] = useState(ALL);
   const [categoryFilter, setCategoryFilter] = useState(ALL);
   const [statusFilter, setStatusFilter] = useState(ALL);
+  // 学習導線（おすすめ順）モード: 合格者の鉄則順に未回答→間違いを優先出題する。
+  const [studyMode, setStudyMode] = useState(false);
   const feedbackRef = useRef<HTMLElement | null>(null);
 
   const categories = useMemo(() => {
-    return Array.from(new Set(takkenQuestions.map((question) => question.category)));
+    return Array.from(
+      new Set(takkenQuestions.map((question) => question.category)),
+    );
   }, []);
 
   const filteredQuestions = useMemo(() => {
-    return takkenQuestions.filter((question) => {
+    const filtered = takkenQuestions.filter((question) => {
       const record = progress.answers[question.id];
 
       if (examFilter !== ALL && question.examId !== examFilter) {
@@ -149,7 +162,24 @@ function App() {
 
       return true;
     });
-  }, [categoryFilter, examFilter, progress.answers, statusFilter]);
+
+    if (!studyMode) {
+      return filtered;
+    }
+
+    // 学習導線モード: 合格者の鉄則順（科目）に並べる。
+    // 並び順は回答状況に依存させず安定させ、「次へ」で宅建業法→権利関係→…と
+    // 科目ごとに通しで演習できるようにする（弱点の進捗はボードで可視化）。
+    return [...filtered].sort((a, b) => {
+      const orderDiff =
+        studyOrderByCategory(a.category) - studyOrderByCategory(b.category);
+      if (orderDiff !== 0) return orderDiff;
+
+      // 同科目内は年度（新しい順）→ 問番号で安定ソート。
+      if (a.examId !== b.examId) return a.examId < b.examId ? 1 : -1;
+      return a.number - b.number;
+    });
+  }, [categoryFilter, examFilter, progress.answers, statusFilter, studyMode]);
 
   const currentQuestion =
     filteredQuestions.find((question) => question.id === progress.currentId) ??
@@ -161,16 +191,54 @@ function App() {
   const currentAnswer = progress.answers[currentQuestion.id];
   const currentNote = progress.notes[currentQuestion.id] ?? "";
   const totalAnswered = Object.keys(progress.answers).length;
-  const totalCorrect = Object.values(progress.answers).filter((answer) => answer.correct).length;
-  const totalWrong = Object.values(progress.answers).filter((answer) => !answer.correct).length;
-  const todayKey = localDateKey(new Date());
-  const todayAnswered = Object.values(progress.answers).filter((answer) =>
-    localDateKey(new Date(answer.answeredAt)) === todayKey,
+  const totalCorrect = Object.values(progress.answers).filter(
+    (answer) => answer.correct,
   ).length;
-  const accuracy = totalAnswered ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+  const totalWrong = Object.values(progress.answers).filter(
+    (answer) => !answer.correct,
+  ).length;
+  const todayKey = localDateKey(new Date());
+  const todayAnswered = Object.values(progress.answers).filter(
+    (answer) => localDateKey(new Date(answer.answeredAt)) === todayKey,
+  ).length;
+  const accuracy = totalAnswered
+    ? Math.round((totalCorrect / totalAnswered) * 100)
+    : 0;
   const completion = Math.round((totalAnswered / takkenQuestions.length) * 100);
 
-  const updateProgress = (updater: (previous: ProgressState) => ProgressState) => {
+  // 科目別の得点ダッシュボード: 各科目の正答率を出し、1回分の試験(満点)に
+  // 換算した「想定得点」を出して、目標点・合格ラインまであと何点かを可視化する。
+  const categoryStats = useMemo(() => {
+    return studyOrder.map((cat) => {
+      const inCategory = takkenQuestions.filter(
+        (q) => q.category === cat.category,
+      );
+      const answered = inCategory.filter((q) => progress.answers[q.id]);
+      const correct = answered.filter((q) => progress.answers[q.id]?.correct);
+      const rate = answered.length ? correct.length / answered.length : 0;
+      // 正答率を本番1回分の満点に換算した想定得点。
+      const projected = Math.round(rate * cat.fullMarks);
+
+      return {
+        ...cat,
+        answeredCount: answered.length,
+        totalCount: inCategory.length,
+        ratePercent: Math.round(rate * 100),
+        projectedScore: answered.length ? projected : null,
+      };
+    });
+  }, [progress.answers]);
+
+  // 全科目の想定得点合計（未着手の科目は0点扱い）と、合格ラインまでの差。
+  const projectedTotal = categoryStats.reduce(
+    (sum, c) => sum + (c.projectedScore ?? 0),
+    0,
+  );
+  const gapToSafe = passLine.safe - projectedTotal;
+
+  const updateProgress = (
+    updater: (previous: ProgressState) => ProgressState,
+  ) => {
     setProgress((previous) => {
       const next = updater(previous);
       saveProgress(next);
@@ -233,7 +301,10 @@ function App() {
     }));
 
     window.setTimeout(() => {
-      feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      feedbackRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }, 80);
   };
 
@@ -253,7 +324,9 @@ function App() {
     }
 
     const nextQuestion =
-      filteredQuestions[(Math.max(currentIndex, 0) + 1) % filteredQuestions.length];
+      filteredQuestions[
+        (Math.max(currentIndex, 0) + 1) % filteredQuestions.length
+      ];
     goToQuestion(nextQuestion.id);
   };
 
@@ -267,7 +340,9 @@ function App() {
   };
 
   const resetProgress = () => {
-    const shouldReset = window.confirm("回答履歴とメモを初期化します。よろしいですか？");
+    const shouldReset = window.confirm(
+      "回答履歴とメモを初期化します。よろしいですか？",
+    );
 
     if (!shouldReset) {
       return;
@@ -289,19 +364,53 @@ function App() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-cyan-200">
-                今日 {Math.min(todayAnswered, DAILY_TARGET)}/{DAILY_TARGET} / 正答率 {accuracy}%
+                今日 {Math.min(todayAnswered, DAILY_TARGET)}/{DAILY_TARGET} /
+                正答率 {accuracy}%
               </p>
               <h1 className="text-xl font-bold tracking-normal text-white">
                 宅建過去問ドリル
               </h1>
             </div>
-            <button
-              className="min-h-11 rounded-lg border border-white/15 bg-slate-900 px-3 text-sm font-bold text-white"
-              onClick={goRandom}
-              type="button"
-            >
-              ランダム
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                aria-pressed={studyMode}
+                className={`min-h-11 rounded-lg border px-3 text-sm font-bold transition ${
+                  studyMode
+                    ? "border-cyan-300 bg-cyan-300/20 text-cyan-100"
+                    : "border-white/15 bg-slate-900 text-white"
+                }`}
+                onClick={() => {
+                  const next = !studyMode;
+                  setStudyMode(next);
+                  // 学習導線ONにしたら、おすすめ順の先頭（業法の未回答）から始める。
+                  if (next) {
+                    setTimeout(() => {
+                      const firstByOrder = [...takkenQuestions]
+                        .filter((q) =>
+                          examFilter === ALL ? true : q.examId === examFilter,
+                        )
+                        .sort(
+                          (a, b) =>
+                            studyOrderByCategory(a.category) -
+                            studyOrderByCategory(b.category),
+                        )
+                        .find((q) => !progress.answers[q.id]);
+                      if (firstByOrder) goToQuestion(firstByOrder.id);
+                    }, 0);
+                  }
+                }}
+                type="button"
+              >
+                おすすめ順
+              </button>
+              <button
+                className="min-h-11 rounded-lg border border-white/15 bg-slate-900 px-3 text-sm font-bold text-white"
+                onClick={goRandom}
+                type="button"
+              >
+                ランダム
+              </button>
+            </div>
           </div>
 
           <div className="mt-3 grid grid-cols-3 gap-2">
@@ -311,7 +420,9 @@ function App() {
                 setExamFilter(event.target.value);
                 setTimeout(() => {
                   const first = takkenQuestions.find((question) =>
-                    event.target.value === ALL ? true : question.examId === event.target.value,
+                    event.target.value === ALL
+                      ? true
+                      : question.examId === event.target.value,
                   );
                   if (first) goToQuestion(first.id);
                 }, 0);
@@ -401,6 +512,81 @@ function App() {
           </div>
         </section>
 
+        <section className="mb-4 rounded-lg border border-white/10 bg-slate-950 p-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-base font-bold text-white">合格作戦ボード</h2>
+            <span className="text-sm text-slate-400">
+              想定 {projectedTotal}/{passLine.fullMarks}点
+            </span>
+          </div>
+          <p className="mt-1 text-xs leading-5 text-slate-400">
+            正答率を本番1回（50問）に換算した想定得点です。合格ラインは過去10年で
+            33〜38点（平均35.5点）。安全圏 {passLine.safe}点を狙います。
+          </p>
+          <div
+            className={`mt-2 rounded-lg border px-3 py-2 text-sm font-bold ${
+              projectedTotal >= passLine.safe
+                ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-100"
+                : "border-amber-200/30 bg-amber-200/10 text-amber-100"
+            }`}
+          >
+            {projectedTotal >= passLine.safe
+              ? `安全圏到達。想定${projectedTotal}点で合格ラインを越えています。`
+              : `安全圏（${passLine.safe}点）まであと ${gapToSafe} 点。`}
+          </div>
+
+          <div className="mt-3 space-y-2">
+            {categoryStats.map((cat) => {
+              const reached =
+                cat.projectedScore !== null &&
+                cat.projectedScore >= cat.targetScore;
+              const barPercent = Math.min(
+                100,
+                Math.round(((cat.projectedScore ?? 0) / cat.targetScore) * 100),
+              );
+
+              return (
+                <div
+                  className="rounded-lg bg-slate-900 px-3 py-2"
+                  key={cat.category}
+                  title={cat.rationale}
+                >
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <span className="font-bold text-white">
+                      {cat.order}. {cat.category}
+                    </span>
+                    <span
+                      className={
+                        reached ? "text-emerald-200" : "text-slate-300"
+                      }
+                    >
+                      想定 {cat.projectedScore ?? "—"}/{cat.fullMarks}点
+                      <span className="text-slate-500">
+                        （目標{cat.targetScore}）
+                      </span>
+                    </span>
+                  </div>
+                  <div className="mt-1.5 h-1.5 rounded-full bg-slate-800">
+                    <div
+                      className={`h-1.5 rounded-full ${
+                        reached ? "bg-emerald-300" : "bg-cyan-300"
+                      }`}
+                      style={{ width: `${barPercent}%` }}
+                    />
+                  </div>
+                  <p className="mt-1 text-xs leading-5 text-slate-400">
+                    {cat.answeredCount > 0
+                      ? `正答率${cat.ratePercent}%・${cat.answeredCount}/${cat.totalCount}問演習`
+                      : "未着手"}
+                    {" — "}
+                    {cat.rationale}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         <section className="rounded-lg border border-white/10 bg-slate-950 shadow-2xl shadow-black/20">
           <div className="border-b border-white/10 bg-slate-900 p-4">
             <div className="flex flex-wrap items-center gap-2">
@@ -463,7 +649,9 @@ function App() {
                   {resultText(currentQuestion)}
                 </p>
                 <div className="mt-3 rounded-lg border border-white/10 bg-[#0F1117] p-3">
-                  <p className="text-sm font-bold text-cyan-100">解答解説（公式根拠）</p>
+                  <p className="text-sm font-bold text-cyan-100">
+                    解答解説（公式根拠）
+                  </p>
                   <p className="mt-2 text-sm leading-6 text-slate-200">
                     {currentQuestion.officialExplanation}
                   </p>
@@ -477,7 +665,9 @@ function App() {
                   </a>
                   {currentQuestion.aiExplanation ? (
                     <div className="mt-3 rounded-lg border border-amber-200/20 bg-amber-200/10 p-3">
-                      <p className="text-sm font-bold text-amber-100">AI補足メモ</p>
+                      <p className="text-sm font-bold text-amber-100">
+                        AI補足メモ
+                      </p>
                       <p className="mt-2 text-sm leading-6 text-slate-200">
                         {currentQuestion.aiExplanation}
                       </p>
@@ -509,7 +699,9 @@ function App() {
             ) : null}
 
             <label className="block">
-              <span className="text-base font-bold text-slate-100">自分メモ</span>
+              <span className="text-base font-bold text-slate-100">
+                自分メモ
+              </span>
               <textarea
                 className="mt-2 min-h-28 w-full rounded-lg border border-white/10 bg-[#0F1117] p-3 text-base leading-7 text-white outline-none focus:border-cyan-200"
                 onChange={(event) => saveNote(event.target.value)}
