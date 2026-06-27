@@ -257,15 +257,17 @@ function App() {
     if (scrollTarget === "question") {
       // 「次へ」: 問題本体（カード）の先頭まで戻す。ヘッダーやボードが縦に長いため
       // ページ最上部(top:0)に戻すだけでは問題が画面外に残ってしまう。
-      // 状態更新→再描画の後にスクロールするため次フレームで実行。
-      window.setTimeout(() => {
-        questionRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 0);
+      //
+      // 重要: behavior は "smooth" にしない。解答時(answerQuestion)に発火した
+      // フィードバック欄への smooth スクロールが進行中だと、後発の smooth スクロールと
+      // 競合して上に戻らないことがある（特に下側の選択肢で解答した場合は移動距離が
+      // 大きく顕著）。即時スクロール(既定の "auto")なら進行中の smooth を確実に上書きする。
+      // 状態更新→再描画後の正しい座標へ飛ぶため requestAnimationFrame で実行。
+      window.requestAnimationFrame(() => {
+        questionRef.current?.scrollIntoView({ block: "start" });
+      });
     } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0 });
     }
   };
 
