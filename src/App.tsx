@@ -133,6 +133,8 @@ function App() {
   // 学習導線（おすすめ順）モード: 合格者の鉄則順に未回答→間違いを優先出題する。
   const [studyMode, setStudyMode] = useState(false);
   const feedbackRef = useRef<HTMLElement | null>(null);
+  // 「次へ」で問題本体（カード）の先頭まで自動スクロールするための参照。
+  const questionRef = useRef<HTMLElement | null>(null);
 
   const categories = useMemo(() => {
     return Array.from(
@@ -246,9 +248,25 @@ function App() {
     });
   };
 
-  const goToQuestion = (questionId: string) => {
+  const goToQuestion = (
+    questionId: string,
+    scrollTarget: "top" | "question" = "top",
+  ) => {
     updateProgress((previous) => ({ ...previous, currentId: questionId }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (scrollTarget === "question") {
+      // 「次へ」: 問題本体（カード）の先頭まで戻す。ヘッダーやボードが縦に長いため
+      // ページ最上部(top:0)に戻すだけでは問題が画面外に残ってしまう。
+      // 状態更新→再描画の後にスクロールするため次フレームで実行。
+      window.setTimeout(() => {
+        questionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 0);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const findFirstQuestion = (status: string) => {
@@ -327,7 +345,7 @@ function App() {
       filteredQuestions[
         (Math.max(currentIndex, 0) + 1) % filteredQuestions.length
       ];
-    goToQuestion(nextQuestion.id);
+    goToQuestion(nextQuestion.id, "question");
   };
 
   const goRandom = () => {
@@ -587,7 +605,10 @@ function App() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-white/10 bg-slate-950 shadow-2xl shadow-black/20">
+        <section
+          ref={questionRef}
+          className="scroll-mt-3 rounded-lg border border-white/10 bg-slate-950 shadow-2xl shadow-black/20"
+        >
           <div className="border-b border-white/10 bg-slate-900 p-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-md border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-sm font-bold text-cyan-100">
