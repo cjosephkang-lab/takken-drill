@@ -1,10 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { User } from "firebase/auth";
 import {
   takkenExams,
   takkenQuestions,
   type TakkenQuestion,
 } from "./data/questions";
 import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
+import {
+  fetchSyncedProgress,
+  isSyncConfigured,
+  pushSyncedProgress,
+  signInWithGoogle,
+  signOutUser,
+  watchAuthUser,
+} from "./firebase";
 
 type AnswerRecord = {
   selected: number;
@@ -139,6 +148,35 @@ const saveProgress = (progress: ProgressState) => {
   }
 };
 
+// 端末間マージ: 問題ごとに answeredAt が新しい方を採用する。
+// メモは空でない方を優先し、両方にあればローカル優先（直前の入力を失わないため）。
+const mergeProgress = (
+  local: ProgressState,
+  remote: {
+    answers: Record<string, AnswerRecord>;
+    notes: Record<string, string>;
+  },
+): ProgressState => {
+  const answers: Record<string, AnswerRecord> = { ...remote.answers };
+
+  for (const [id, record] of Object.entries(local.answers)) {
+    const remoteRecord = answers[id];
+    if (!remoteRecord || record.answeredAt >= remoteRecord.answeredAt) {
+      answers[id] = record;
+    }
+  }
+
+  const notes: Record<string, string> = { ...remote.notes };
+
+  for (const [id, note] of Object.entries(local.notes)) {
+    if (note) {
+      notes[id] = note;
+    }
+  }
+
+  return { ...local, answers, notes };
+};
+
 const allCategories = Array.from(
   new Set(takkenQuestions.map((question) => question.category)),
 );
@@ -269,6 +307,13 @@ function App() {
   // 「次へ」で問題本体（カード）の先頭まで自動スクロールするための参照。
   const questionRef = useRef<HTMLElement | null>(null);
 
+  // Firebase同期（ログイン時のみ）。未ログインは従来通りlocalStorageのみで動く。
+  const [authUser, setAuthUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(isSyncConfigured);
+  const [syncState, setSyncState] = useState<
+    "idle" | "syncing" | "synced" | "error"
+  >("idle");
+
   useEffect(() => {
     saveSettings({
       examFilter,
@@ -278,6 +323,62 @@ function App() {
       boardOpen,
     });
   }, [boardOpen, categoryFilter, examFilter, statusFilter, studyMode]);
+
+  // ログイン状態を監視し、ログインしたらリモートの記録とローカルをマージして取り込む。
+  useEffect(() => {
+    const unsubscribe = watchAuthUser((user) => {
+      setAuthUser(user);
+      setAuthLoading(false);
+
+      if (!user) {
+        return;
+      }
+
+      setSyncState("syncing");
+      fetchSyncedProgress(user.uid)
+        .then((remote) => {
+          if (!remote) {
+            setSyncState("synced");
+            return;
+          }
+
+          setProgress((local) => {
+            const merged = mergeProgress(local, {
+              answers: remote.answers as Record<string, AnswerRecord>,
+              notes: remote.notes,
+            });
+            saveProgress(merged);
+            return merged;
+          });
+          setSyncState("synced");
+        })
+        .catch((error) => {
+          console.error("Failed to fetch synced progress.", error);
+          setSyncState("error");
+        });
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // ログイン中は、回答・メモが変わるたびにFirestoreへ反映する。
+  useEffect(() => {
+    if (!authUser) {
+      return;
+    }
+
+    setSyncState("syncing");
+    pushSyncedProgress(authUser.uid, {
+      answers: progress.answers,
+      notes: progress.notes,
+      updatedAt: new Date().toISOString(),
+    })
+      .then(() => setSyncState("synced"))
+      .catch((error) => {
+        console.error("Failed to push synced progress.", error);
+        setSyncState("error");
+      });
+  }, [authUser, progress.answers, progress.notes]);
 
   const categories = allCategories;
 
@@ -642,6 +743,36 @@ function App() {
               </button>
             </div>
           </div>
+
+          {isSyncConfigured ? (
+            <div className="mt-2 flex items-center justify-between gap-2 text-xs text-slate-400">
+              {authUser ? (
+                <>
+                  <span>
+                    {authUser.displayName ?? authUser.email} で同期中
+                    {syncState === "syncing" ? "…" : ""}
+                    {syncState === "error" ? "（同期エラー）" : ""}
+                  </span>
+                  <button
+                    className="min-h-8 rounded-md border border-white/15 px-2 text-xs font-bold text-slate-300"
+                    onClick={() => signOutUser()}
+                    type="button"
+                  >
+                    ログアウト
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="min-h-8 rounded-md border border-white/15 px-2 text-xs font-bold text-cyan-100"
+                  disabled={authLoading}
+                  onClick={() => signInWithGoogle()}
+                  type="button"
+                >
+                  Googleでログインして端末間同期
+                </button>
+              )}
+            </div>
+          ) : null}
 
           <div className="mt-3 grid grid-cols-3 gap-2">
             <select
