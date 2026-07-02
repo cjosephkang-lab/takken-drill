@@ -6,6 +6,8 @@ import {
   type TakkenQuestion,
 } from "./data/questions";
 import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
+import { formatQuestionText } from "./lib/formatQuestionText";
+import { MockExam, type MockRun } from "./MockExam";
 import {
   fetchSyncedProgress,
   isSyncConfigured,
@@ -29,10 +31,17 @@ type AnswerRecord = {
   nextReviewAt: string;
 };
 
+/** 1日ごとの学習量。ストリーク・カレンダー・今日のミッションの進捗に使う。 */
+type DayLog = {
+  answered: number;
+  correct: number;
+};
+
 type ProgressState = {
   answers: Record<string, AnswerRecord>;
   notes: Record<string, string>;
   currentId: string;
+  dailyLog: Record<string, DayLog>;
 };
 
 type UiSettings = {
@@ -41,6 +50,8 @@ type UiSettings = {
   statusFilter: string;
   studyMode: boolean;
   boardOpen: boolean;
+  /** 本試験の日付（YYYY-MM-DD）。逆算ペースとカウントダウンに使う。 */
+  examDate: string;
 };
 
 const STORAGE_KEY = "takken-drill.progress.v1";
@@ -52,6 +63,10 @@ const DUE = "due";
 const DAILY_TARGET = 10;
 /** この回数連続で正解したら「習得済み」とみなす。 */
 const MASTER_STREAK = 2;
+/** 宅建試験は例年10月の第3日曜。2026年は10月18日。 */
+const DEFAULT_EXAM_DATE = "2026-10-18";
+/** 1日のミッション問題数の上限（詰め込みすぎ防止）。 */
+const MISSION_CAP = 50;
 
 const localDateKey = (date: Date) => {
   const year = date.getFullYear();
@@ -97,11 +112,67 @@ const normalizeAnswer = (record: AnswerRecord): AnswerRecord => {
 const isDueRecord = (record?: AnswerRecord) =>
   Boolean(record && record.nextReviewAt <= new Date().toISOString());
 
+// 通常ドリルと模試の両方で使う、回答1件ぶんの間隔反復レコード更新。
+const buildAnswerRecord = (
+  previous: AnswerRecord | undefined,
+  selected: number,
+  correct: boolean,
+  answeredAt: string,
+): AnswerRecord => {
+  const streak = correct ? (previous?.streak ?? 0) + 1 : 0;
+
+  return {
+    selected,
+    correct,
+    answeredAt,
+    streak,
+    attempts: (previous?.attempts ?? 0) + 1,
+    lapses: (previous?.lapses ?? 0) + (correct ? 0 : 1),
+    nextReviewAt: addDays(answeredAt, reviewIntervalDays(streak)),
+  };
+};
+
+// 日次ログに回答を加算する（今日のミッション・ストリーク・カレンダーの元データ）。
+const addToDailyLog = (
+  log: Record<string, DayLog>,
+  count: number,
+  correctCount: number,
+): Record<string, DayLog> => {
+  const key = localDateKey(new Date());
+  const day = log[key] ?? { answered: 0, correct: 0 };
+
+  return {
+    ...log,
+    [key]: {
+      answered: day.answered + count,
+      correct: day.correct + correctCount,
+    },
+  };
+};
+
+// 旧形式（dailyLogなし）からの移行: 手元にある最新回答の日時から近似的に日次ログを再構成する。
+const seedDailyLog = (
+  answers: Record<string, AnswerRecord>,
+): Record<string, DayLog> => {
+  const log: Record<string, DayLog> = {};
+
+  for (const record of Object.values(answers)) {
+    const key = localDateKey(new Date(record.answeredAt));
+    const day = log[key] ?? { answered: 0, correct: 0 };
+    day.answered += 1;
+    if (record.correct) day.correct += 1;
+    log[key] = day;
+  }
+
+  return log;
+};
+
 const loadProgress = (): ProgressState => {
   const fallback: ProgressState = {
     answers: {},
     notes: {},
     currentId: takkenQuestions[0]?.id ?? "",
+    dailyLog: {},
   };
 
   try {
@@ -133,6 +204,10 @@ const loadProgress = (): ProgressState => {
       notes:
         parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
       currentId,
+      dailyLog:
+        parsed.dailyLog && typeof parsed.dailyLog === "object"
+          ? parsed.dailyLog
+          : seedDailyLog(answers),
     };
   } catch (error) {
     console.error("Failed to load progress.", error);
@@ -155,6 +230,7 @@ const mergeProgress = (
   remote: {
     answers: Record<string, AnswerRecord>;
     notes: Record<string, string>;
+    dailyLog: Record<string, DayLog>;
   },
 ): ProgressState => {
   const answers: Record<string, AnswerRecord> = { ...remote.answers };
@@ -174,7 +250,17 @@ const mergeProgress = (
     }
   }
 
-  return { ...local, answers, notes };
+  // 日次ログは日付ごとに大きい方を採用（同じ端末の履歴が二重計上されるのを防ぐ）。
+  const dailyLog: Record<string, DayLog> = { ...remote.dailyLog };
+
+  for (const [key, day] of Object.entries(local.dailyLog)) {
+    const remoteDay = dailyLog[key];
+    if (!remoteDay || day.answered >= remoteDay.answered) {
+      dailyLog[key] = day;
+    }
+  }
+
+  return { ...local, answers, notes, dailyLog };
 };
 
 const allCategories = Array.from(
@@ -189,6 +275,7 @@ const loadSettings = (): UiSettings => {
     statusFilter: ALL,
     studyMode: false,
     boardOpen: false,
+    examDate: DEFAULT_EXAM_DATE,
   };
 
   try {
@@ -220,6 +307,11 @@ const loadSettings = (): UiSettings => {
           : ALL,
       studyMode: parsed.studyMode === true,
       boardOpen: parsed.boardOpen === true,
+      examDate:
+        typeof parsed.examDate === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(parsed.examDate)
+          ? parsed.examDate
+          : DEFAULT_EXAM_DATE,
     };
   } catch (error) {
     console.error("Failed to load settings.", error);
@@ -236,6 +328,41 @@ const saveSettings = (settings: UiSettings) => {
 };
 
 const initialSettings = loadSettings();
+
+const MOCK_KEY = "takken-drill.mock.v1";
+
+const loadMockRun = (): MockRun | null => {
+  try {
+    const raw = window.localStorage.getItem(MOCK_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as Partial<MockRun>;
+    if (
+      typeof parsed.examId !== "string" ||
+      typeof parsed.startedAt !== "string" ||
+      !parsed.answers ||
+      typeof parsed.answers !== "object"
+    ) {
+      return null;
+    }
+    return parsed as MockRun;
+  } catch (error) {
+    console.error("Failed to load mock run.", error);
+    return null;
+  }
+};
+
+const saveMockRun = (run: MockRun | null) => {
+  try {
+    if (run) {
+      window.localStorage.setItem(MOCK_KEY, JSON.stringify(run));
+    } else {
+      window.localStorage.removeItem(MOCK_KEY);
+    }
+  } catch (error) {
+    console.error("Failed to save mock run.", error);
+  }
+};
 
 const formatChoices = (choices: number[]) => choices.join(" / ");
 
@@ -298,6 +425,7 @@ function App() {
   // 学習導線（おすすめ順）モード: 合格者の鉄則順に復習期限→未回答を優先出題する。
   const [studyMode, setStudyMode] = useState(initialSettings.studyMode);
   const [boardOpen, setBoardOpen] = useState(initialSettings.boardOpen);
+  const [examDate, setExamDate] = useState(initialSettings.examDate);
   // この起動中に解いた問題の回答。過去の回答は画面に出さないので、
   // 再訪時は毎回「思い出して解く」テスト形式になる（想起練習）。
   const [sessionAnswers, setSessionAnswers] = useState<
@@ -306,6 +434,10 @@ function App() {
   const feedbackRef = useRef<HTMLElement | null>(null);
   // 「次へ」で問題本体（カード）の先頭まで自動スクロールするための参照。
   const questionRef = useRef<HTMLElement | null>(null);
+
+  // 模試モード。進行中はlocalStorageに保存され、リロードしても再開できる。
+  const [mockRun, setMockRun] = useState<MockRun | null>(() => loadMockRun());
+  const [mockPicker, setMockPicker] = useState(false);
 
   // Firebase同期（ログイン時のみ）。未ログインは従来通りlocalStorageのみで動く。
   const [authUser, setAuthUser] = useState<User | null>(null);
@@ -321,8 +453,16 @@ function App() {
       statusFilter,
       studyMode,
       boardOpen,
+      examDate,
     });
-  }, [boardOpen, categoryFilter, examFilter, statusFilter, studyMode]);
+  }, [
+    boardOpen,
+    categoryFilter,
+    examDate,
+    examFilter,
+    statusFilter,
+    studyMode,
+  ]);
 
   // ログイン状態を監視し、ログインしたらリモートの記録とローカルをマージして取り込む。
   useEffect(() => {
@@ -346,6 +486,7 @@ function App() {
             const merged = mergeProgress(local, {
               answers: remote.answers as Record<string, AnswerRecord>,
               notes: remote.notes,
+              dailyLog: remote.dailyLog ?? {},
             });
             saveProgress(merged);
             return merged;
@@ -371,6 +512,7 @@ function App() {
     pushSyncedProgress(authUser.uid, {
       answers: progress.answers,
       notes: progress.notes,
+      dailyLog: progress.dailyLog,
       updatedAt: new Date().toISOString(),
     })
       .then(() => setSyncState("synced"))
@@ -378,7 +520,7 @@ function App() {
         console.error("Failed to push synced progress.", error);
         setSyncState("error");
       });
-  }, [authUser, progress.answers, progress.notes]);
+  }, [authUser, progress.answers, progress.notes, progress.dailyLog]);
 
   const categories = allCategories;
 
@@ -451,13 +593,80 @@ function App() {
     isDueRecord(progress.answers[question.id]),
   ).length;
   const todayKey = localDateKey(new Date());
-  const todayAnswered = Object.values(progress.answers).filter(
-    (answer) => localDateKey(new Date(answer.answeredAt)) === todayKey,
-  ).length;
+  const todayLog = progress.dailyLog[todayKey] ?? { answered: 0, correct: 0 };
+  const todayAnswered = todayLog.answered;
+  const todayAccuracy = todayLog.answered
+    ? Math.round((todayLog.correct / todayLog.answered) * 100)
+    : 0;
   const accuracy = totalAnswered
     ? Math.round((totalCorrect / totalAnswered) * 100)
     : 0;
   const completion = Math.round((totalAnswered / takkenQuestions.length) * 100);
+
+  // 連続学習日数（ストリーク）。今日まだ解いていなければ昨日までの連続を表示する
+  // （その日のうちに解けば途切れない）。
+  const streakDays = useMemo(() => {
+    const cursor = new Date();
+    if (!(progress.dailyLog[localDateKey(cursor)]?.answered ?? 0)) {
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    let days = 0;
+    while ((progress.dailyLog[localDateKey(cursor)]?.answered ?? 0) > 0) {
+      days += 1;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return days;
+  }, [progress.dailyLog]);
+
+  // 試験日カウントダウンと逆算ペース。
+  // 「未回答は2回・回答済みで未習得は1回解く必要がある」という近似で
+  // 残りの回答回数を見積もり、残り日数で割って1日あたりの必要問題数を出す。
+  const daysToExam = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const exam = new Date(`${examDate}T00:00:00`);
+    return Math.ceil((exam.getTime() - today.getTime()) / 86400000);
+  }, [examDate]);
+  const remainingEvents =
+    (takkenQuestions.length - totalAnswered) * 2 +
+    (totalAnswered - totalMastered);
+  const paceNeeded =
+    daysToExam > 0 ? Math.ceil(remainingEvents / daysToExam) : remainingEvents;
+
+  // 今日のミッション: 逆算ペースと最低ノルマ（10問）の大きい方。上限50問。
+  const missionTarget = Math.min(
+    MISSION_CAP,
+    Math.max(DAILY_TARGET, paceNeeded),
+  );
+  const missionDone = todayAnswered >= missionTarget;
+  const missionRemaining = Math.max(0, missionTarget - todayAnswered);
+  const missionReviewPart = Math.min(dueCount, missionRemaining);
+  const missionNewPart = missionRemaining - missionReviewPart;
+  const missionPercent = Math.min(
+    100,
+    Math.round((todayAnswered / missionTarget) * 100),
+  );
+
+  // 学習カレンダー: 直近12週（今日を含む週まで、日曜始まり）。
+  const calendarDays = useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - 83);
+    start.setDate(start.getDate() - start.getDay()); // 直前の日曜まで戻す
+
+    const days: { key: string; count: number }[] = [];
+    const cursor = new Date(start);
+    const endKey = localDateKey(new Date());
+
+    while (true) {
+      const key = localDateKey(cursor);
+      days.push({ key, count: progress.dailyLog[key]?.answered ?? 0 });
+      if (key === endKey) break;
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    return days;
+  }, [progress.dailyLog]);
 
   // 科目別の得点ダッシュボード: 各科目の正答率を出し、1回分の試験(満点)に
   // 換算した「想定得点」を出して、目標点・合格ラインまであと何点かを可視化する。
@@ -563,6 +772,28 @@ function App() {
     }
   };
 
+  // 今日のミッション開始: フィルタを解除しておすすめ順モードに入り、
+  // 復習期限 → 未回答（合格者の鉄則順）の先頭から1タップで学習を始める。
+  const startMission = () => {
+    setExamFilter(ALL);
+    setCategoryFilter(ALL);
+    setStatusFilter(ALL);
+    setStudyMode(true);
+
+    const pool = [...takkenQuestions].sort(
+      (a, b) =>
+        studyOrderByCategory(a.category) - studyOrderByCategory(b.category),
+    );
+    const first =
+      pool.find((q) => isDueRecord(progress.answers[q.id])) ??
+      pool.find((q) => !progress.answers[q.id]) ??
+      pool[0];
+
+    if (first) {
+      goToQuestion(first.id, "question");
+    }
+  };
+
   const answerQuestion = (choice: number) => {
     // この起動中に一度解いた問題は上書きしない
     // （正解を見た後にタップし直して成績が濁るのを防ぐ）。
@@ -571,18 +802,12 @@ function App() {
     }
 
     const correct = currentQuestion.correctChoices.includes(choice);
-    const previous = progress.answers[currentQuestion.id];
-    const streak = correct ? (previous?.streak ?? 0) + 1 : 0;
-    const answeredAt = new Date().toISOString();
-    const record: AnswerRecord = {
-      selected: choice,
+    const record = buildAnswerRecord(
+      progress.answers[currentQuestion.id],
+      choice,
       correct,
-      answeredAt,
-      streak,
-      attempts: (previous?.attempts ?? 0) + 1,
-      lapses: (previous?.lapses ?? 0) + (correct ? 0 : 1),
-      nextReviewAt: addDays(answeredAt, reviewIntervalDays(streak)),
-    };
+      new Date().toISOString(),
+    );
 
     setSessionAnswers((prev) => ({ ...prev, [currentQuestion.id]: record }));
     updateProgress((prev) => ({
@@ -591,6 +816,7 @@ function App() {
         ...prev.answers,
         [currentQuestion.id]: record,
       },
+      dailyLog: addToDailyLog(prev.dailyLog, 1, correct ? 1 : 0),
       currentId: currentQuestion.id,
     }));
 
@@ -680,11 +906,94 @@ function App() {
       answers: {},
       notes: {},
       currentId: takkenQuestions[0]?.id ?? "",
+      dailyLog: {},
     };
     setProgress(next);
     setSessionAnswers({});
     window.localStorage.removeItem(STORAGE_KEY);
   };
+
+  const startMock = (examId: string) => {
+    const run: MockRun = {
+      examId,
+      startedAt: new Date().toISOString(),
+      answers: {},
+    };
+    setMockRun(run);
+    saveMockRun(run);
+    setMockPicker(false);
+    window.scrollTo({ top: 0 });
+  };
+
+  const changeMock = (run: MockRun) => {
+    setMockRun(run);
+    saveMockRun(run);
+  };
+
+  const abortMock = () => {
+    setMockRun(null);
+    saveMockRun(null);
+  };
+
+  // 模試の採点結果を学習記録へ反映する。回答した各問を通常ドリルと同じ
+  // 間隔反復レコードとして記録し、日次ログにも加算する。
+  const commitMock = (run: MockRun) => {
+    const answeredAt = new Date().toISOString();
+    const questionById = new Map(takkenQuestions.map((q) => [q.id, q]));
+
+    updateProgress((prev) => {
+      const answers = { ...prev.answers };
+      let count = 0;
+      let correctCount = 0;
+
+      for (const [qid, choice] of Object.entries(run.answers)) {
+        const question = questionById.get(qid);
+        if (!question) continue;
+
+        const correct =
+          question.isAllCorrect || question.correctChoices.includes(choice);
+        answers[qid] = buildAnswerRecord(
+          answers[qid],
+          choice,
+          correct,
+          answeredAt,
+        );
+        count += 1;
+        if (correct) correctCount += 1;
+      }
+
+      return {
+        ...prev,
+        answers,
+        dailyLog: addToDailyLog(prev.dailyLog, count, correctCount),
+      };
+    });
+
+    setMockRun(null);
+    saveMockRun(null);
+    window.scrollTo({ top: 0 });
+  };
+
+  // 模試モード中は模試画面だけを表示する（リロードしても再開される）。
+  const mockExam = mockRun
+    ? takkenExams.find((exam) => exam.id === mockRun.examId)
+    : undefined;
+  if (mockRun && mockExam) {
+    const mockQuestions = takkenQuestions
+      .filter((question) => question.examId === mockRun.examId)
+      .sort((a, b) => a.number - b.number);
+
+    return (
+      <MockExam
+        exam={mockExam}
+        onAbort={abortMock}
+        onChange={changeMock}
+        onCommit={commitMock}
+        questions={mockQuestions}
+        run={mockRun}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0F1117] text-slate-100">
@@ -693,8 +1002,8 @@ function App() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-cyan-200">
-                今日 {Math.min(todayAnswered, DAILY_TARGET)}/{DAILY_TARGET} /
-                復習 {dueCount} / 正答率 {accuracy}%
+                🔥{streakDays}日連続 / 復習 {dueCount} / 試験まで
+                {daysToExam > 0 ? `${daysToExam}日` : "—"}
               </p>
               <h1 className="text-xl font-bold tracking-normal text-white">
                 宅建過去問ドリル
@@ -740,6 +1049,13 @@ function App() {
                 type="button"
               >
                 ランダム
+              </button>
+              <button
+                className="min-h-11 rounded-lg border border-amber-200/30 bg-amber-200/10 px-3 text-sm font-bold text-amber-100"
+                onClick={() => setMockPicker(true)}
+                type="button"
+              >
+                模試
               </button>
             </div>
           </div>
@@ -864,6 +1180,62 @@ function App() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 pb-28 pt-5">
+        <section
+          className={`mb-4 rounded-lg border p-3 ${
+            missionDone
+              ? "border-emerald-300/30 bg-emerald-300/5"
+              : "border-cyan-300/25 bg-slate-950"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-base font-bold text-white">今日のミッション</h2>
+            <span
+              className={`text-sm font-bold ${
+                missionDone ? "text-emerald-200" : "text-cyan-200"
+              }`}
+            >
+              {todayAnswered}/{missionTarget}問
+            </span>
+          </div>
+          <div className="mt-2 h-2 rounded-full bg-slate-800">
+            <div
+              className={`h-2 rounded-full ${
+                missionDone ? "bg-emerald-300" : "bg-cyan-300"
+              }`}
+              style={{ width: `${missionPercent}%` }}
+            />
+          </div>
+          {missionDone ? (
+            <p className="mt-2 text-sm leading-6 text-emerald-100">
+              ミッション完了！ 今日{todayAnswered}問・正答率{todayAccuracy}
+              %。🔥{streakDays}日連続。余力があればもう少し進めましょう。
+            </p>
+          ) : (
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              残り{missionRemaining}問（復習{missionReviewPart}・新規
+              {missionNewPart}）。
+              {daysToExam > 0
+                ? `1日${missionTarget}問ペースで試験日までに全問習得できます。`
+                : "試験日を設定すると逆算ペースが表示されます。"}
+            </p>
+          )}
+          <button
+            className={`mt-3 min-h-12 w-full rounded-lg font-bold ${
+              missionDone
+                ? "border border-white/15 bg-slate-900 text-white"
+                : "bg-cyan-300 text-slate-950"
+            }`}
+            onClick={startMission}
+            type="button"
+          >
+            {missionDone
+              ? "さらに解く"
+              : todayAnswered > 0
+                ? "続きから解く"
+                : "今日の学習を始める"}
+          </button>
+        </section>
+
         <section className="mb-4 rounded-lg border border-white/10 bg-slate-950">
           <button
             aria-expanded={boardOpen}
@@ -905,7 +1277,8 @@ function App() {
               </div>
 
               <p className="mt-3 text-xs leading-5 text-slate-400">
-                正答率を本番1回（50問）に換算した想定得点です。合格ラインは過去10年で
+                正答率を本番1回（50問）に換算した想定得点です（累計正答率
+                {accuracy}%）。合格ラインは過去10年で
                 33〜38点（平均35.5点）。安全圏 {passLine.safe}点を狙います。
                 「習得済み」は2連続正解した問題です。
               </p>
@@ -973,6 +1346,50 @@ function App() {
                   );
                 })}
               </div>
+
+              <div className="mt-4">
+                <p className="text-xs font-bold text-slate-300">
+                  学習カレンダー（過去12週・🔥{streakDays}日連続）
+                </p>
+                <div className="mt-2 grid grid-flow-col grid-rows-7 justify-start gap-1">
+                  {calendarDays.map((day) => (
+                    <div
+                      className={`h-3 w-3 rounded-sm ${
+                        day.count === 0
+                          ? "bg-slate-800"
+                          : day.count < 5
+                            ? "bg-cyan-900"
+                            : day.count < 10
+                              ? "bg-cyan-600"
+                              : "bg-cyan-300"
+                      }`}
+                      key={day.key}
+                      title={`${day.key}: ${day.count}問`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-lg bg-slate-900 px-3 py-2">
+                <label className="flex items-center justify-between gap-2 text-sm">
+                  <span className="font-bold text-white">試験日</span>
+                  <input
+                    className="rounded-md border border-white/15 bg-[#0F1117] px-2 py-1 text-sm text-white"
+                    onChange={(event) => {
+                      if (/^\d{4}-\d{2}-\d{2}$/.test(event.target.value)) {
+                        setExamDate(event.target.value);
+                      }
+                    }}
+                    type="date"
+                    value={examDate}
+                  />
+                </label>
+                <p className="mt-1 text-xs leading-5 text-slate-400">
+                  {daysToExam > 0
+                    ? `あと${daysToExam}日。未回答×2回＋未習得×1回の見積もりで、1日${paceNeeded}問ペースなら全問習得が間に合います。`
+                    : "試験日が過ぎています。次回の試験日を設定してください。"}
+                </p>
+              </div>
             </div>
           ) : null}
         </section>
@@ -1025,7 +1442,7 @@ function App() {
             />
 
             <div className="whitespace-pre-wrap break-words rounded-lg border border-white/10 bg-[#111827] p-4 text-base leading-7 text-slate-100">
-              {currentQuestion.questionText}
+              {formatQuestionText(currentQuestion.questionText)}
             </div>
 
             <ChoiceButtons
@@ -1176,6 +1593,42 @@ function App() {
           </button>
         </div>
       </nav>
+
+      {mockPicker ? (
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 px-6"
+          onClick={() => setMockPicker(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-lg border border-white/10 bg-slate-950 p-4"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 className="text-base font-bold text-white">模試を開始</h2>
+            <p className="mt-1 text-xs leading-5 text-slate-400">
+              本番同様の50問・2時間。途中の正誤は表示されず、採点後にまとめて学習記録へ反映されます。全問抽出できている年度のみ選べます。
+            </p>
+            {takkenExams
+              .filter((exam) => exam.extractedCount === exam.questionCount)
+              .map((exam) => (
+                <button
+                  className="mt-2 min-h-12 w-full rounded-lg border border-white/15 bg-slate-900 px-3 text-sm font-bold text-white"
+                  key={exam.id}
+                  onClick={() => startMock(exam.id)}
+                  type="button"
+                >
+                  {exam.year}（{exam.questionCount}問）
+                </button>
+              ))}
+            <button
+              className="mt-3 min-h-10 w-full text-xs text-slate-400"
+              onClick={() => setMockPicker(false)}
+              type="button"
+            >
+              キャンセル
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

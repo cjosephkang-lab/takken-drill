@@ -49,6 +49,7 @@ export const signOutUser = async () => {
 export type SyncedProgress = {
   answers: Record<string, unknown>;
   notes: Record<string, string>;
+  dailyLog?: Record<string, { answered: number; correct: number }>;
   updatedAt: string;
 };
 
