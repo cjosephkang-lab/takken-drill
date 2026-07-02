@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   takkenExams,
   takkenQuestions,
@@ -10,6 +10,14 @@ type AnswerRecord = {
   selected: number;
   correct: boolean;
   answeredAt: string;
+  /** 連続正解数。間違えると0に戻る。MASTER_STREAK以上で「習得済み」扱い。 */
+  streak: number;
+  /** 累計挑戦回数。 */
+  attempts: number;
+  /** 累計不正解回数。 */
+  lapses: number;
+  /** 次に復習すべき日時（間隔反復）。この日時を過ぎると「復習期限」に入る。 */
+  nextReviewAt: string;
 };
 
 type ProgressState = {
@@ -18,11 +26,23 @@ type ProgressState = {
   currentId: string;
 };
 
+type UiSettings = {
+  examFilter: string;
+  categoryFilter: string;
+  statusFilter: string;
+  studyMode: boolean;
+  boardOpen: boolean;
+};
+
 const STORAGE_KEY = "takken-drill.progress.v1";
+const SETTINGS_KEY = "takken-drill.settings.v1";
 const ALL = "all";
 const UNANSWERED = "unanswered";
 const WRONG = "wrong";
+const DUE = "due";
 const DAILY_TARGET = 10;
+/** この回数連続で正解したら「習得済み」とみなす。 */
+const MASTER_STREAK = 2;
 
 const localDateKey = (date: Date) => {
   const year = date.getFullYear();
@@ -31,6 +51,42 @@ const localDateKey = (date: Date) => {
 
   return `${year}-${month}-${day}`;
 };
+
+// 間隔反復の復習間隔。間違えたら翌日、正解を重ねるほど間隔を広げて、
+// 忘れかけた頃に再出題する。
+const reviewIntervalDays = (streak: number) => {
+  if (streak <= 0) return 1;
+  if (streak === 1) return 2;
+  if (streak === 2) return 7;
+  if (streak === 3) return 14;
+  return 30;
+};
+
+const addDays = (iso: string, days: number) => {
+  const date = new Date(iso);
+  date.setDate(date.getDate() + days);
+  return date.toISOString();
+};
+
+// 旧形式（間隔反復フィールドなし）の回答レコードを読み込み時に補完する。
+const normalizeAnswer = (record: AnswerRecord): AnswerRecord => {
+  if (typeof record.streak === "number" && record.nextReviewAt) {
+    return record;
+  }
+
+  const streak = record.correct ? 1 : 0;
+
+  return {
+    ...record,
+    streak,
+    attempts: 1,
+    lapses: record.correct ? 0 : 1,
+    nextReviewAt: addDays(record.answeredAt, reviewIntervalDays(streak)),
+  };
+};
+
+const isDueRecord = (record?: AnswerRecord) =>
+  Boolean(record && record.nextReviewAt <= new Date().toISOString());
 
 const loadProgress = (): ProgressState => {
   const fallback: ProgressState = {
@@ -53,11 +109,18 @@ const loadProgress = (): ProgressState => {
         ? parsed.currentId
         : fallback.currentId;
 
+    const rawAnswers =
+      parsed.answers && typeof parsed.answers === "object"
+        ? parsed.answers
+        : {};
+    const answers: Record<string, AnswerRecord> = {};
+
+    for (const [id, record] of Object.entries(rawAnswers)) {
+      answers[id] = normalizeAnswer(record);
+    }
+
     return {
-      answers:
-        parsed.answers && typeof parsed.answers === "object"
-          ? parsed.answers
-          : {},
+      answers,
       notes:
         parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
       currentId,
@@ -75,6 +138,66 @@ const saveProgress = (progress: ProgressState) => {
     console.error("Failed to save progress.", error);
   }
 };
+
+const allCategories = Array.from(
+  new Set(takkenQuestions.map((question) => question.category)),
+);
+const validExamIds = new Set(takkenExams.map((exam) => exam.id));
+
+const loadSettings = (): UiSettings => {
+  const fallback: UiSettings = {
+    examFilter: ALL,
+    categoryFilter: ALL,
+    statusFilter: ALL,
+    studyMode: false,
+    boardOpen: false,
+  };
+
+  try {
+    const raw = window.localStorage.getItem(SETTINGS_KEY);
+
+    if (!raw) {
+      return fallback;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<UiSettings>;
+
+    return {
+      examFilter:
+        typeof parsed.examFilter === "string" &&
+        (parsed.examFilter === ALL || validExamIds.has(parsed.examFilter))
+          ? parsed.examFilter
+          : ALL,
+      categoryFilter:
+        typeof parsed.categoryFilter === "string" &&
+        (parsed.categoryFilter === ALL ||
+          allCategories.includes(parsed.categoryFilter))
+          ? parsed.categoryFilter
+          : ALL,
+      statusFilter:
+        parsed.statusFilter === UNANSWERED ||
+        parsed.statusFilter === WRONG ||
+        parsed.statusFilter === DUE
+          ? parsed.statusFilter
+          : ALL,
+      studyMode: parsed.studyMode === true,
+      boardOpen: parsed.boardOpen === true,
+    };
+  } catch (error) {
+    console.error("Failed to load settings.", error);
+    return fallback;
+  }
+};
+
+const saveSettings = (settings: UiSettings) => {
+  try {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch (error) {
+    console.error("Failed to save settings.", error);
+  }
+};
+
+const initialSettings = loadSettings();
 
 const formatChoices = (choices: number[]) => choices.join(" / ");
 
@@ -127,20 +250,36 @@ function ChoiceButtons({ question, answer, onAnswer }: ChoiceButtonsProps) {
 
 function App() {
   const [progress, setProgress] = useState<ProgressState>(() => loadProgress());
-  const [examFilter, setExamFilter] = useState(ALL);
-  const [categoryFilter, setCategoryFilter] = useState(ALL);
-  const [statusFilter, setStatusFilter] = useState(ALL);
-  // 学習導線（おすすめ順）モード: 合格者の鉄則順に未回答→間違いを優先出題する。
-  const [studyMode, setStudyMode] = useState(false);
+  const [examFilter, setExamFilter] = useState(initialSettings.examFilter);
+  const [categoryFilter, setCategoryFilter] = useState(
+    initialSettings.categoryFilter,
+  );
+  const [statusFilter, setStatusFilter] = useState(
+    initialSettings.statusFilter,
+  );
+  // 学習導線（おすすめ順）モード: 合格者の鉄則順に復習期限→未回答を優先出題する。
+  const [studyMode, setStudyMode] = useState(initialSettings.studyMode);
+  const [boardOpen, setBoardOpen] = useState(initialSettings.boardOpen);
+  // この起動中に解いた問題の回答。過去の回答は画面に出さないので、
+  // 再訪時は毎回「思い出して解く」テスト形式になる（想起練習）。
+  const [sessionAnswers, setSessionAnswers] = useState<
+    Record<string, AnswerRecord>
+  >({});
   const feedbackRef = useRef<HTMLElement | null>(null);
   // 「次へ」で問題本体（カード）の先頭まで自動スクロールするための参照。
   const questionRef = useRef<HTMLElement | null>(null);
 
-  const categories = useMemo(() => {
-    return Array.from(
-      new Set(takkenQuestions.map((question) => question.category)),
-    );
-  }, []);
+  useEffect(() => {
+    saveSettings({
+      examFilter,
+      categoryFilter,
+      statusFilter,
+      studyMode,
+      boardOpen,
+    });
+  }, [boardOpen, categoryFilter, examFilter, statusFilter, studyMode]);
+
+  const categories = allCategories;
 
   const filteredQuestions = useMemo(() => {
     const filtered = takkenQuestions.filter((question) => {
@@ -159,6 +298,10 @@ function App() {
       }
 
       if (statusFilter === WRONG && (!record || record.correct)) {
+        return false;
+      }
+
+      if (statusFilter === DUE && !isDueRecord(record)) {
         return false;
       }
 
@@ -190,7 +333,8 @@ function App() {
   const currentIndex = filteredQuestions.findIndex(
     (question) => question.id === currentQuestion.id,
   );
-  const currentAnswer = progress.answers[currentQuestion.id];
+  const storedAnswer = progress.answers[currentQuestion.id];
+  const currentAnswer = sessionAnswers[currentQuestion.id];
   const currentNote = progress.notes[currentQuestion.id] ?? "";
   const totalAnswered = Object.keys(progress.answers).length;
   const totalCorrect = Object.values(progress.answers).filter(
@@ -198,6 +342,12 @@ function App() {
   ).length;
   const totalWrong = Object.values(progress.answers).filter(
     (answer) => !answer.correct,
+  ).length;
+  const totalMastered = Object.values(progress.answers).filter(
+    (answer) => answer.streak >= MASTER_STREAK,
+  ).length;
+  const dueCount = takkenQuestions.filter((question) =>
+    isDueRecord(progress.answers[question.id]),
   ).length;
   const todayKey = localDateKey(new Date());
   const todayAnswered = Object.values(progress.answers).filter(
@@ -217,6 +367,9 @@ function App() {
       );
       const answered = inCategory.filter((q) => progress.answers[q.id]);
       const correct = answered.filter((q) => progress.answers[q.id]?.correct);
+      const mastered = inCategory.filter(
+        (q) => (progress.answers[q.id]?.streak ?? 0) >= MASTER_STREAK,
+      );
       const rate = answered.length ? correct.length / answered.length : 0;
       // 正答率を本番1回分の満点に換算した想定得点。
       const projected = Math.round(rate * cat.fullMarks);
@@ -224,6 +377,7 @@ function App() {
       return {
         ...cat,
         answeredCount: answered.length,
+        masteredCount: mastered.length,
         totalCount: inCategory.length,
         ratePercent: Math.round(rate * 100),
         projectedScore: answered.length ? projected : null,
@@ -291,6 +445,10 @@ function App() {
         return Boolean(record && !record.correct);
       }
 
+      if (status === DUE) {
+        return isDueRecord(record);
+      }
+
       return true;
     });
   };
@@ -305,17 +463,32 @@ function App() {
   };
 
   const answerQuestion = (choice: number) => {
-    const correct = currentQuestion.correctChoices.includes(choice);
+    // この起動中に一度解いた問題は上書きしない
+    // （正解を見た後にタップし直して成績が濁るのを防ぐ）。
+    if (sessionAnswers[currentQuestion.id]) {
+      return;
+    }
 
-    updateProgress((previous) => ({
-      ...previous,
+    const correct = currentQuestion.correctChoices.includes(choice);
+    const previous = progress.answers[currentQuestion.id];
+    const streak = correct ? (previous?.streak ?? 0) + 1 : 0;
+    const answeredAt = new Date().toISOString();
+    const record: AnswerRecord = {
+      selected: choice,
+      correct,
+      answeredAt,
+      streak,
+      attempts: (previous?.attempts ?? 0) + 1,
+      lapses: (previous?.lapses ?? 0) + (correct ? 0 : 1),
+      nextReviewAt: addDays(answeredAt, reviewIntervalDays(streak)),
+    };
+
+    setSessionAnswers((prev) => ({ ...prev, [currentQuestion.id]: record }));
+    updateProgress((prev) => ({
+      ...prev,
       answers: {
-        ...previous.answers,
-        [currentQuestion.id]: {
-          selected: choice,
-          correct,
-          answeredAt: new Date().toISOString(),
-        },
+        ...prev.answers,
+        [currentQuestion.id]: record,
       },
       currentId: currentQuestion.id,
     }));
@@ -343,11 +516,45 @@ function App() {
       return;
     }
 
+    if (studyMode) {
+      // 学習効率優先: 復習期限が来ている問題 → 未回答の問題の順で出題する。
+      // filteredQuestions は既におすすめ科目順に並んでいる。
+      const due = filteredQuestions.find(
+        (q) =>
+          q.id !== currentQuestion.id && isDueRecord(progress.answers[q.id]),
+      );
+      if (due) {
+        goToQuestion(due.id, "question");
+        return;
+      }
+
+      const unanswered = filteredQuestions.find(
+        (q) => q.id !== currentQuestion.id && !progress.answers[q.id],
+      );
+      if (unanswered) {
+        goToQuestion(unanswered.id, "question");
+        return;
+      }
+    }
+
     const nextQuestion =
       filteredQuestions[
         (Math.max(currentIndex, 0) + 1) % filteredQuestions.length
       ];
     goToQuestion(nextQuestion.id, "question");
+  };
+
+  const goPrev = () => {
+    if (!filteredQuestions.length) {
+      return;
+    }
+
+    const prevQuestion =
+      filteredQuestions[
+        (Math.max(currentIndex, 0) - 1 + filteredQuestions.length) %
+          filteredQuestions.length
+      ];
+    goToQuestion(prevQuestion.id, "question");
   };
 
   const goRandom = () => {
@@ -374,6 +581,7 @@ function App() {
       currentId: takkenQuestions[0]?.id ?? "",
     };
     setProgress(next);
+    setSessionAnswers({});
     window.localStorage.removeItem(STORAGE_KEY);
   };
 
@@ -385,7 +593,7 @@ function App() {
             <div>
               <p className="text-sm font-bold text-cyan-200">
                 今日 {Math.min(todayAnswered, DAILY_TARGET)}/{DAILY_TARGET} /
-                正答率 {accuracy}%
+                復習 {dueCount} / 正答率 {accuracy}%
               </p>
               <h1 className="text-xl font-bold tracking-normal text-white">
                 宅建過去問ドリル
@@ -402,10 +610,10 @@ function App() {
                 onClick={() => {
                   const next = !studyMode;
                   setStudyMode(next);
-                  // 学習導線ONにしたら、おすすめ順の先頭（業法の未回答）から始める。
+                  // 学習導線ONにしたら、おすすめ順の先頭（復習期限→未回答）から始める。
                   if (next) {
                     setTimeout(() => {
-                      const firstByOrder = [...takkenQuestions]
+                      const pool = [...takkenQuestions]
                         .filter((q) =>
                           examFilter === ALL ? true : q.examId === examFilter,
                         )
@@ -413,8 +621,10 @@ function App() {
                           (a, b) =>
                             studyOrderByCategory(a.category) -
                             studyOrderByCategory(b.category),
-                        )
-                        .find((q) => !progress.answers[q.id]);
+                        );
+                      const firstByOrder =
+                        pool.find((q) => isDueRecord(progress.answers[q.id])) ??
+                        pool.find((q) => !progress.answers[q.id]);
                       if (firstByOrder) goToQuestion(firstByOrder.id);
                     }, 0);
                   }
@@ -478,6 +688,7 @@ function App() {
               <option value={ALL}>全状態</option>
               <option value={UNANSWERED}>未回答</option>
               <option value={WRONG}>間違い</option>
+              <option value={DUE}>復習期限</option>
             </select>
           </div>
 
@@ -488,7 +699,14 @@ function App() {
             />
           </div>
 
-          <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="mt-3 grid grid-cols-4 gap-2">
+            <button
+              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
+              onClick={() => applyStatusShortcut(DUE)}
+              type="button"
+            >
+              復習 {dueCount}
+            </button>
             <button
               className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
               onClick={() => applyStatusShortcut(UNANSWERED)}
@@ -514,97 +732,118 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 pb-10 pt-5">
-        <section className="mb-4 rounded-lg border border-white/10 bg-slate-950 p-3">
-          <div className="grid grid-cols-3 gap-2 text-center text-sm">
-            <div className="rounded-lg bg-slate-900 p-2">
-              <p className="font-bold text-white">{totalAnswered}/250</p>
-              <p className="text-slate-400">回答済み</p>
-            </div>
-            <div className="rounded-lg bg-slate-900 p-2">
-              <p className="font-bold text-white">{completion}%</p>
-              <p className="text-slate-400">進捗</p>
-            </div>
-            <div className="rounded-lg bg-slate-900 p-2">
-              <p className="font-bold text-white">{todayAnswered}</p>
-              <p className="text-slate-400">今日</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mb-4 rounded-lg border border-white/10 bg-slate-950 p-3">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-base font-bold text-white">合格作戦ボード</h2>
+      <main className="mx-auto max-w-3xl px-4 pb-28 pt-5">
+        <section className="mb-4 rounded-lg border border-white/10 bg-slate-950">
+          <button
+            aria-expanded={boardOpen}
+            className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
+            onClick={() => setBoardOpen(!boardOpen)}
+            type="button"
+          >
+            <span className="text-base font-bold text-white">
+              合格作戦ボード
+            </span>
             <span className="text-sm text-slate-400">
               想定 {projectedTotal}/{passLine.fullMarks}点
+              {projectedTotal >= passLine.safe
+                ? "・安全圏"
+                : `・あと${gapToSafe}点`}
+              <span className="ml-2 text-slate-500">
+                {boardOpen ? "▲" : "▼"}
+              </span>
             </span>
-          </div>
-          <p className="mt-1 text-xs leading-5 text-slate-400">
-            正答率を本番1回（50問）に換算した想定得点です。合格ラインは過去10年で
-            33〜38点（平均35.5点）。安全圏 {passLine.safe}点を狙います。
-          </p>
-          <div
-            className={`mt-2 rounded-lg border px-3 py-2 text-sm font-bold ${
-              projectedTotal >= passLine.safe
-                ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-100"
-                : "border-amber-200/30 bg-amber-200/10 text-amber-100"
-            }`}
-          >
-            {projectedTotal >= passLine.safe
-              ? `安全圏到達。想定${projectedTotal}点で合格ラインを越えています。`
-              : `安全圏（${passLine.safe}点）まであと ${gapToSafe} 点。`}
-          </div>
+          </button>
 
-          <div className="mt-3 space-y-2">
-            {categoryStats.map((cat) => {
-              const reached =
-                cat.projectedScore !== null &&
-                cat.projectedScore >= cat.targetScore;
-              const barPercent = Math.min(
-                100,
-                Math.round(((cat.projectedScore ?? 0) / cat.targetScore) * 100),
-              );
-
-              return (
-                <div
-                  className="rounded-lg bg-slate-900 px-3 py-2"
-                  key={cat.category}
-                  title={cat.rationale}
-                >
-                  <div className="flex items-center justify-between gap-2 text-sm">
-                    <span className="font-bold text-white">
-                      {cat.order}. {cat.category}
-                    </span>
-                    <span
-                      className={
-                        reached ? "text-emerald-200" : "text-slate-300"
-                      }
-                    >
-                      想定 {cat.projectedScore ?? "—"}/{cat.fullMarks}点
-                      <span className="text-slate-500">
-                        （目標{cat.targetScore}）
-                      </span>
-                    </span>
-                  </div>
-                  <div className="mt-1.5 h-1.5 rounded-full bg-slate-800">
-                    <div
-                      className={`h-1.5 rounded-full ${
-                        reached ? "bg-emerald-300" : "bg-cyan-300"
-                      }`}
-                      style={{ width: `${barPercent}%` }}
-                    />
-                  </div>
-                  <p className="mt-1 text-xs leading-5 text-slate-400">
-                    {cat.answeredCount > 0
-                      ? `正答率${cat.ratePercent}%・${cat.answeredCount}/${cat.totalCount}問演習`
-                      : "未着手"}
-                    {" — "}
-                    {cat.rationale}
+          {boardOpen ? (
+            <div className="border-t border-white/10 p-3">
+              <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                <div className="rounded-lg bg-slate-900 p-2">
+                  <p className="font-bold text-white">
+                    {totalAnswered}/{takkenQuestions.length}
                   </p>
+                  <p className="text-slate-400">回答済み</p>
                 </div>
-              );
-            })}
-          </div>
+                <div className="rounded-lg bg-slate-900 p-2">
+                  <p className="font-bold text-white">{totalMastered}</p>
+                  <p className="text-slate-400">習得済み</p>
+                </div>
+                <div className="rounded-lg bg-slate-900 p-2">
+                  <p className="font-bold text-white">{todayAnswered}</p>
+                  <p className="text-slate-400">今日</p>
+                </div>
+              </div>
+
+              <p className="mt-3 text-xs leading-5 text-slate-400">
+                正答率を本番1回（50問）に換算した想定得点です。合格ラインは過去10年で
+                33〜38点（平均35.5点）。安全圏 {passLine.safe}点を狙います。
+                「習得済み」は2連続正解した問題です。
+              </p>
+              <div
+                className={`mt-2 rounded-lg border px-3 py-2 text-sm font-bold ${
+                  projectedTotal >= passLine.safe
+                    ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-100"
+                    : "border-amber-200/30 bg-amber-200/10 text-amber-100"
+                }`}
+              >
+                {projectedTotal >= passLine.safe
+                  ? `安全圏到達。想定${projectedTotal}点で合格ラインを越えています。`
+                  : `安全圏（${passLine.safe}点）まであと ${gapToSafe} 点。`}
+              </div>
+
+              <div className="mt-3 space-y-2">
+                {categoryStats.map((cat) => {
+                  const reached =
+                    cat.projectedScore !== null &&
+                    cat.projectedScore >= cat.targetScore;
+                  const barPercent = Math.min(
+                    100,
+                    Math.round(
+                      ((cat.projectedScore ?? 0) / cat.targetScore) * 100,
+                    ),
+                  );
+
+                  return (
+                    <div
+                      className="rounded-lg bg-slate-900 px-3 py-2"
+                      key={cat.category}
+                      title={cat.rationale}
+                    >
+                      <div className="flex items-center justify-between gap-2 text-sm">
+                        <span className="font-bold text-white">
+                          {cat.order}. {cat.category}
+                        </span>
+                        <span
+                          className={
+                            reached ? "text-emerald-200" : "text-slate-300"
+                          }
+                        >
+                          想定 {cat.projectedScore ?? "—"}/{cat.fullMarks}点
+                          <span className="text-slate-500">
+                            （目標{cat.targetScore}）
+                          </span>
+                        </span>
+                      </div>
+                      <div className="mt-1.5 h-1.5 rounded-full bg-slate-800">
+                        <div
+                          className={`h-1.5 rounded-full ${
+                            reached ? "bg-emerald-300" : "bg-cyan-300"
+                          }`}
+                          style={{ width: `${barPercent}%` }}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs leading-5 text-slate-400">
+                        {cat.answeredCount > 0
+                          ? `正答率${cat.ratePercent}%・習得${cat.masteredCount}/${cat.totalCount}問・${cat.answeredCount}/${cat.totalCount}問演習`
+                          : "未着手"}
+                        {" — "}
+                        {cat.rationale}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
         </section>
 
         <section
@@ -637,6 +876,14 @@ function App() {
                 公式PDF
               </a>
             </div>
+            {storedAnswer && !currentAnswer ? (
+              <p className="mt-2 text-sm text-slate-400">
+                挑戦{storedAnswer.attempts + 1}回目・前回
+                {storedAnswer.correct ? "正解" : "不正解"}
+                {isDueRecord(storedAnswer) ? "・復習期限です" : ""}
+                。答えは見えないので、思い出して解き直しましょう。
+              </p>
+            ) : null}
           </div>
 
           <div className="space-y-5 p-4">
@@ -670,6 +917,13 @@ function App() {
                 </p>
                 <p className="mt-1 text-base leading-7 text-slate-100">
                   {resultText(currentQuestion)}
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-300">
+                  {currentAnswer.correct
+                    ? currentAnswer.streak >= MASTER_STREAK
+                      ? `連続${currentAnswer.streak}回正解で習得済み。${reviewIntervalDays(currentAnswer.streak)}日後に忘れかけた頃、もう一度出題されます。`
+                      : `連続${currentAnswer.streak}回正解。あと${MASTER_STREAK - currentAnswer.streak}回連続で正解すると習得済みになります（${reviewIntervalDays(currentAnswer.streak)}日後に復習）。`
+                    : "明日の復習に入りました。忘れる前にもう一度解いて定着させます。"}
                 </p>
                 <div className="mt-3 rounded-lg border border-white/10 bg-[#0F1117] p-3">
                   <p className="text-sm font-bold text-cyan-100">
@@ -769,6 +1023,28 @@ function App() {
           </div>
         </section>
       </main>
+
+      <nav
+        className="fixed inset-x-0 bottom-0 z-10 border-t border-white/10 bg-[#0F1117]/95 px-4 pt-2 backdrop-blur"
+        style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
+      >
+        <div className="mx-auto grid max-w-3xl grid-cols-[1fr_2fr] gap-2">
+          <button
+            className="min-h-12 rounded-lg border border-white/15 bg-slate-900 px-4 text-base font-bold text-white"
+            onClick={goPrev}
+            type="button"
+          >
+            前へ
+          </button>
+          <button
+            className="min-h-12 rounded-lg bg-white px-4 text-base font-bold text-slate-950"
+            onClick={goNext}
+            type="button"
+          >
+            次へ
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
