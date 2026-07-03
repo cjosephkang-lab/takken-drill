@@ -968,6 +968,18 @@ function App() {
           ? "復習期限"
           : "全状態";
   const filterSummary = `${examFilterLabel} / ${categoryFilterLabel} / ${statusFilterLabel}`;
+  const historySaveTitle = authUser
+    ? syncState === "error"
+      ? "履歴同期でエラーが出ています"
+      : "履歴はGoogle同期中"
+    : "履歴はこの端末に保存中";
+  const historySaveDetail = authUser
+    ? syncState === "error"
+      ? "通信状態を確認すると、次の回答時に再同期します。"
+      : "スマホ・PCでも同じ学習履歴を使えます。"
+    : isSyncConfigured
+      ? "Google同期でスマホ・PCに引き継げます。"
+      : "このブラウザを変えると履歴は引き継がれません。";
 
   return (
     <div className="min-h-screen bg-[#0F1117] text-slate-100">
@@ -988,7 +1000,7 @@ function App() {
               {authUser ? (
                 <>
                   <span>
-                    同期中
+                    履歴同期中
                     {syncState === "syncing" ? "…" : ""}
                     {syncState === "error" ? "（エラー）" : ""}
                   </span>
@@ -1007,7 +1019,7 @@ function App() {
                   onClick={() => signInWithGoogle()}
                   type="button"
                 >
-                  Google同期
+                  履歴同期
                 </button>
               )}
             </div>
@@ -1063,6 +1075,25 @@ function App() {
               <p className="font-bold text-white">{missionNewPart}</p>
               <p className="text-slate-400">新規</p>
             </div>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-3 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-bold text-slate-100">{historySaveTitle}</p>
+              <p className="mt-0.5 leading-5 text-slate-400">
+                {historySaveDetail}
+              </p>
+            </div>
+            {isSyncConfigured && !authUser ? (
+              <button
+                className="min-h-9 shrink-0 rounded-md border border-cyan-200/30 bg-cyan-200/10 px-3 text-xs font-bold text-cyan-100"
+                disabled={authLoading}
+                onClick={() => signInWithGoogle()}
+                type="button"
+              >
+                Google同期する
+              </button>
+            ) : null}
           </div>
 
           {missionDone ? (
