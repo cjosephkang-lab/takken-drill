@@ -12,7 +12,6 @@ export type TakkenQuestion = {
   correctChoices: number[];
   isAllCorrect: boolean;
   officialExplanation: string;
-  aiExplanation: string;
 };
 
 export type TakkenExam = {
@@ -89,8 +88,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-02",
@@ -107,8 +105,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-03",
@@ -125,8 +122,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。取消しでは、取消前後の第三者、善意・無過失、登記の要否を分けて考えます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-04",
@@ -143,8 +139,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-05",
@@ -161,8 +156,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-06",
@@ -179,8 +173,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-07",
@@ -197,8 +190,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。契約解除では、解除前の第三者と解除後の第三者で処理が変わる点が頻出です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-08",
@@ -215,8 +207,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-09",
@@ -233,8 +224,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-10",
@@ -251,8 +241,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-11",
@@ -269,8 +258,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-12",
@@ -287,8 +275,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。借地借家法では、存続期間、更新、対抗要件、正当事由の有無を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-13",
@@ -305,8 +292,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。区分所有法では、集会決議の要件、共用部分、規約、管理者の権限を押さえます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-14",
@@ -323,8 +309,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-15",
@@ -341,8 +326,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-16",
@@ -359,8 +343,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-17",
@@ -377,8 +360,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。建築基準法では、用途制限、道路、建ぺい率、容積率、高さ制限を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-18",
@@ -395,8 +377,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-19",
@@ -413,8 +394,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-20",
@@ -431,8 +411,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-21",
@@ -449,8 +428,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-22",
@@ -467,8 +445,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-23",
@@ -485,8 +462,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-24",
@@ -503,8 +479,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-25",
@@ -521,8 +496,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-26",
@@ -539,8 +513,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-27",
@@ -557,8 +530,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-28",
@@ -575,8 +547,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-29",
@@ -593,8 +564,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-30",
@@ -611,8 +581,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-31",
@@ -629,8 +598,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-32",
@@ -647,8 +615,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。8種制限では、手付金等の保全、手付解除、損害賠償予定額の制限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-33",
@@ -665,8 +632,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-34",
@@ -683,8 +649,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-35",
@@ -701,8 +666,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-36",
@@ -719,8 +683,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-37",
@@ -737,8 +700,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-38",
@@ -755,8 +717,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-39",
@@ -773,8 +734,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-40",
@@ -791,8 +751,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-41",
@@ -809,8 +768,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-42",
@@ -827,8 +785,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。宅建士では、登録、変更登録、移転、宅建士証、事務禁止処分を整理します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-43",
@@ -845,8 +802,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-44",
@@ -863,8 +819,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-45",
@@ -881,8 +836,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r7-46",
@@ -899,8 +853,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。住宅金融支援機構では、直接融資と証券化支援、業務範囲を押さえます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-47",
@@ -917,8 +870,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。建物の問題は、構造、材料、劣化、耐震・防火の基本知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r7-48",
@@ -935,8 +887,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。統計問題は年度データの暗記要素が強いため、最新資料の数値確認が必要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-49",
@@ -953,8 +904,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。土地の問題は、地形・地質・災害リスクに関する基礎知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r7-50",
@@ -971,8 +921,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。免除科目は暗記比重が高いため、正解肢だけでなく頻出数値・用語も確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-01",
@@ -989,8 +938,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。強迫は詐欺より保護が厚く、取消しと第三者保護の違いが問われやすい論点です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-02",
@@ -1007,8 +955,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。代理では、代理権の有無、表見代理、本人の追認、相手方の善意無過失を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-03",
@@ -1025,8 +972,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-04",
@@ -1043,8 +989,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-05",
@@ -1061,8 +1006,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-06",
@@ -1079,8 +1023,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-07",
@@ -1097,8 +1040,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-08",
@@ -1115,8 +1057,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。代理では、代理権の有無、表見代理、本人の追認、相手方の善意無過失を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-09",
@@ -1133,8 +1074,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-10",
@@ -1151,8 +1091,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。契約解除では、解除前の第三者と解除後の第三者で処理が変わる点が頻出です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-11",
@@ -1169,8 +1108,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。借地借家法では、存続期間、更新、対抗要件、正当事由の有無を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-12",
@@ -1187,8 +1125,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-13",
@@ -1205,8 +1142,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。区分所有法では、集会決議の要件、共用部分、規約、管理者の権限を押さえます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-14",
@@ -1223,8 +1159,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-15",
@@ -1241,8 +1176,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-16",
@@ -1259,8 +1193,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-17",
@@ -1277,8 +1210,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。建築基準法では、用途制限、道路、建ぺい率、容積率、高さ制限を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-18",
@@ -1295,8 +1227,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-19",
@@ -1313,8 +1244,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-20",
@@ -1331,8 +1261,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-21",
@@ -1349,8 +1278,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-22",
@@ -1367,8 +1295,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-23",
@@ -1385,8 +1312,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。建築基準法では、用途制限、道路、建ぺい率、容積率、高さ制限を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-24",
@@ -1403,8 +1329,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。固定資産税では、納税義務者、課税標準、住宅用地特例、縦覧・審査を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-25",
@@ -1421,8 +1346,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-26",
@@ -1439,8 +1363,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-27",
@@ -1457,8 +1380,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。保証協会では、弁済業務保証金分担金、還付、納付期限、営業保証金との違いを確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-28",
@@ -1475,8 +1397,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-29",
@@ -1493,8 +1414,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。宅建士では、登録、変更登録、移転、宅建士証、事務禁止処分を整理します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-30",
@@ -1511,8 +1431,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-31",
@@ -1529,8 +1448,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-32",
@@ -1547,8 +1465,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-33",
@@ -1565,8 +1482,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。広告規制では、誇大広告、広告開始時期、取引態様の明示を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-34",
@@ -1583,8 +1499,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-35",
@@ -1601,8 +1516,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-36",
@@ -1619,8 +1533,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。保証協会では、弁済業務保証金分担金、還付、納付期限、営業保証金との違いを確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-37",
@@ -1637,8 +1550,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r6-38",
@@ -1655,8 +1567,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-39",
@@ -1673,8 +1584,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-40",
@@ -1691,8 +1601,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-41",
@@ -1709,8 +1618,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-42",
@@ -1727,8 +1635,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-43",
@@ -1745,8 +1652,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。宅建士では、登録、変更登録、移転、宅建士証、事務禁止処分を整理します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-44",
@@ -1763,8 +1669,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-45",
@@ -1781,8 +1686,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。住宅瑕疵担保履行法では、資力確保措置、届出、対象となる新築住宅を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-46",
@@ -1799,8 +1703,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。住宅金融支援機構では、直接融資と証券化支援、業務範囲を押さえます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-47",
@@ -1817,8 +1720,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。土地の問題は、地形・地質・災害リスクに関する基礎知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r6-48",
@@ -1835,8 +1737,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。統計問題は年度データの暗記要素が強いため、最新資料の数値確認が必要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r6-49",
@@ -1853,8 +1754,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。土地の問題は、地形・地質・災害リスクに関する基礎知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r6-50",
@@ -1871,8 +1771,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。建物の問題は、構造、材料、劣化、耐震・防火の基本知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-01",
@@ -1889,8 +1788,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-02",
@@ -1907,8 +1805,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-03",
@@ -1925,8 +1822,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-04",
@@ -1943,8 +1839,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-05",
@@ -1961,8 +1856,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-06",
@@ -1979,8 +1873,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-07",
@@ -1997,8 +1890,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-08",
@@ -2015,8 +1907,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。取消しでは、取消前後の第三者、善意・無過失、登記の要否を分けて考えます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-09",
@@ -2033,8 +1924,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-10",
@@ -2051,8 +1941,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-11",
@@ -2069,8 +1958,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。借地借家法では、存続期間、更新、対抗要件、正当事由の有無を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-12",
@@ -2087,8 +1975,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。借地借家法では、存続期間、更新、対抗要件、正当事由の有無を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-13",
@@ -2105,8 +1992,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。区分所有法では、集会決議の要件、共用部分、規約、管理者の権限を押さえます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-14",
@@ -2123,8 +2009,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-15",
@@ -2141,8 +2026,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-16",
@@ -2159,8 +2043,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-17",
@@ -2177,8 +2060,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。建築基準法では、用途制限、道路、建ぺい率、容積率、高さ制限を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-18",
@@ -2195,8 +2077,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。建築基準法では、用途制限、道路、建ぺい率、容積率、高さ制限を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-19",
@@ -2213,8 +2094,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-20",
@@ -2231,8 +2111,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-21",
@@ -2249,8 +2128,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-22",
@@ -2267,8 +2145,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-23",
@@ -2285,8 +2162,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-24",
@@ -2303,8 +2179,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-25",
@@ -2321,8 +2196,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-26",
@@ -2339,8 +2213,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-27",
@@ -2357,8 +2230,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-28",
@@ -2375,8 +2247,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。宅建士では、登録、変更登録、移転、宅建士証、事務禁止処分を整理します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-29",
@@ -2393,8 +2264,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-30",
@@ -2411,8 +2281,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-31",
@@ -2429,8 +2298,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-32",
@@ -2447,8 +2315,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-33",
@@ -2465,8 +2332,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-34",
@@ -2483,8 +2349,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-35",
@@ -2501,8 +2366,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-36",
@@ -2519,8 +2383,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-37",
@@ -2537,8 +2400,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-38",
@@ -2555,8 +2417,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-39",
@@ -2573,8 +2434,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。8種制限では、手付金等の保全、手付解除、損害賠償予定額の制限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-40",
@@ -2591,8 +2451,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-41",
@@ -2609,8 +2468,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-42",
@@ -2627,8 +2485,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r5-43",
@@ -2645,8 +2502,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。37条書面では、契約成立後に交付する書面と記載事項を35条書面と混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-44",
@@ -2663,8 +2519,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。保証協会では、弁済業務保証金分担金、還付、納付期限、営業保証金との違いを確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-45",
@@ -2681,8 +2536,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。住宅瑕疵担保履行法では、資力確保措置、届出、対象となる新築住宅を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-46",
@@ -2699,8 +2553,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。住宅金融支援機構では、直接融資と証券化支援、業務範囲を押さえます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-47",
@@ -2717,8 +2570,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。建物の問題は、構造、材料、劣化、耐震・防火の基本知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-48",
@@ -2735,8 +2587,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。統計問題は年度データの暗記要素が強いため、最新資料の数値確認が必要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r5-49",
@@ -2753,8 +2604,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。土地の問題は、地形・地質・災害リスクに関する基礎知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r5-50",
@@ -2771,8 +2621,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。建物の問題は、構造、材料、劣化、耐震・防火の基本知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-01",
@@ -2789,8 +2638,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-02",
@@ -2807,8 +2655,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-03",
@@ -2825,8 +2672,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。取消しでは、取消前後の第三者、善意・無過失、登記の要否を分けて考えます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-04",
@@ -2843,8 +2689,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-05",
@@ -2861,8 +2706,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。契約解除では、解除前の第三者と解除後の第三者で処理が変わる点が頻出です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-06",
@@ -2879,8 +2723,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-07",
@@ -2897,8 +2740,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-08",
@@ -2915,8 +2757,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-09",
@@ -2933,8 +2774,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-10",
@@ -2951,8 +2791,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-11",
@@ -2969,8 +2808,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。借地借家法では、存続期間、更新、対抗要件、正当事由の有無を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-12",
@@ -2987,8 +2825,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。借地借家法では、存続期間、更新、対抗要件、正当事由の有無を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-13",
@@ -3005,8 +2842,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-14",
@@ -3023,8 +2859,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-15",
@@ -3041,8 +2876,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-16",
@@ -3059,8 +2893,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-17",
@@ -3077,8 +2910,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-18",
@@ -3095,8 +2927,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-19",
@@ -3113,8 +2944,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-20",
@@ -3131,8 +2961,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-21",
@@ -3149,8 +2978,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-22",
@@ -3167,8 +2995,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-23",
@@ -3185,8 +3012,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-24",
@@ -3203,8 +3029,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。固定資産税では、納税義務者、課税標準、住宅用地特例、縦覧・審査を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-25",
@@ -3221,8 +3046,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-26",
@@ -3239,8 +3063,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-27",
@@ -3257,8 +3080,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-28",
@@ -3275,8 +3097,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-29",
@@ -3293,8 +3114,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。宅建士では、登録、変更登録、移転、宅建士証、事務禁止処分を整理します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-30",
@@ -3311,8 +3131,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-31",
@@ -3329,8 +3148,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-32",
@@ -3347,8 +3165,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-33",
@@ -3365,8 +3182,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-34",
@@ -3383,8 +3199,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-35",
@@ -3401,8 +3216,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-36",
@@ -3419,8 +3233,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-37",
@@ -3437,8 +3250,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。8種制限では、手付金等の保全、手付解除、損害賠償予定額の制限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-38",
@@ -3455,8 +3267,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-39",
@@ -3473,8 +3284,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。保証協会では、弁済業務保証金分担金、還付、納付期限、営業保証金との違いを確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-40",
@@ -3491,8 +3301,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-41",
@@ -3509,8 +3318,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-42",
@@ -3527,8 +3335,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-43",
@@ -3545,8 +3352,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-44",
@@ -3563,8 +3369,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-45",
@@ -3581,8 +3386,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-46",
@@ -3599,8 +3403,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。免除科目は暗記比重が高いため、正解肢だけでなく頻出数値・用語も確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r4-47",
@@ -3617,8 +3420,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。統計問題は年度データの暗記要素が強いため、最新資料の数値確認が必要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-48",
@@ -3638,8 +3440,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": true,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は全ての選択肢として扱われています。",
-    "aiExplanation": "AI補足: この問は公式正解番号表で全員正解扱いです。通常の正誤判断よりも、問題文の論点確認に使ってください。免除科目は暗記比重が高いため、正解肢だけでなく頻出数値・用語も確認します。"
+    "officialExplanation": "公式PDFの正解番号表: 全ての選択肢を正解扱い。"
   },
   {
     "id": "r4-49",
@@ -3656,8 +3457,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。土地の問題は、地形・地質・災害リスクに関する基礎知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-50",
@@ -3674,8 +3474,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。免除科目は暗記比重が高いため、正解肢だけでなく頻出数値・用語も確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-01",
@@ -3692,8 +3491,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-02",
@@ -3710,8 +3508,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-03",
@@ -3728,8 +3525,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。契約解除では、解除前の第三者と解除後の第三者で処理が変わる点が頻出です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-04",
@@ -3746,8 +3542,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。契約解除では、解除前の第三者と解除後の第三者で処理が変わる点が頻出です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-05",
@@ -3764,8 +3559,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。代理では、代理権の有無、表見代理、本人の追認、相手方の善意無過失を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-06",
@@ -3782,8 +3576,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-07",
@@ -3800,8 +3593,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-08",
@@ -3818,8 +3610,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。相続では、法定相続分、遺産分割、遺留分、相続放棄の時期を混同しないことが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-09",
@@ -3836,8 +3627,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-10",
@@ -3854,8 +3644,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。権利関係は、当事者、第三者、時系列、対抗要件を図にして整理すると正誤判断しやすくなります。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-11",
@@ -3872,8 +3661,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-12",
@@ -3890,8 +3678,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。契約解除では、解除前の第三者と解除後の第三者で処理が変わる点が頻出です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-13",
@@ -3908,8 +3695,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。区分所有法では、集会決議の要件、共用部分、規約、管理者の権限を押さえます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-14",
@@ -3926,8 +3712,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-15",
@@ -3944,8 +3729,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-16",
@@ -3962,8 +3746,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-17",
@@ -3980,8 +3763,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-18",
@@ -3998,8 +3780,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。都市計画法では、区域区分、用途地域、開発許可の要否と例外を先に判定します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-19",
@@ -4016,8 +3797,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-20",
@@ -4034,8 +3814,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-21",
@@ -4052,8 +3831,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-22",
@@ -4070,8 +3848,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。法令上の制限は、区域・面積・許可権者・例外の順に確認すると失点を減らせます。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-23",
@@ -4088,8 +3865,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。不動産物権変動は、当事者関係か第三者対抗関係かをまず分け、登記の要否を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-24",
@@ -4106,8 +3882,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-25",
@@ -4124,8 +3899,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。税・価格評定は、課税主体、納税義務者、特例要件、評価基準を分けて確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-26",
@@ -4142,8 +3916,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-27",
@@ -4160,8 +3933,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。8種制限では、手付金等の保全、手付解除、損害賠償予定額の制限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-28",
@@ -4178,8 +3950,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。報酬計算では、売買・交換・貸借の別、消費税、代理か媒介かを分けて計算します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-29",
@@ -4196,8 +3967,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。免許では、免許権者、欠格事由、免許換え、届出・廃業等の期限を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-30",
@@ -4214,8 +3984,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-31",
@@ -4232,8 +4001,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-32",
@@ -4250,8 +4018,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-33",
@@ -4268,8 +4035,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-34",
@@ -4286,8 +4052,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-35",
@@ -4304,8 +4069,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-36",
@@ -4322,8 +4086,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-37",
@@ -4340,8 +4103,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。宅建士では、登録、変更登録、移転、宅建士証、事務禁止処分を整理します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-38",
@@ -4358,8 +4120,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-39",
@@ -4376,8 +4137,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-40",
@@ -4394,8 +4154,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。媒介契約では、契約類型、指定流通機構への登録、業務報告、価額意見の根拠を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-41",
@@ -4412,8 +4171,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。宅建士では、登録、変更登録、移転、宅建士証、事務禁止処分を整理します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-42",
@@ -4430,8 +4188,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 3 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-43",
@@ -4448,8 +4205,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。クーリングオフでは、場所、告知書面、申込み・契約の別、期間経過を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-44",
@@ -4467,8 +4223,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       3
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 / 3 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 / 3 です。35条書面では、説明・交付の相手方、説明時期、宅建士の記名、説明事項を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2 / 3"
   },
   {
     "id": "r3_12-45",
@@ -4485,8 +4240,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。宅建業法は、誰が誰に対して、いつ、どの書面や説明を行うかを整理するのが重要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-46",
@@ -4503,8 +4257,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       1
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 1 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 1 です。免除科目は暗記比重が高いため、正解肢だけでなく頻出数値・用語も確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-47",
@@ -4521,8 +4274,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。土地の問題は、地形・地質・災害リスクに関する基礎知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-48",
@@ -4539,8 +4291,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。統計問題は年度データの暗記要素が強いため、最新資料の数値確認が必要です。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r3_12-49",
@@ -4557,8 +4308,7 @@ export const takkenQuestions: TakkenQuestion[] = [
       2
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 2 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 2 です。免除科目は暗記比重が高いため、正解肢だけでなく頻出数値・用語も確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-50",
@@ -4575,7 +4325,6 @@ export const takkenQuestions: TakkenQuestion[] = [
       4
     ],
     "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表では、この問題の正解は 4 です。 詳細な理由づけは公式PDFには掲載されていないため、問題文と正解番号表を根拠として確認してください。",
-    "aiExplanation": "AI補足: この問の正解は 4 です。建物の問題は、構造、材料、劣化、耐震・防火の基本知識を確認します。 迷った場合は、正解肢だけでなく、他の肢が「時期」「相手方」「許可・届出」「例外」のどこをずらしているかを確認してください。"
+    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   }
 ];

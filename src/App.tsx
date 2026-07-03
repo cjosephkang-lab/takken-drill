@@ -50,6 +50,7 @@ type UiSettings = {
   statusFilter: string;
   studyMode: boolean;
   boardOpen: boolean;
+  questionPickerOpen: boolean;
   /** 本試験の日付（YYYY-MM-DD）。逆算ペースとカウントダウンに使う。 */
   examDate: string;
 };
@@ -275,6 +276,7 @@ const loadSettings = (): UiSettings => {
     statusFilter: ALL,
     studyMode: false,
     boardOpen: false,
+    questionPickerOpen: false,
     examDate: DEFAULT_EXAM_DATE,
   };
 
@@ -307,6 +309,7 @@ const loadSettings = (): UiSettings => {
           : ALL,
       studyMode: parsed.studyMode === true,
       boardOpen: parsed.boardOpen === true,
+      questionPickerOpen: parsed.questionPickerOpen === true,
       examDate:
         typeof parsed.examDate === "string" &&
         /^\d{4}-\d{2}-\d{2}$/.test(parsed.examDate)
@@ -425,6 +428,9 @@ function App() {
   // 学習導線（おすすめ順）モード: 合格者の鉄則順に復習期限→未回答を優先出題する。
   const [studyMode, setStudyMode] = useState(initialSettings.studyMode);
   const [boardOpen, setBoardOpen] = useState(initialSettings.boardOpen);
+  const [questionPickerOpen, setQuestionPickerOpen] = useState(
+    initialSettings.questionPickerOpen,
+  );
   const [examDate, setExamDate] = useState(initialSettings.examDate);
   // この起動中に解いた問題の回答。過去の回答は画面に出さないので、
   // 再訪時は毎回「思い出して解く」テスト形式になる（想起練習）。
@@ -453,6 +459,7 @@ function App() {
       statusFilter,
       studyMode,
       boardOpen,
+      questionPickerOpen,
       examDate,
     });
   }, [
@@ -460,6 +467,7 @@ function App() {
     categoryFilter,
     examDate,
     examFilter,
+    questionPickerOpen,
     statusFilter,
     studyMode,
   ]);
@@ -583,9 +591,6 @@ function App() {
   const totalCorrect = Object.values(progress.answers).filter(
     (answer) => answer.correct,
   ).length;
-  const totalWrong = Object.values(progress.answers).filter(
-    (answer) => !answer.correct,
-  ).length;
   const totalMastered = Object.values(progress.answers).filter(
     (answer) => answer.streak >= MASTER_STREAK,
   ).length;
@@ -601,7 +606,6 @@ function App() {
   const accuracy = totalAnswered
     ? Math.round((totalCorrect / totalAnswered) * 100)
     : 0;
-  const completion = Math.round((totalAnswered / takkenQuestions.length) * 100);
 
   // 連続学習日数（ストリーク）。今日まだ解いていなければ昨日までの連続を表示する
   // （その日のうちに解けば途切れない）。
@@ -735,43 +739,6 @@ function App() {
     }
   };
 
-  const findFirstQuestion = (status: string) => {
-    return takkenQuestions.find((question) => {
-      const record = progress.answers[question.id];
-
-      if (examFilter !== ALL && question.examId !== examFilter) {
-        return false;
-      }
-
-      if (categoryFilter !== ALL && question.category !== categoryFilter) {
-        return false;
-      }
-
-      if (status === UNANSWERED) {
-        return !record;
-      }
-
-      if (status === WRONG) {
-        return Boolean(record && !record.correct);
-      }
-
-      if (status === DUE) {
-        return isDueRecord(record);
-      }
-
-      return true;
-    });
-  };
-
-  const applyStatusShortcut = (status: string) => {
-    setStatusFilter(status);
-    const first = findFirstQuestion(status);
-
-    if (first) {
-      goToQuestion(first.id);
-    }
-  };
-
   // 今日のミッション開始: フィルタを解除しておすすめ順モードに入り、
   // 復習期限 → 未回答（合格者の鉄則順）の先頭から1タップで学習を始める。
   const startMission = () => {
@@ -884,15 +851,6 @@ function App() {
     goToQuestion(prevQuestion.id, "question");
   };
 
-  const goRandom = () => {
-    const pool = filteredQuestions.length ? filteredQuestions : takkenQuestions;
-    const randomQuestion = pool[Math.floor(Math.random() * pool.length)];
-
-    if (randomQuestion) {
-      goToQuestion(randomQuestion.id);
-    }
-  };
-
   const resetProgress = () => {
     const shouldReset = window.confirm(
       "回答履歴とメモを初期化します。よろしいですか？",
@@ -995,79 +953,44 @@ function App() {
     );
   }
 
+  const examFilterLabel =
+    examFilter === ALL
+      ? "全年度"
+      : (takkenExams.find((exam) => exam.id === examFilter)?.year ?? "全年度");
+  const categoryFilterLabel =
+    categoryFilter === ALL ? "全分野" : categoryFilter;
+  const statusFilterLabel =
+    statusFilter === UNANSWERED
+      ? "未回答"
+      : statusFilter === WRONG
+        ? "間違い"
+        : statusFilter === DUE
+          ? "復習期限"
+          : "全状態";
+  const filterSummary = `${examFilterLabel} / ${categoryFilterLabel} / ${statusFilterLabel}`;
+
   return (
     <div className="min-h-screen bg-[#0F1117] text-slate-100">
       <header className="border-b border-white/10 bg-[#0F1117] px-4 py-3">
-        <div className="mx-auto max-w-3xl">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-bold text-cyan-200">
-                🔥{streakDays}日連続 / 復習 {dueCount} / 試験まで
-                {daysToExam > 0 ? `${daysToExam}日` : "—"}
-              </p>
-              <h1 className="text-xl font-bold tracking-normal text-white">
-                宅建過去問ドリル
-              </h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                aria-pressed={studyMode}
-                className={`min-h-11 rounded-lg border px-3 text-sm font-bold transition ${
-                  studyMode
-                    ? "border-cyan-300 bg-cyan-300/20 text-cyan-100"
-                    : "border-white/15 bg-slate-900 text-white"
-                }`}
-                onClick={() => {
-                  const next = !studyMode;
-                  setStudyMode(next);
-                  // 学習導線ONにしたら、おすすめ順の先頭（復習期限→未回答）から始める。
-                  if (next) {
-                    setTimeout(() => {
-                      const pool = [...takkenQuestions]
-                        .filter((q) =>
-                          examFilter === ALL ? true : q.examId === examFilter,
-                        )
-                        .sort(
-                          (a, b) =>
-                            studyOrderByCategory(a.category) -
-                            studyOrderByCategory(b.category),
-                        );
-                      const firstByOrder =
-                        pool.find((q) => isDueRecord(progress.answers[q.id])) ??
-                        pool.find((q) => !progress.answers[q.id]);
-                      if (firstByOrder) goToQuestion(firstByOrder.id);
-                    }, 0);
-                  }
-                }}
-                type="button"
-              >
-                おすすめ順
-              </button>
-              <button
-                className="min-h-11 rounded-lg border border-white/15 bg-slate-900 px-3 text-sm font-bold text-white"
-                onClick={goRandom}
-                type="button"
-              >
-                ランダム
-              </button>
-              <button
-                className="min-h-11 rounded-lg border border-amber-200/30 bg-amber-200/10 px-3 text-sm font-bold text-amber-100"
-                onClick={() => setMockPicker(true)}
-                type="button"
-              >
-                模試
-              </button>
-            </div>
+        <div className="mx-auto flex max-w-3xl items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-bold text-cyan-200">
+              連続 {streakDays}日 / 復習 {dueCount} / 試験まで
+              {daysToExam > 0 ? `${daysToExam}日` : "—"}
+            </p>
+            <h1 className="text-xl font-bold tracking-normal text-white">
+              宅建過去問ドリル
+            </h1>
           </div>
 
           {isSyncConfigured ? (
-            <div className="mt-2 flex items-center justify-between gap-2 text-xs text-slate-400">
+            <div className="flex shrink-0 flex-col items-end gap-1 text-right text-xs text-slate-400">
               {authUser ? (
                 <>
                   <span>
-                    {authUser.displayName ?? authUser.email} で同期中
+                    同期中
                     {syncState === "syncing" ? "…" : ""}
-                    {syncState === "error" ? "（同期エラー）" : ""}
+                    {syncState === "error" ? "（エラー）" : ""}
                   </span>
                   <button
                     className="min-h-8 rounded-md border border-white/15 px-2 text-xs font-bold text-slate-300"
@@ -1079,116 +1002,36 @@ function App() {
                 </>
               ) : (
                 <button
-                  className="min-h-8 rounded-md border border-white/15 px-2 text-xs font-bold text-cyan-100"
+                  className="min-h-8 rounded-md border border-cyan-200/30 bg-cyan-200/10 px-2 text-xs font-bold text-cyan-100"
                   disabled={authLoading}
                   onClick={() => signInWithGoogle()}
                   type="button"
                 >
-                  Googleでログインして端末間同期
+                  Google同期
                 </button>
               )}
             </div>
           ) : null}
-
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <select
-              className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
-              onChange={(event) => {
-                setExamFilter(event.target.value);
-                setTimeout(() => {
-                  const first = takkenQuestions.find((question) =>
-                    event.target.value === ALL
-                      ? true
-                      : question.examId === event.target.value,
-                  );
-                  if (first) goToQuestion(first.id);
-                }, 0);
-              }}
-              value={examFilter}
-            >
-              <option value={ALL}>全年度</option>
-              {takkenExams.map((exam) => (
-                <option key={exam.id} value={exam.id}>
-                  {exam.year}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
-              onChange={(event) => setCategoryFilter(event.target.value)}
-              value={categoryFilter}
-            >
-              <option value={ALL}>全分野</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
-              onChange={(event) => setStatusFilter(event.target.value)}
-              value={statusFilter}
-            >
-              <option value={ALL}>全状態</option>
-              <option value={UNANSWERED}>未回答</option>
-              <option value={WRONG}>間違い</option>
-              <option value={DUE}>復習期限</option>
-            </select>
-          </div>
-
-          <div className="mt-3 h-2 rounded-full bg-slate-800">
-            <div
-              className="h-2 rounded-full bg-cyan-300"
-              style={{ width: `${completion}%` }}
-            />
-          </div>
-
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            <button
-              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
-              onClick={() => applyStatusShortcut(DUE)}
-              type="button"
-            >
-              復習 {dueCount}
-            </button>
-            <button
-              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
-              onClick={() => applyStatusShortcut(UNANSWERED)}
-              type="button"
-            >
-              未回答
-            </button>
-            <button
-              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
-              onClick={() => applyStatusShortcut(WRONG)}
-              type="button"
-            >
-              間違い {totalWrong}
-            </button>
-            <button
-              className="min-h-10 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm font-bold text-white"
-              onClick={() => applyStatusShortcut(ALL)}
-              type="button"
-            >
-              全問
-            </button>
-          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 pb-28 pt-5">
         <section
-          className={`mb-4 rounded-lg border p-3 ${
+          className={`mb-4 rounded-lg border p-4 ${
             missionDone
               ? "border-emerald-300/30 bg-emerald-300/5"
               : "border-cyan-300/25 bg-slate-950"
           }`}
         >
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-base font-bold text-white">今日のミッション</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-cyan-200">
+                今日の学習
+              </p>
+              <h2 className="mt-1 text-xl font-bold text-white">
+                {missionDone ? "今日の目標達成" : `今日の${missionTarget}問`}
+              </h2>
+            </div>
             <span
               className={`text-sm font-bold ${
                 missionDone ? "text-emerald-200" : "text-cyan-200"
@@ -1197,7 +1040,8 @@ function App() {
               {todayAnswered}/{missionTarget}問
             </span>
           </div>
-          <div className="mt-2 h-2 rounded-full bg-slate-800">
+
+          <div className="mt-4 h-2 rounded-full bg-slate-800">
             <div
               className={`h-2 rounded-full ${
                 missionDone ? "bg-emerald-300" : "bg-cyan-300"
@@ -1205,10 +1049,26 @@ function App() {
               style={{ width: `${missionPercent}%` }}
             />
           </div>
+
+          <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
+            <div className="rounded-lg bg-slate-900 p-2">
+              <p className="font-bold text-white">{missionRemaining}</p>
+              <p className="text-slate-400">残り</p>
+            </div>
+            <div className="rounded-lg bg-slate-900 p-2">
+              <p className="font-bold text-white">{missionReviewPart}</p>
+              <p className="text-slate-400">復習</p>
+            </div>
+            <div className="rounded-lg bg-slate-900 p-2">
+              <p className="font-bold text-white">{missionNewPart}</p>
+              <p className="text-slate-400">新規</p>
+            </div>
+          </div>
+
           {missionDone ? (
             <p className="mt-2 text-sm leading-6 text-emerald-100">
               ミッション完了！ 今日{todayAnswered}問・正答率{todayAccuracy}
-              %。🔥{streakDays}日連続。余力があればもう少し進めましょう。
+              %。{streakDays}日連続。余力があればもう少し進めましょう。
             </p>
           ) : (
             <p className="mt-2 text-sm leading-6 text-slate-300">
@@ -1231,23 +1091,229 @@ function App() {
             {missionDone
               ? "さらに解く"
               : todayAnswered > 0
-                ? "続きから解く"
-                : "今日の学習を始める"}
+                ? "今日の続きへ"
+                : `今日の${missionTarget}問を始める`}
           </button>
         </section>
 
-        <section className="mb-4 rounded-lg border border-white/10 bg-slate-950">
+        <section
+          ref={questionRef}
+          className="scroll-mt-3 rounded-lg border border-white/10 bg-slate-950 shadow-2xl shadow-black/20"
+        >
+          <div className="border-b border-white/10 bg-slate-900 p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-md border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-sm font-bold text-cyan-100">
+                {currentQuestion.year}
+              </span>
+              <span className="rounded-md border border-amber-200/30 bg-amber-200/10 px-2.5 py-1 text-sm font-bold text-amber-100">
+                問{currentQuestion.number}
+              </span>
+              <span className="rounded-md border border-white/10 bg-[#0F1117] px-2.5 py-1 text-sm font-bold text-slate-200">
+                {currentQuestion.category}
+              </span>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-400">
+              <span>
+                表示 {filteredQuestions.length ? currentIndex + 1 : 0}/
+                {filteredQuestions.length}
+              </span>
+              <a
+                className="min-h-11 rounded-lg border border-white/15 px-3 py-2 font-bold text-cyan-100"
+                href={currentQuestion.sourceUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                公式PDF
+              </a>
+            </div>
+            {storedAnswer && !currentAnswer ? (
+              <p className="mt-2 text-sm text-slate-400">
+                挑戦{storedAnswer.attempts + 1}回目・前回
+                {storedAnswer.correct ? "正解" : "不正解"}
+                {isDueRecord(storedAnswer) ? "・復習期限です" : ""}
+                。答えは見えないので、思い出して解き直しましょう。
+              </p>
+            ) : null}
+          </div>
+
+          <div className="space-y-5 p-4">
+            <ChoiceButtons
+              answer={currentAnswer}
+              onAnswer={answerQuestion}
+              question={currentQuestion}
+            />
+
+            <div className="whitespace-pre-wrap break-words rounded-lg border border-white/10 bg-[#111827] p-4 text-base leading-7 text-slate-100">
+              {formatQuestionText(currentQuestion.questionText)}
+            </div>
+
+            <ChoiceButtons
+              answer={currentAnswer}
+              onAnswer={answerQuestion}
+              question={currentQuestion}
+            />
+
+            {currentAnswer ? (
+              <section
+                ref={feedbackRef}
+                className={`rounded-lg border p-4 ${
+                  currentAnswer.correct
+                    ? "border-emerald-300/40 bg-emerald-300/10"
+                    : "border-rose-300/40 bg-rose-300/10"
+                }`}
+              >
+                <p className="text-base font-bold">
+                  {currentAnswer.correct ? "正解" : "不正解"}
+                </p>
+                <p className="mt-1 text-base leading-7 text-slate-100">
+                  {resultText(currentQuestion)}
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-300">
+                  {currentAnswer.correct
+                    ? currentAnswer.streak >= MASTER_STREAK
+                      ? `習得済み。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
+                      : `あと${MASTER_STREAK - currentAnswer.streak}回正解で習得です。`
+                    : "復習リストに追加しました。"}
+                </p>
+                <div className="mt-3 rounded-lg border border-white/10 bg-[#0F1117] p-3">
+                  <p className="text-sm font-bold text-cyan-100">
+                    公式根拠
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-200">
+                    {currentQuestion.officialExplanation}
+                  </p>
+                  <a
+                    className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-cyan-200/30 bg-cyan-200/10 px-3 py-2 text-sm font-bold text-cyan-100"
+                    href={currentQuestion.externalExplanationUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    解答解説を見る
+                  </a>
+                </div>
+                <button
+                  className="mt-3 min-h-12 w-full rounded-lg bg-white px-4 text-base font-bold text-slate-950"
+                  onClick={goNext}
+                  type="button"
+                >
+                  次へ
+                </button>
+              </section>
+            ) : null}
+
+            <label className="block">
+              <span className="text-base font-bold text-slate-100">
+                自分メモ
+              </span>
+              <textarea
+                className="mt-2 min-h-28 w-full rounded-lg border border-white/10 bg-[#0F1117] p-3 text-base leading-7 text-white outline-none focus:border-cyan-200"
+                onChange={(event) => saveNote(event.target.value)}
+                placeholder="条文、間違えた理由、覚えることを自分用に書く"
+                value={currentNote}
+              />
+            </label>
+
+          </div>
+        </section>
+
+        <section className="mt-5 rounded-lg border border-white/10 bg-slate-950 p-3">
+          <button
+            className="min-h-12 w-full rounded-lg border border-amber-200/30 bg-amber-200/10 px-3 text-sm font-bold text-amber-100"
+            onClick={() => setMockPicker(true)}
+            type="button"
+          >
+            模試を始める
+          </button>
+        </section>
+
+        <section className="mt-3 rounded-lg border border-white/10 bg-slate-950">
+          <button
+            aria-expanded={questionPickerOpen}
+            className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
+            onClick={() => setQuestionPickerOpen(!questionPickerOpen)}
+            type="button"
+          >
+            <span className="text-base font-bold text-white">問題を選ぶ</span>
+            <span className="text-right text-sm text-slate-400">
+              {filterSummary}
+              <span className="ml-2 text-slate-500">
+                {questionPickerOpen ? "▲" : "▼"}
+              </span>
+            </span>
+          </button>
+
+          {questionPickerOpen ? (
+            <div className="border-t border-white/10 p-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <select
+                  className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
+                  onChange={(event) => {
+                    setStudyMode(false);
+                    setExamFilter(event.target.value);
+                    setTimeout(() => {
+                      const first = takkenQuestions.find((question) =>
+                        event.target.value === ALL
+                          ? true
+                          : question.examId === event.target.value,
+                      );
+                      if (first) goToQuestion(first.id);
+                    }, 0);
+                  }}
+                  value={examFilter}
+                >
+                  <option value={ALL}>全年度</option>
+                  {takkenExams.map((exam) => (
+                    <option key={exam.id} value={exam.id}>
+                      {exam.year}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
+                  onChange={(event) => {
+                    setStudyMode(false);
+                    setCategoryFilter(event.target.value);
+                  }}
+                  value={categoryFilter}
+                >
+                  <option value={ALL}>全分野</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
+                  onChange={(event) => {
+                    setStudyMode(false);
+                    setStatusFilter(event.target.value);
+                  }}
+                  value={statusFilter}
+                >
+                  <option value={ALL}>全状態</option>
+                  <option value={UNANSWERED}>未回答</option>
+                  <option value={WRONG}>間違い</option>
+                  <option value={DUE}>復習期限</option>
+                </select>
+              </div>
+            </div>
+          ) : null}
+        </section>
+
+        <section className="mt-3 rounded-lg border border-white/10 bg-slate-950">
           <button
             aria-expanded={boardOpen}
             className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
             onClick={() => setBoardOpen(!boardOpen)}
             type="button"
           >
-            <span className="text-base font-bold text-white">
-              合格作戦ボード
-            </span>
-            <span className="text-sm text-slate-400">
-              想定 {projectedTotal}/{passLine.fullMarks}点
+            <span className="text-base font-bold text-white">成績を見る</span>
+            <span className="text-right text-sm text-slate-400">
+              進捗 {totalAnswered}/{takkenQuestions.length}・想定{" "}
+              {projectedTotal}/{passLine.fullMarks}点
               {projectedTotal >= passLine.safe
                 ? "・安全圏"
                 : `・あと${gapToSafe}点`}
@@ -1349,7 +1415,7 @@ function App() {
 
               <div className="mt-4">
                 <p className="text-xs font-bold text-slate-300">
-                  学習カレンダー（過去12週・🔥{streakDays}日連続）
+                  学習カレンダー（過去12週・{streakDays}日連続）
                 </p>
                 <div className="mt-2 grid grid-flow-col grid-rows-7 justify-start gap-1">
                   {calendarDays.map((day) => (
@@ -1390,168 +1456,16 @@ function App() {
                     : "試験日が過ぎています。次回の試験日を設定してください。"}
                 </p>
               </div>
-            </div>
-          ) : null}
-        </section>
 
-        <section
-          ref={questionRef}
-          className="scroll-mt-3 rounded-lg border border-white/10 bg-slate-950 shadow-2xl shadow-black/20"
-        >
-          <div className="border-b border-white/10 bg-slate-900 p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-sm font-bold text-cyan-100">
-                {currentQuestion.year}
-              </span>
-              <span className="rounded-md border border-amber-200/30 bg-amber-200/10 px-2.5 py-1 text-sm font-bold text-amber-100">
-                問{currentQuestion.number}
-              </span>
-              <span className="rounded-md border border-white/10 bg-[#0F1117] px-2.5 py-1 text-sm font-bold text-slate-200">
-                {currentQuestion.category}
-              </span>
-            </div>
-            <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-400">
-              <span>
-                表示 {filteredQuestions.length ? currentIndex + 1 : 0}/
-                {filteredQuestions.length}
-              </span>
-              <a
-                className="min-h-11 rounded-lg border border-white/15 px-3 py-2 font-bold text-cyan-100"
-                href={currentQuestion.sourceUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                公式PDF
-              </a>
-            </div>
-            {storedAnswer && !currentAnswer ? (
-              <p className="mt-2 text-sm text-slate-400">
-                挑戦{storedAnswer.attempts + 1}回目・前回
-                {storedAnswer.correct ? "正解" : "不正解"}
-                {isDueRecord(storedAnswer) ? "・復習期限です" : ""}
-                。答えは見えないので、思い出して解き直しましょう。
-              </p>
-            ) : null}
-          </div>
-
-          <div className="space-y-5 p-4">
-            <ChoiceButtons
-              answer={currentAnswer}
-              onAnswer={answerQuestion}
-              question={currentQuestion}
-            />
-
-            <div className="whitespace-pre-wrap break-words rounded-lg border border-white/10 bg-[#111827] p-4 text-base leading-7 text-slate-100">
-              {formatQuestionText(currentQuestion.questionText)}
-            </div>
-
-            <ChoiceButtons
-              answer={currentAnswer}
-              onAnswer={answerQuestion}
-              question={currentQuestion}
-            />
-
-            {currentAnswer ? (
-              <section
-                ref={feedbackRef}
-                className={`rounded-lg border p-4 ${
-                  currentAnswer.correct
-                    ? "border-emerald-300/40 bg-emerald-300/10"
-                    : "border-rose-300/40 bg-rose-300/10"
-                }`}
-              >
-                <p className="text-base font-bold">
-                  {currentAnswer.correct ? "正解" : "不正解"}
-                </p>
-                <p className="mt-1 text-base leading-7 text-slate-100">
-                  {resultText(currentQuestion)}
-                </p>
-                <p className="mt-1 text-sm leading-6 text-slate-300">
-                  {currentAnswer.correct
-                    ? currentAnswer.streak >= MASTER_STREAK
-                      ? `連続${currentAnswer.streak}回正解で習得済み。${reviewIntervalDays(currentAnswer.streak)}日後に忘れかけた頃、もう一度出題されます。`
-                      : `連続${currentAnswer.streak}回正解。あと${MASTER_STREAK - currentAnswer.streak}回連続で正解すると習得済みになります（${reviewIntervalDays(currentAnswer.streak)}日後に復習）。`
-                    : "明日の復習に入りました。忘れる前にもう一度解いて定着させます。"}
-                </p>
-                <div className="mt-3 rounded-lg border border-white/10 bg-[#0F1117] p-3">
-                  <p className="text-sm font-bold text-cyan-100">
-                    解答解説（公式根拠）
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-200">
-                    {currentQuestion.officialExplanation}
-                  </p>
-                  <a
-                    className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-cyan-200/30 bg-cyan-200/10 px-3 py-2 text-sm font-bold text-cyan-100"
-                    href={currentQuestion.externalExplanationUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    詳細解説を開く（{currentQuestion.externalExplanationName}）
-                  </a>
-                  {currentQuestion.aiExplanation ? (
-                    <div className="mt-3 rounded-lg border border-amber-200/20 bg-amber-200/10 p-3">
-                      <p className="text-sm font-bold text-amber-100">
-                        AI補足メモ
-                      </p>
-                      <p className="mt-2 text-sm leading-6 text-slate-200">
-                        {currentQuestion.aiExplanation}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="mt-2 text-sm leading-6 text-slate-400">
-                      詳細な法律理由は、公開されている外部解説ページで確認できます。本文は転載せず、出典ページに直接リンクしています。
-                    </p>
-                  )}
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <a
-                    className="flex min-h-12 items-center justify-center rounded-lg border border-white/15 bg-slate-900 px-3 text-center text-sm font-bold text-cyan-100"
-                    href={currentQuestion.externalExplanationUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    外部詳細
-                  </a>
-                  <button
-                    className="min-h-12 rounded-lg bg-white px-4 text-base font-bold text-slate-950"
-                    onClick={goNext}
-                    type="button"
-                  >
-                    次へ
-                  </button>
-                </div>
-              </section>
-            ) : null}
-
-            <label className="block">
-              <span className="text-base font-bold text-slate-100">
-                自分メモ
-              </span>
-              <textarea
-                className="mt-2 min-h-28 w-full rounded-lg border border-white/10 bg-[#0F1117] p-3 text-base leading-7 text-white outline-none focus:border-cyan-200"
-                onChange={(event) => saveNote(event.target.value)}
-                placeholder="条文、間違えた理由、覚えることを自分用に書く"
-                value={currentNote}
-              />
-            </label>
-
-            <div className="grid grid-cols-2 gap-3">
               <button
-                className="min-h-12 rounded-lg border border-white/15 bg-slate-900 px-4 text-base font-bold text-white"
+                className="mt-3 min-h-11 w-full rounded-lg border border-white/15 bg-slate-900 px-3 text-sm font-bold text-slate-200"
                 onClick={resetProgress}
                 type="button"
               >
-                初期化
-              </button>
-              <button
-                className="min-h-12 rounded-lg bg-white px-4 text-base font-bold text-slate-950"
-                onClick={goNext}
-                type="button"
-              >
-                次へ
+                履歴を初期化
               </button>
             </div>
-          </div>
+          ) : null}
         </section>
 
         <section className="mt-5 rounded-lg border border-white/10 bg-slate-950 p-4">
