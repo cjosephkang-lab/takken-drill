@@ -134,9 +134,9 @@ export function MockExam({
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-700">
               {passed
-                ? `安全圏（${passLine.safe}点）を超えています。本番でも合格圏です。`
+                ? `目標の${passLine.safe}点を超えています。本番でも合格圏です。`
                 : passedMin
-                  ? `過去10年の合格ライン（${passLine.min}〜${passLine.max}点）の範囲内。安全圏${passLine.safe}点まであと${passLine.safe - score}点。`
+                  ? `過去10年の合格ライン（${passLine.min}〜${passLine.max}点）の範囲内。目標の${passLine.safe}点まであと${passLine.safe - score}点。`
                   : `合格ライン（最低${passLine.min}点）まであと${passLine.min - score}点。弱点科目を復習しましょう。`}
             </p>
             {timeUp ? (
@@ -170,7 +170,7 @@ export function MockExam({
 
           <p className="mt-4 text-xs leading-5 text-slate-500">
             「終了」を押すと、回答した{answeredCount}
-            問が学習記録（間隔反復・正答率・今日のミッション）に反映されます。
+            問が学習履歴に残ります。
           </p>
 
           <div className="mt-3 grid grid-cols-2 gap-3">
@@ -187,7 +187,7 @@ export function MockExam({
               onClick={() => onCommit(run)}
               type="button"
             >
-              終了（記録に反映）
+              終わって記録に残す
             </button>
           </div>
         </div>
@@ -205,7 +205,7 @@ export function MockExam({
             </p>
             <p className="text-xs text-slate-500">
               回答 {answeredCount}/{questions.length}問
-              ・正誤は採点まで表示されません
+              ・正解・不正解は採点まで表示されません
             </p>
           </div>
           <button
@@ -213,7 +213,7 @@ export function MockExam({
             onClick={() => {
               if (
                 window.confirm(
-                  "模試を中断して破棄します（学習記録には反映されません）。よろしいですか？",
+                  "模試を中断して、この模試の回答を消します。よろしいですか？",
                 )
               ) {
                 onAbort();
@@ -265,7 +265,9 @@ export function MockExam({
             const unanswered = questions.length - answeredCount;
             if (
               unanswered === 0 ||
-              window.confirm(`未回答が${unanswered}問あります。採点しますか？`)
+              window.confirm(
+                `まだ答えていない問題が${unanswered}問あります。採点しますか？`,
+              )
             ) {
               setShowResult(true);
             }

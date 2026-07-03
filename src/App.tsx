@@ -864,7 +864,7 @@ function App() {
 
   const resetProgress = () => {
     const shouldReset = window.confirm(
-      "回答履歴とメモを初期化します。よろしいですか？",
+      "回答履歴とメモを消します。よろしいですか？",
     );
 
     if (!shouldReset) {
@@ -967,31 +967,32 @@ function App() {
 
   const examFilterLabel =
     examFilter === ALL
-      ? "全年度"
-      : (takkenExams.find((exam) => exam.id === examFilter)?.year ?? "全年度");
+      ? "すべての年度"
+      : (takkenExams.find((exam) => exam.id === examFilter)?.year ??
+        "すべての年度");
   const categoryFilterLabel =
-    categoryFilter === ALL ? "全分野" : categoryFilter;
+    categoryFilter === ALL ? "すべての分野" : categoryFilter;
   const statusFilterLabel =
     statusFilter === UNANSWERED
-      ? "未回答"
+      ? "まだ解いていない"
       : statusFilter === WRONG
-        ? "間違い"
+        ? "間違えた問題"
         : statusFilter === DUE
-          ? "復習期限"
-          : "全状態";
+          ? "復習する問題"
+          : "すべての問題";
   const filterSummary = `${examFilterLabel} / ${categoryFilterLabel} / ${statusFilterLabel}`;
   const historySaveTitle = authUser
     ? syncState === "error"
-      ? "履歴同期でエラーが出ています"
-      : "履歴はGoogle同期中"
+      ? "Google保存でエラーが出ています"
+      : "履歴はGoogleに保存中"
     : "履歴はこの端末に保存中";
   const historySaveDetail = authUser
     ? syncState === "error"
-      ? "通信状態を確認すると、次の回答時に再同期します。"
+      ? "通信状態を確認すると、次に解いた時にもう一度保存します。"
       : "スマホ・PCでも同じ学習履歴を使えます。"
     : isSyncConfigured
-      ? "Google同期でスマホ・PCに引き継げます。"
-      : "このブラウザを変えると履歴は引き継がれません。";
+      ? "Googleで保存するとスマホ・PCに引き継げます。"
+      : "別のスマホ・PCでは履歴を引き継げません。";
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -1012,7 +1013,7 @@ function App() {
               {authUser ? (
                 <>
                   <span>
-                    履歴同期中
+                    Googleに保存中
                     {syncState === "syncing" ? "…" : ""}
                     {syncState === "error" ? "（エラー）" : ""}
                   </span>
@@ -1031,7 +1032,7 @@ function App() {
                   onClick={() => signInWithGoogle()}
                   type="button"
                 >
-                  履歴同期
+                  Googleで保存
                 </button>
               )}
             </div>
@@ -1103,7 +1104,7 @@ function App() {
                 onClick={() => signInWithGoogle()}
                 type="button"
               >
-                Google同期する
+                Googleで保存する
               </button>
             ) : null}
           </div>
@@ -1173,7 +1174,7 @@ function App() {
               <p className="mt-2 text-sm text-slate-600">
                 挑戦{storedAnswer.attempts + 1}回目・前回
                 {storedAnswer.correct ? "正解" : "不正解"}
-                {isDueRecord(storedAnswer) ? "・復習期限です" : ""}
+                {isDueRecord(storedAnswer) ? "・復習のタイミングです" : ""}
                 。答えは見えないので、思い出して解き直しましょう。
               </p>
             ) : null}
@@ -1214,13 +1215,13 @@ function App() {
                 <p className="mt-1 text-sm leading-6 text-slate-700">
                   {currentAnswer.correct
                     ? currentAnswer.streak >= MASTER_STREAK
-                      ? `習得済み。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
-                      : `あと${MASTER_STREAK - currentAnswer.streak}回正解で習得です。`
+                      ? `身につきました。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
+                      : `あと${MASTER_STREAK - currentAnswer.streak}回正解で身につきます。`
                     : "復習リストに追加しました。"}
                 </p>
                 <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
                   <p className="text-sm font-bold text-sky-700">
-                    公式根拠
+                    公式の答え
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-700">
                     {currentQuestion.officialExplanation}
@@ -1304,7 +1305,7 @@ function App() {
                   }}
                   value={examFilter}
                 >
-                  <option value={ALL}>全年度</option>
+                  <option value={ALL}>すべての年度</option>
                   {takkenExams.map((exam) => (
                     <option key={exam.id} value={exam.id}>
                       {exam.year}
@@ -1320,7 +1321,7 @@ function App() {
                   }}
                   value={categoryFilter}
                 >
-                  <option value={ALL}>全分野</option>
+                  <option value={ALL}>すべての分野</option>
                   {categories.map((category) => (
                     <option key={category} value={category}>
                       {category}
@@ -1336,10 +1337,10 @@ function App() {
                   }}
                   value={statusFilter}
                 >
-                  <option value={ALL}>全状態</option>
-                  <option value={UNANSWERED}>未回答</option>
-                  <option value={WRONG}>間違い</option>
-                  <option value={DUE}>復習期限</option>
+                  <option value={ALL}>すべての問題</option>
+                  <option value={UNANSWERED}>まだ解いていない</option>
+                  <option value={WRONG}>間違えた問題</option>
+                  <option value={DUE}>復習する問題</option>
                 </select>
               </div>
             </div>
@@ -1355,10 +1356,10 @@ function App() {
           >
             <span className="text-base font-bold text-slate-950">成績を見る</span>
             <span className="text-right text-sm text-slate-500">
-              進捗 {totalAnswered}/{takkenQuestions.length}・想定{" "}
+              学習状況 {totalAnswered}/{takkenQuestions.length}・予想{" "}
               {projectedTotal}/{passLine.fullMarks}点
               {projectedTotal >= passLine.safe
-                ? "・安全圏"
+                ? "・合格目安クリア"
                 : `・あと${gapToSafe}点`}
               <span className="ml-2 text-slate-400">
                 {boardOpen ? "▲" : "▼"}
@@ -1373,11 +1374,11 @@ function App() {
                   <p className="font-bold text-slate-950">
                     {totalAnswered}/{takkenQuestions.length}
                   </p>
-                  <p className="text-slate-500">回答済み</p>
+                  <p className="text-slate-500">解いた問題</p>
                 </div>
                 <div className="rounded-lg bg-slate-50 p-2">
                   <p className="font-bold text-slate-950">{totalMastered}</p>
-                  <p className="text-slate-500">習得済み</p>
+                  <p className="text-slate-500">身についた問題</p>
                 </div>
                 <div className="rounded-lg bg-slate-50 p-2">
                   <p className="font-bold text-slate-950">{todayAnswered}</p>
@@ -1386,10 +1387,10 @@ function App() {
               </div>
 
               <p className="mt-3 text-xs leading-5 text-slate-500">
-                正答率を本番1回（50問）に換算した想定得点です（累計正答率
+                正答率を本番1回（50問）に置き換えた予想点です（累計正答率
                 {accuracy}%）。合格ラインは過去10年で
-                33〜38点（平均35.5点）。安全圏 {passLine.safe}点を狙います。
-                「習得済み」は2連続正解した問題です。
+                33〜38点（平均35.5点）。まずは {passLine.safe}点を目指します。
+                「身についた問題」は2回連続で正解した問題です。
               </p>
               <div
                 className={`mt-2 rounded-lg border px-3 py-2 text-sm font-bold ${
@@ -1399,8 +1400,8 @@ function App() {
                 }`}
               >
                 {projectedTotal >= passLine.safe
-                  ? `安全圏到達。想定${projectedTotal}点で合格ラインを越えています。`
-                  : `安全圏（${passLine.safe}点）まであと ${gapToSafe} 点。`}
+                  ? `合格目安クリア。予想${projectedTotal}点で合格ラインを越えています。`
+                  : `目標の${passLine.safe}点まであと ${gapToSafe} 点。`}
               </div>
 
               <div className="mt-3 space-y-2">
@@ -1430,7 +1431,7 @@ function App() {
                             reached ? "text-emerald-700" : "text-slate-700"
                           }
                         >
-                          想定 {cat.projectedScore ?? "—"}/{cat.fullMarks}点
+                          予想 {cat.projectedScore ?? "—"}/{cat.fullMarks}点
                           <span className="text-slate-500">
                             （目標{cat.targetScore}）
                           </span>
@@ -1446,8 +1447,8 @@ function App() {
                       </div>
                       <p className="mt-1 text-xs leading-5 text-slate-500">
                         {cat.answeredCount > 0
-                          ? `正答率${cat.ratePercent}%・習得${cat.masteredCount}/${cat.totalCount}問・${cat.answeredCount}/${cat.totalCount}問演習`
-                          : "未着手"}
+                          ? `正答率${cat.ratePercent}%・身についた問題${cat.masteredCount}/${cat.totalCount}問・解いた問題${cat.answeredCount}/${cat.totalCount}問`
+                          : "まだ解いていません"}
                         {" — "}
                         {cat.rationale}
                       </p>
@@ -1495,7 +1496,7 @@ function App() {
                 </label>
                 <p className="mt-1 text-xs leading-5 text-slate-500">
                   {daysToExam > 0
-                    ? `あと${daysToExam}日。未回答×2回＋未習得×1回の見積もりで、1日${paceNeeded}問ペースなら全問習得が間に合います。`
+                    ? `あと${daysToExam}日。まだ解いていない問題を2回、まだ身についていない問題を1回解く見込みで、1日${paceNeeded}問ペースなら間に合います。`
                     : "試験日が過ぎています。次回の試験日を設定してください。"}
                 </p>
               </div>
@@ -1505,14 +1506,16 @@ function App() {
                 onClick={resetProgress}
                 type="button"
               >
-                履歴を初期化
+                履歴を消す
               </button>
             </div>
           ) : null}
         </section>
 
         <section className="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-base font-bold text-slate-950">収録データ</h2>
+          <h2 className="text-base font-bold text-slate-950">
+            入っている過去問
+          </h2>
           <div className="mt-3 space-y-2">
             {takkenExams.map((exam) => (
               <div
@@ -1521,7 +1524,7 @@ function App() {
               >
                 <span>{exam.label}</span>
                 <span className="text-slate-500">
-                  {exam.extractedCount}/50 抽出
+                  {exam.extractedCount}/50 問
                 </span>
               </div>
             ))}
@@ -1562,7 +1565,7 @@ function App() {
           >
             <h2 className="text-base font-bold text-slate-950">模試を開始</h2>
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              本番同様の50問・2時間。途中の正誤は表示されず、採点後にまとめて学習記録へ反映されます。全問抽出できている年度のみ選べます。
+              本番同様の50問・2時間。途中の正解・不正解は表示されず、採点後にまとめて学習履歴に残ります。50問そろっている年度だけ選べます。
             </p>
             {takkenExams
               .filter((exam) => exam.extractedCount === exam.questionCount)
