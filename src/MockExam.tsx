@@ -111,28 +111,28 @@ export function MockExam({
     const passedMin = score >= passLine.min;
 
     return (
-      <div className="min-h-screen bg-[#0F1117] px-4 py-6 text-slate-100">
+      <div className="min-h-screen bg-slate-100 px-4 py-6 text-slate-900">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-xl font-bold text-white">
+          <h1 className="text-xl font-bold text-slate-950">
             模試結果（{exam.year}）
           </h1>
 
           <div
             className={`mt-4 rounded-lg border p-4 text-center ${
               passed
-                ? "border-emerald-300/40 bg-emerald-300/10"
+                ? "border-emerald-200 bg-emerald-50"
                 : passedMin
-                  ? "border-amber-200/30 bg-amber-200/10"
-                  : "border-rose-300/40 bg-rose-300/10"
+                  ? "border-amber-200 bg-amber-50"
+                  : "border-rose-200 bg-rose-50"
             }`}
           >
-            <p className="text-4xl font-bold text-white">
+            <p className="text-4xl font-bold text-slate-950">
               {score}
-              <span className="text-xl text-slate-300">
+              <span className="text-xl text-slate-500">
                 /{questions.length}点
               </span>
             </p>
-            <p className="mt-2 text-sm leading-6 text-slate-200">
+            <p className="mt-2 text-sm leading-6 text-slate-700">
               {passed
                 ? `安全圏（${passLine.safe}点）を超えています。本番でも合格圏です。`
                 : passedMin
@@ -140,7 +140,7 @@ export function MockExam({
                   : `合格ライン（最低${passLine.min}点）まであと${passLine.min - score}点。弱点科目を復習しましょう。`}
             </p>
             {timeUp ? (
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-slate-500">
                 （制限時間 {MOCK_MINUTES}分 が経過したため自動採点）
               </p>
             ) : null}
@@ -151,12 +151,12 @@ export function MockExam({
               const reached = row.correct >= row.targetScore;
               return (
                 <div
-                  className="flex items-center justify-between gap-2 rounded-lg bg-slate-900 px-3 py-2 text-sm"
+                  className="flex items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-sm shadow-sm"
                   key={row.category}
                 >
-                  <span className="font-bold text-white">{row.category}</span>
+                  <span className="font-bold text-slate-950">{row.category}</span>
                   <span
-                    className={reached ? "text-emerald-200" : "text-rose-200"}
+                    className={reached ? "text-emerald-700" : "text-rose-700"}
                   >
                     {row.correct}/{row.total}点
                     <span className="text-slate-500">
@@ -168,14 +168,14 @@ export function MockExam({
             })}
           </div>
 
-          <p className="mt-4 text-xs leading-5 text-slate-400">
+          <p className="mt-4 text-xs leading-5 text-slate-500">
             「終了」を押すと、回答した{answeredCount}
             問が学習記録（間隔反復・正答率・今日のミッション）に反映されます。
           </p>
 
           <div className="mt-3 grid grid-cols-2 gap-3">
             <button
-              className="min-h-12 rounded-lg border border-white/15 bg-slate-900 px-4 text-sm font-bold text-white"
+              className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700"
               onClick={() => setShowResult(false)}
               disabled={timeUp}
               type="button"
@@ -183,7 +183,7 @@ export function MockExam({
               {timeUp ? "時間切れ" : "問題に戻る"}
             </button>
             <button
-              className="min-h-12 rounded-lg bg-white px-4 text-base font-bold text-slate-950"
+              className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
               onClick={() => onCommit(run)}
               type="button"
             >
@@ -196,20 +196,20 @@ export function MockExam({
   }
 
   return (
-    <div className="min-h-screen bg-[#0F1117] pb-28 text-slate-100">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0F1117] px-4 py-3">
+    <div className="min-h-screen bg-slate-100 pb-28 text-slate-900">
+      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white px-4 py-3">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-bold text-amber-200">
+            <p className="text-sm font-bold text-amber-700">
               模試 {exam.year} ・ 残り {formatRemaining(remaining)}
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               回答 {answeredCount}/{questions.length}問
               ・正誤は採点まで表示されません
             </p>
           </div>
           <button
-            className="min-h-10 rounded-lg border border-white/15 bg-slate-900 px-3 text-xs font-bold text-slate-300"
+            className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
             onClick={() => {
               if (
                 window.confirm(
@@ -227,17 +227,17 @@ export function MockExam({
       </header>
 
       <main className="mx-auto max-w-3xl px-4 pt-4">
-        <section className="rounded-lg border border-white/10 bg-slate-950 p-4">
+        <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2 text-sm">
-            <span className="rounded-md border border-amber-200/30 bg-amber-200/10 px-2.5 py-1 font-bold text-amber-100">
+            <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 font-bold text-amber-700">
               問{question.number}
             </span>
-            <span className="text-slate-400">
+            <span className="text-slate-500">
               {index + 1}/{questions.length}
             </span>
           </div>
 
-          <div className="mt-3 whitespace-pre-wrap break-words rounded-lg border border-white/10 bg-[#111827] p-4 text-base leading-7 text-slate-100">
+          <div className="mt-3 whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-slate-50 p-4 text-base leading-7 text-slate-950">
             {formatQuestionText(question.questionText)}
           </div>
 
@@ -246,8 +246,8 @@ export function MockExam({
               <button
                 className={`min-h-14 rounded-lg border text-xl font-bold transition ${
                   selected === choice
-                    ? "border-amber-200 bg-amber-200/20 text-amber-100"
-                    : "border-white/10 bg-slate-900 text-white"
+                    ? "border-amber-500 bg-amber-50 text-amber-700"
+                    : "border-slate-300 bg-white text-slate-900 shadow-sm"
                 }`}
                 key={choice}
                 onClick={() => select(choice)}
@@ -260,7 +260,7 @@ export function MockExam({
         </section>
 
         <button
-          className="mt-4 min-h-12 w-full rounded-lg border border-amber-200/30 bg-amber-200/10 px-4 text-sm font-bold text-amber-100"
+          className="mt-4 min-h-12 w-full rounded-lg border border-amber-200 bg-amber-50 px-4 text-sm font-bold text-amber-700"
           onClick={() => {
             const unanswered = questions.length - answeredCount;
             if (
@@ -277,12 +277,12 @@ export function MockExam({
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-10 border-t border-white/10 bg-[#0F1117]/95 px-4 pt-2 backdrop-blur"
+        className="fixed inset-x-0 bottom-0 z-10 border-t border-slate-200 bg-white/95 px-4 pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur"
         style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto grid max-w-3xl grid-cols-[1fr_2fr] gap-2">
           <button
-            className="min-h-12 rounded-lg border border-white/15 bg-slate-900 px-4 text-base font-bold text-white"
+            className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-base font-bold text-slate-700"
             onClick={() => {
               setIndex((i) => Math.max(i - 1, 0));
               window.scrollTo({ top: 0 });
@@ -292,7 +292,7 @@ export function MockExam({
             前へ
           </button>
           <button
-            className="min-h-12 rounded-lg bg-white px-4 text-base font-bold text-slate-950"
+            className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
             onClick={() => {
               setIndex((i) => Math.min(i + 1, questions.length - 1));
               window.scrollTo({ top: 0 });

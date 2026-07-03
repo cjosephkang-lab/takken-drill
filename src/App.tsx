@@ -399,10 +399,10 @@ function ChoiceButtons({ question, answer, onAnswer }: ChoiceButtonsProps) {
           <button
             className={`min-h-14 rounded-lg border text-xl font-bold transition ${
               answered && correct
-                ? "border-emerald-300 bg-emerald-300/20 text-emerald-100"
+                ? "border-emerald-500 bg-emerald-50 text-emerald-700"
                 : answered && selected
-                  ? "border-rose-300 bg-rose-300/20 text-rose-100"
-                  : "border-white/10 bg-slate-900 text-white"
+                  ? "border-rose-500 bg-rose-50 text-rose-700"
+                  : "border-slate-300 bg-white text-slate-900 shadow-sm"
             }`}
             key={choice}
             onClick={() => onAnswer(choice)}
@@ -982,21 +982,21 @@ function App() {
       : "このブラウザを変えると履歴は引き継がれません。";
 
   return (
-    <div className="min-h-screen bg-[#0F1117] text-slate-100">
-      <header className="border-b border-white/10 bg-[#0F1117] px-4 py-3">
+    <div className="min-h-screen bg-slate-100 text-slate-900">
+      <header className="border-b border-slate-200 bg-white px-4 py-3">
         <div className="mx-auto flex max-w-3xl items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-bold text-cyan-200">
+            <p className="text-sm font-bold text-sky-700">
               連続 {streakDays}日 / 復習 {dueCount} / 試験まで
               {daysToExam > 0 ? `${daysToExam}日` : "—"}
             </p>
-            <h1 className="text-xl font-bold tracking-normal text-white">
+            <h1 className="text-xl font-bold tracking-normal text-slate-950">
               宅建過去問ドリル
             </h1>
           </div>
 
           {isSyncConfigured ? (
-            <div className="flex shrink-0 flex-col items-end gap-1 text-right text-xs text-slate-400">
+            <div className="flex shrink-0 flex-col items-end gap-1 text-right text-xs text-slate-500">
               {authUser ? (
                 <>
                   <span>
@@ -1005,7 +1005,7 @@ function App() {
                     {syncState === "error" ? "（エラー）" : ""}
                   </span>
                   <button
-                    className="min-h-8 rounded-md border border-white/15 px-2 text-xs font-bold text-slate-300"
+                    className="min-h-8 rounded-md border border-slate-300 bg-white px-2 text-xs font-bold text-slate-700"
                     onClick={() => signOutUser()}
                     type="button"
                   >
@@ -1014,7 +1014,7 @@ function App() {
                 </>
               ) : (
                 <button
-                  className="min-h-8 rounded-md border border-cyan-200/30 bg-cyan-200/10 px-2 text-xs font-bold text-cyan-100"
+                  className="min-h-8 rounded-md border border-sky-200 bg-sky-50 px-2 text-xs font-bold text-sky-700"
                   disabled={authLoading}
                   onClick={() => signInWithGoogle()}
                   type="button"
@@ -1029,64 +1029,64 @@ function App() {
 
       <main className="mx-auto max-w-3xl px-4 pb-28 pt-5">
         <section
-          className={`mb-4 rounded-lg border p-4 ${
+          className={`mb-4 rounded-lg border p-4 shadow-sm ${
             missionDone
-              ? "border-emerald-300/30 bg-emerald-300/5"
-              : "border-cyan-300/25 bg-slate-950"
+              ? "border-emerald-200 bg-emerald-50"
+              : "border-sky-200 bg-white"
           }`}
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-cyan-200">
+              <p className="text-xs font-bold uppercase tracking-wide text-sky-700">
                 今日の学習
               </p>
-              <h2 className="mt-1 text-xl font-bold text-white">
+              <h2 className="mt-1 text-xl font-bold text-slate-950">
                 {missionDone ? "今日の目標達成" : `今日の${missionTarget}問`}
               </h2>
             </div>
             <span
               className={`text-sm font-bold ${
-                missionDone ? "text-emerald-200" : "text-cyan-200"
+                missionDone ? "text-emerald-700" : "text-sky-700"
               }`}
             >
               {todayAnswered}/{missionTarget}問
             </span>
           </div>
 
-          <div className="mt-4 h-2 rounded-full bg-slate-800">
+          <div className="mt-4 h-2 rounded-full bg-slate-200">
             <div
               className={`h-2 rounded-full ${
-                missionDone ? "bg-emerald-300" : "bg-cyan-300"
+                missionDone ? "bg-emerald-500" : "bg-sky-600"
               }`}
               style={{ width: `${missionPercent}%` }}
             />
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
-            <div className="rounded-lg bg-slate-900 p-2">
-              <p className="font-bold text-white">{missionRemaining}</p>
-              <p className="text-slate-400">残り</p>
+            <div className="rounded-lg bg-slate-50 p-2">
+              <p className="font-bold text-slate-950">{missionRemaining}</p>
+              <p className="text-slate-500">残り</p>
             </div>
-            <div className="rounded-lg bg-slate-900 p-2">
-              <p className="font-bold text-white">{missionReviewPart}</p>
-              <p className="text-slate-400">復習</p>
+            <div className="rounded-lg bg-slate-50 p-2">
+              <p className="font-bold text-slate-950">{missionReviewPart}</p>
+              <p className="text-slate-500">復習</p>
             </div>
-            <div className="rounded-lg bg-slate-900 p-2">
-              <p className="font-bold text-white">{missionNewPart}</p>
-              <p className="text-slate-400">新規</p>
+            <div className="rounded-lg bg-slate-50 p-2">
+              <p className="font-bold text-slate-950">{missionNewPart}</p>
+              <p className="text-slate-500">新規</p>
             </div>
           </div>
 
-          <div className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-3 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 flex flex-col gap-2 border-t border-slate-200 pt-3 text-xs text-slate-700 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-bold text-slate-100">{historySaveTitle}</p>
-              <p className="mt-0.5 leading-5 text-slate-400">
+              <p className="font-bold text-slate-950">{historySaveTitle}</p>
+              <p className="mt-0.5 leading-5 text-slate-500">
                 {historySaveDetail}
               </p>
             </div>
             {isSyncConfigured && !authUser ? (
               <button
-                className="min-h-9 shrink-0 rounded-md border border-cyan-200/30 bg-cyan-200/10 px-3 text-xs font-bold text-cyan-100"
+                className="min-h-9 shrink-0 rounded-md border border-sky-200 bg-sky-50 px-3 text-xs font-bold text-sky-700"
                 disabled={authLoading}
                 onClick={() => signInWithGoogle()}
                 type="button"
@@ -1097,12 +1097,12 @@ function App() {
           </div>
 
           {missionDone ? (
-            <p className="mt-2 text-sm leading-6 text-emerald-100">
+            <p className="mt-2 text-sm leading-6 text-emerald-800">
               ミッション完了！ 今日{todayAnswered}問・正答率{todayAccuracy}
               %。{streakDays}日連続。余力があればもう少し進めましょう。
             </p>
           ) : (
-            <p className="mt-2 text-sm leading-6 text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-slate-700">
               残り{missionRemaining}問（復習{missionReviewPart}・新規
               {missionNewPart}）。
               {daysToExam > 0
@@ -1113,8 +1113,8 @@ function App() {
           <button
             className={`mt-3 min-h-12 w-full rounded-lg font-bold ${
               missionDone
-                ? "border border-white/15 bg-slate-900 text-white"
-                : "bg-cyan-300 text-slate-950"
+                ? "border border-slate-300 bg-white text-slate-900"
+                : "bg-sky-700 text-white"
             }`}
             onClick={startMission}
             type="button"
@@ -1129,27 +1129,27 @@ function App() {
 
         <section
           ref={questionRef}
-          className="scroll-mt-3 rounded-lg border border-white/10 bg-slate-950 shadow-2xl shadow-black/20"
+          className="scroll-mt-3 rounded-lg border border-slate-200 bg-white shadow-sm"
         >
-          <div className="border-b border-white/10 bg-slate-900 p-4">
+          <div className="border-b border-slate-200 bg-white p-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-sm font-bold text-cyan-100">
+              <span className="rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1 text-sm font-bold text-sky-700">
                 {currentQuestion.year}
               </span>
-              <span className="rounded-md border border-amber-200/30 bg-amber-200/10 px-2.5 py-1 text-sm font-bold text-amber-100">
+              <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-sm font-bold text-amber-700">
                 問{currentQuestion.number}
               </span>
-              <span className="rounded-md border border-white/10 bg-[#0F1117] px-2.5 py-1 text-sm font-bold text-slate-200">
+              <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-sm font-bold text-slate-700">
                 {currentQuestion.category}
               </span>
             </div>
-            <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-400">
+            <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-500">
               <span>
                 表示 {filteredQuestions.length ? currentIndex + 1 : 0}/
                 {filteredQuestions.length}
               </span>
               <a
-                className="min-h-11 rounded-lg border border-white/15 px-3 py-2 font-bold text-cyan-100"
+                className="min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 font-bold text-sky-700"
                 href={currentQuestion.sourceUrl}
                 rel="noreferrer"
                 target="_blank"
@@ -1158,7 +1158,7 @@ function App() {
               </a>
             </div>
             {storedAnswer && !currentAnswer ? (
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-slate-600">
                 挑戦{storedAnswer.attempts + 1}回目・前回
                 {storedAnswer.correct ? "正解" : "不正解"}
                 {isDueRecord(storedAnswer) ? "・復習期限です" : ""}
@@ -1174,7 +1174,7 @@ function App() {
               question={currentQuestion}
             />
 
-            <div className="whitespace-pre-wrap break-words rounded-lg border border-white/10 bg-[#111827] p-4 text-base leading-7 text-slate-100">
+            <div className="whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-slate-50 p-4 text-base leading-7 text-slate-950">
               {formatQuestionText(currentQuestion.questionText)}
             </div>
 
@@ -1189,32 +1189,32 @@ function App() {
                 ref={feedbackRef}
                 className={`rounded-lg border p-4 ${
                   currentAnswer.correct
-                    ? "border-emerald-300/40 bg-emerald-300/10"
-                    : "border-rose-300/40 bg-rose-300/10"
+                    ? "border-emerald-200 bg-emerald-50"
+                    : "border-rose-200 bg-rose-50"
                 }`}
               >
                 <p className="text-base font-bold">
                   {currentAnswer.correct ? "正解" : "不正解"}
                 </p>
-                <p className="mt-1 text-base leading-7 text-slate-100">
+                <p className="mt-1 text-base leading-7 text-slate-950">
                   {resultText(currentQuestion)}
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-300">
+                <p className="mt-1 text-sm leading-6 text-slate-700">
                   {currentAnswer.correct
                     ? currentAnswer.streak >= MASTER_STREAK
                       ? `習得済み。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
                       : `あと${MASTER_STREAK - currentAnswer.streak}回正解で習得です。`
                     : "復習リストに追加しました。"}
                 </p>
-                <div className="mt-3 rounded-lg border border-white/10 bg-[#0F1117] p-3">
-                  <p className="text-sm font-bold text-cyan-100">
+                <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
+                  <p className="text-sm font-bold text-sky-700">
                     公式根拠
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-200">
+                  <p className="mt-2 text-sm leading-6 text-slate-700">
                     {currentQuestion.officialExplanation}
                   </p>
                   <a
-                    className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-cyan-200/30 bg-cyan-200/10 px-3 py-2 text-sm font-bold text-cyan-100"
+                    className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-bold text-sky-700"
                     href={currentQuestion.externalExplanationUrl}
                     rel="noreferrer"
                     target="_blank"
@@ -1223,7 +1223,7 @@ function App() {
                   </a>
                 </div>
                 <button
-                  className="mt-3 min-h-12 w-full rounded-lg bg-white px-4 text-base font-bold text-slate-950"
+                  className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
                   onClick={goNext}
                   type="button"
                 >
@@ -1233,11 +1233,11 @@ function App() {
             ) : null}
 
             <label className="block">
-              <span className="text-base font-bold text-slate-100">
+              <span className="text-base font-bold text-slate-900">
                 自分メモ
               </span>
               <textarea
-                className="mt-2 min-h-28 w-full rounded-lg border border-white/10 bg-[#0F1117] p-3 text-base leading-7 text-white outline-none focus:border-cyan-200"
+                className="mt-2 min-h-28 w-full rounded-lg border border-slate-300 bg-white p-3 text-base leading-7 text-slate-900 outline-none focus:border-sky-500"
                 onChange={(event) => saveNote(event.target.value)}
                 placeholder="条文、間違えた理由、覚えることを自分用に書く"
                 value={currentNote}
@@ -1247,9 +1247,9 @@ function App() {
           </div>
         </section>
 
-        <section className="mt-5 rounded-lg border border-white/10 bg-slate-950 p-3">
+        <section className="mt-5 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
           <button
-            className="min-h-12 w-full rounded-lg border border-amber-200/30 bg-amber-200/10 px-3 text-sm font-bold text-amber-100"
+            className="min-h-12 w-full rounded-lg border border-amber-200 bg-amber-50 px-3 text-sm font-bold text-amber-700"
             onClick={() => setMockPicker(true)}
             type="button"
           >
@@ -1257,27 +1257,27 @@ function App() {
           </button>
         </section>
 
-        <section className="mt-3 rounded-lg border border-white/10 bg-slate-950">
+        <section className="mt-3 rounded-lg border border-slate-200 bg-white shadow-sm">
           <button
             aria-expanded={questionPickerOpen}
             className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
             onClick={() => setQuestionPickerOpen(!questionPickerOpen)}
             type="button"
           >
-            <span className="text-base font-bold text-white">問題を選ぶ</span>
-            <span className="text-right text-sm text-slate-400">
+            <span className="text-base font-bold text-slate-950">問題を選ぶ</span>
+            <span className="text-right text-sm text-slate-500">
               {filterSummary}
-              <span className="ml-2 text-slate-500">
+              <span className="ml-2 text-slate-400">
                 {questionPickerOpen ? "▲" : "▼"}
               </span>
             </span>
           </button>
 
           {questionPickerOpen ? (
-            <div className="border-t border-white/10 p-3">
+            <div className="border-t border-slate-200 p-3">
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 <select
-                  className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
                     setStudyMode(false);
                     setExamFilter(event.target.value);
@@ -1301,7 +1301,7 @@ function App() {
                 </select>
 
                 <select
-                  className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
                     setStudyMode(false);
                     setCategoryFilter(event.target.value);
@@ -1317,7 +1317,7 @@ function App() {
                 </select>
 
                 <select
-                  className="min-h-11 rounded-lg border border-white/10 bg-slate-900 px-2 text-sm text-white"
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
                     setStudyMode(false);
                     setStatusFilter(event.target.value);
@@ -1334,46 +1334,46 @@ function App() {
           ) : null}
         </section>
 
-        <section className="mt-3 rounded-lg border border-white/10 bg-slate-950">
+        <section className="mt-3 rounded-lg border border-slate-200 bg-white shadow-sm">
           <button
             aria-expanded={boardOpen}
             className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
             onClick={() => setBoardOpen(!boardOpen)}
             type="button"
           >
-            <span className="text-base font-bold text-white">成績を見る</span>
-            <span className="text-right text-sm text-slate-400">
+            <span className="text-base font-bold text-slate-950">成績を見る</span>
+            <span className="text-right text-sm text-slate-500">
               進捗 {totalAnswered}/{takkenQuestions.length}・想定{" "}
               {projectedTotal}/{passLine.fullMarks}点
               {projectedTotal >= passLine.safe
                 ? "・安全圏"
                 : `・あと${gapToSafe}点`}
-              <span className="ml-2 text-slate-500">
+              <span className="ml-2 text-slate-400">
                 {boardOpen ? "▲" : "▼"}
               </span>
             </span>
           </button>
 
           {boardOpen ? (
-            <div className="border-t border-white/10 p-3">
+            <div className="border-t border-slate-200 p-3">
               <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                <div className="rounded-lg bg-slate-900 p-2">
-                  <p className="font-bold text-white">
+                <div className="rounded-lg bg-slate-50 p-2">
+                  <p className="font-bold text-slate-950">
                     {totalAnswered}/{takkenQuestions.length}
                   </p>
-                  <p className="text-slate-400">回答済み</p>
+                  <p className="text-slate-500">回答済み</p>
                 </div>
-                <div className="rounded-lg bg-slate-900 p-2">
-                  <p className="font-bold text-white">{totalMastered}</p>
-                  <p className="text-slate-400">習得済み</p>
+                <div className="rounded-lg bg-slate-50 p-2">
+                  <p className="font-bold text-slate-950">{totalMastered}</p>
+                  <p className="text-slate-500">習得済み</p>
                 </div>
-                <div className="rounded-lg bg-slate-900 p-2">
-                  <p className="font-bold text-white">{todayAnswered}</p>
-                  <p className="text-slate-400">今日</p>
+                <div className="rounded-lg bg-slate-50 p-2">
+                  <p className="font-bold text-slate-950">{todayAnswered}</p>
+                  <p className="text-slate-500">今日</p>
                 </div>
               </div>
 
-              <p className="mt-3 text-xs leading-5 text-slate-400">
+              <p className="mt-3 text-xs leading-5 text-slate-500">
                 正答率を本番1回（50問）に換算した想定得点です（累計正答率
                 {accuracy}%）。合格ラインは過去10年で
                 33〜38点（平均35.5点）。安全圏 {passLine.safe}点を狙います。
@@ -1382,8 +1382,8 @@ function App() {
               <div
                 className={`mt-2 rounded-lg border px-3 py-2 text-sm font-bold ${
                   projectedTotal >= passLine.safe
-                    ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-100"
-                    : "border-amber-200/30 bg-amber-200/10 text-amber-100"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-amber-200 bg-amber-50 text-amber-700"
                 }`}
               >
                 {projectedTotal >= passLine.safe
@@ -1405,17 +1405,17 @@ function App() {
 
                   return (
                     <div
-                      className="rounded-lg bg-slate-900 px-3 py-2"
+                      className="rounded-lg bg-slate-50 px-3 py-2"
                       key={cat.category}
                       title={cat.rationale}
                     >
                       <div className="flex items-center justify-between gap-2 text-sm">
-                        <span className="font-bold text-white">
+                        <span className="font-bold text-slate-950">
                           {cat.order}. {cat.category}
                         </span>
                         <span
                           className={
-                            reached ? "text-emerald-200" : "text-slate-300"
+                            reached ? "text-emerald-700" : "text-slate-700"
                           }
                         >
                           想定 {cat.projectedScore ?? "—"}/{cat.fullMarks}点
@@ -1424,15 +1424,15 @@ function App() {
                           </span>
                         </span>
                       </div>
-                      <div className="mt-1.5 h-1.5 rounded-full bg-slate-800">
+                      <div className="mt-1.5 h-1.5 rounded-full bg-slate-200">
                         <div
                           className={`h-1.5 rounded-full ${
-                            reached ? "bg-emerald-300" : "bg-cyan-300"
+                            reached ? "bg-emerald-500" : "bg-sky-600"
                           }`}
                           style={{ width: `${barPercent}%` }}
                         />
                       </div>
-                      <p className="mt-1 text-xs leading-5 text-slate-400">
+                      <p className="mt-1 text-xs leading-5 text-slate-500">
                         {cat.answeredCount > 0
                           ? `正答率${cat.ratePercent}%・習得${cat.masteredCount}/${cat.totalCount}問・${cat.answeredCount}/${cat.totalCount}問演習`
                           : "未着手"}
@@ -1445,7 +1445,7 @@ function App() {
               </div>
 
               <div className="mt-4">
-                <p className="text-xs font-bold text-slate-300">
+                <p className="text-xs font-bold text-slate-700">
                   学習カレンダー（過去12週・{streakDays}日連続）
                 </p>
                 <div className="mt-2 grid grid-flow-col grid-rows-7 justify-start gap-1">
@@ -1453,12 +1453,12 @@ function App() {
                     <div
                       className={`h-3 w-3 rounded-sm ${
                         day.count === 0
-                          ? "bg-slate-800"
+                          ? "bg-slate-200"
                           : day.count < 5
-                            ? "bg-cyan-900"
+                            ? "bg-sky-200"
                             : day.count < 10
-                              ? "bg-cyan-600"
-                              : "bg-cyan-300"
+                              ? "bg-sky-500"
+                              : "bg-sky-700"
                       }`}
                       key={day.key}
                       title={`${day.key}: ${day.count}問`}
@@ -1467,11 +1467,11 @@ function App() {
                 </div>
               </div>
 
-              <div className="mt-4 rounded-lg bg-slate-900 px-3 py-2">
+              <div className="mt-4 rounded-lg bg-slate-50 px-3 py-2">
                 <label className="flex items-center justify-between gap-2 text-sm">
-                  <span className="font-bold text-white">試験日</span>
+                  <span className="font-bold text-slate-950">試験日</span>
                   <input
-                    className="rounded-md border border-white/15 bg-[#0F1117] px-2 py-1 text-sm text-white"
+                    className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900"
                     onChange={(event) => {
                       if (/^\d{4}-\d{2}-\d{2}$/.test(event.target.value)) {
                         setExamDate(event.target.value);
@@ -1481,7 +1481,7 @@ function App() {
                     value={examDate}
                   />
                 </label>
-                <p className="mt-1 text-xs leading-5 text-slate-400">
+                <p className="mt-1 text-xs leading-5 text-slate-500">
                   {daysToExam > 0
                     ? `あと${daysToExam}日。未回答×2回＋未習得×1回の見積もりで、1日${paceNeeded}問ペースなら全問習得が間に合います。`
                     : "試験日が過ぎています。次回の試験日を設定してください。"}
@@ -1489,7 +1489,7 @@ function App() {
               </div>
 
               <button
-                className="mt-3 min-h-11 w-full rounded-lg border border-white/15 bg-slate-900 px-3 text-sm font-bold text-slate-200"
+                className="mt-3 min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700"
                 onClick={resetProgress}
                 type="button"
               >
@@ -1499,16 +1499,16 @@ function App() {
           ) : null}
         </section>
 
-        <section className="mt-5 rounded-lg border border-white/10 bg-slate-950 p-4">
-          <h2 className="text-base font-bold text-white">収録データ</h2>
+        <section className="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-bold text-slate-950">収録データ</h2>
           <div className="mt-3 space-y-2">
             {takkenExams.map((exam) => (
               <div
-                className="flex items-center justify-between gap-3 rounded-lg bg-slate-900 px-3 py-2 text-sm"
+                className="flex items-center justify-between gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm"
                 key={exam.id}
               >
                 <span>{exam.label}</span>
-                <span className="text-slate-400">
+                <span className="text-slate-500">
                   {exam.extractedCount}/50 抽出
                 </span>
               </div>
@@ -1518,19 +1518,19 @@ function App() {
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-10 border-t border-white/10 bg-[#0F1117]/95 px-4 pt-2 backdrop-blur"
+        className="fixed inset-x-0 bottom-0 z-10 border-t border-slate-200 bg-white/95 px-4 pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur"
         style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto grid max-w-3xl grid-cols-[1fr_2fr] gap-2">
           <button
-            className="min-h-12 rounded-lg border border-white/15 bg-slate-900 px-4 text-base font-bold text-white"
+            className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-base font-bold text-slate-700"
             onClick={goPrev}
             type="button"
           >
             前へ
           </button>
           <button
-            className="min-h-12 rounded-lg bg-white px-4 text-base font-bold text-slate-950"
+            className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
             onClick={goNext}
             type="button"
           >
@@ -1541,22 +1541,22 @@ function App() {
 
       {mockPicker ? (
         <div
-          className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 px-6"
+          className="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/60 px-6"
           onClick={() => setMockPicker(false)}
         >
           <div
-            className="w-full max-w-sm rounded-lg border border-white/10 bg-slate-950 p-4"
+            className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-4 shadow-xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <h2 className="text-base font-bold text-white">模試を開始</h2>
-            <p className="mt-1 text-xs leading-5 text-slate-400">
+            <h2 className="text-base font-bold text-slate-950">模試を開始</h2>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
               本番同様の50問・2時間。途中の正誤は表示されず、採点後にまとめて学習記録へ反映されます。全問抽出できている年度のみ選べます。
             </p>
             {takkenExams
               .filter((exam) => exam.extractedCount === exam.questionCount)
               .map((exam) => (
                 <button
-                  className="mt-2 min-h-12 w-full rounded-lg border border-white/15 bg-slate-900 px-3 text-sm font-bold text-white"
+                  className="mt-2 min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-bold text-slate-900"
                   key={exam.id}
                   onClick={() => startMock(exam.id)}
                   type="button"
@@ -1565,7 +1565,7 @@ function App() {
                 </button>
               ))}
             <button
-              className="mt-3 min-h-10 w-full text-xs text-slate-400"
+              className="mt-3 min-h-10 w-full text-xs text-slate-500"
               onClick={() => setMockPicker(false)}
               type="button"
             >
