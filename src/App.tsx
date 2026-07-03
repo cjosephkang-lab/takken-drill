@@ -440,6 +440,7 @@ function App() {
   const feedbackRef = useRef<HTMLElement | null>(null);
   // 「次へ」で問題本体（カード）の先頭まで自動スクロールするための参照。
   const questionRef = useRef<HTMLElement | null>(null);
+  const forceCloudReplaceRef = useRef(false);
 
   // 模試モード。進行中はlocalStorageに保存され、リロードしても再開できる。
   const [mockRun, setMockRun] = useState<MockRun | null>(() => loadMockRun());
@@ -451,6 +452,7 @@ function App() {
   const [syncState, setSyncState] = useState<
     "idle" | "syncing" | "synced" | "error"
   >("idle");
+  const [syncReady, setSyncReady] = useState(false);
 
   useEffect(() => {
     saveSettings({
@@ -477,8 +479,10 @@ function App() {
     const unsubscribe = watchAuthUser((user) => {
       setAuthUser(user);
       setAuthLoading(false);
+      setSyncReady(false);
 
       if (!user) {
+        setSyncState("idle");
         return;
       }
 
@@ -486,23 +490,26 @@ function App() {
       fetchSyncedProgress(user.uid)
         .then((remote) => {
           if (!remote) {
+            setSyncReady(true);
             setSyncState("synced");
             return;
           }
 
           setProgress((local) => {
             const merged = mergeProgress(local, {
-              answers: remote.answers as Record<string, AnswerRecord>,
-              notes: remote.notes,
+              answers: (remote.answers ?? {}) as Record<string, AnswerRecord>,
+              notes: remote.notes ?? {},
               dailyLog: remote.dailyLog ?? {},
             });
             saveProgress(merged);
             return merged;
           });
+          setSyncReady(true);
           setSyncState("synced");
         })
         .catch((error) => {
           console.error("Failed to fetch synced progress.", error);
+          setSyncReady(false);
           setSyncState("error");
         });
     });
@@ -512,23 +519,27 @@ function App() {
 
   // ログイン中は、回答・メモが変わるたびにFirestoreへ反映する。
   useEffect(() => {
-    if (!authUser) {
+    if (!authUser || !syncReady) {
       return;
     }
 
     setSyncState("syncing");
+    const writeMode = forceCloudReplaceRef.current ? "replace" : "merge";
     pushSyncedProgress(authUser.uid, {
       answers: progress.answers,
       notes: progress.notes,
       dailyLog: progress.dailyLog,
       updatedAt: new Date().toISOString(),
-    })
-      .then(() => setSyncState("synced"))
+    }, writeMode)
+      .then(() => {
+        forceCloudReplaceRef.current = false;
+        setSyncState("synced");
+      })
       .catch((error) => {
         console.error("Failed to push synced progress.", error);
         setSyncState("error");
       });
-  }, [authUser, progress.answers, progress.notes, progress.dailyLog]);
+  }, [authUser, progress.answers, progress.notes, progress.dailyLog, syncReady]);
 
   const categories = allCategories;
 
@@ -866,6 +877,7 @@ function App() {
       currentId: takkenQuestions[0]?.id ?? "",
       dailyLog: {},
     };
+    forceCloudReplaceRef.current = true;
     setProgress(next);
     setSessionAnswers({});
     window.localStorage.removeItem(STORAGE_KEY);
