@@ -57,6 +57,8 @@ type UiSettings = {
 
 const STORAGE_KEY = "takken-drill.progress.v1";
 const SETTINGS_KEY = "takken-drill.settings.v1";
+/** 初回ガイドを見たかどうか。一度閉じたら二度と出さない。 */
+const GUIDE_SEEN_KEY = "takken-drill.guideSeen.v1";
 const ALL = "all";
 const UNANSWERED = "unanswered";
 const WRONG = "wrong";
@@ -446,6 +448,23 @@ function App() {
   const [mockRun, setMockRun] = useState<MockRun | null>(() => loadMockRun());
   const [mockPicker, setMockPicker] = useState(false);
 
+  // 初回だけ出す使い方ガイド。閉じたらlocalStorageに記録して二度と出さない。
+  const [showGuide, setShowGuide] = useState(() => {
+    try {
+      return window.localStorage.getItem(GUIDE_SEEN_KEY) !== "1";
+    } catch {
+      return true;
+    }
+  });
+  const dismissGuide = () => {
+    setShowGuide(false);
+    try {
+      window.localStorage.setItem(GUIDE_SEEN_KEY, "1");
+    } catch (error) {
+      console.error("Failed to save guide flag.", error);
+    }
+  };
+
   // Firebase同期（ログイン時のみ）。未ログインは従来通りlocalStorageのみで動く。
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(isSyncConfigured);
@@ -525,12 +544,16 @@ function App() {
 
     setSyncState("syncing");
     const writeMode = forceCloudReplaceRef.current ? "replace" : "merge";
-    pushSyncedProgress(authUser.uid, {
-      answers: progress.answers,
-      notes: progress.notes,
-      dailyLog: progress.dailyLog,
-      updatedAt: new Date().toISOString(),
-    }, writeMode)
+    pushSyncedProgress(
+      authUser.uid,
+      {
+        answers: progress.answers,
+        notes: progress.notes,
+        dailyLog: progress.dailyLog,
+        updatedAt: new Date().toISOString(),
+      },
+      writeMode,
+    )
       .then(() => {
         forceCloudReplaceRef.current = false;
         setSyncState("synced");
@@ -539,7 +562,13 @@ function App() {
         console.error("Failed to push synced progress.", error);
         setSyncState("error");
       });
-  }, [authUser, progress.answers, progress.notes, progress.dailyLog, syncReady]);
+  }, [
+    authUser,
+    progress.answers,
+    progress.notes,
+    progress.dailyLog,
+    syncReady,
+  ]);
 
   const categories = allCategories;
 
@@ -999,13 +1028,15 @@ function App() {
       <header className="border-b border-slate-200 bg-white px-4 py-3">
         <div className="mx-auto flex max-w-3xl items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-bold text-sky-700">
-              連続 {streakDays}日 / 復習 {dueCount} / 試験まで
-              {daysToExam > 0 ? `${daysToExam}日` : "—"}
-            </p>
             <h1 className="text-xl font-bold tracking-normal text-slate-950">
               宅建過去問ドリル
             </h1>
+            <p className="mt-0.5 text-xs font-medium text-slate-500">
+              <span className="font-bold text-sky-700">連続{streakDays}日</span>
+              <span className="mx-1.5 text-slate-300">·</span>
+              要復習{dueCount}問<span className="mx-1.5 text-slate-300">·</span>
+              試験まで{daysToExam > 0 ? `あと${daysToExam}日` : "—"}
+            </p>
           </div>
 
           {isSyncConfigured ? (
@@ -1090,25 +1121,6 @@ function App() {
             </div>
           </div>
 
-          <div className="mt-4 flex flex-col gap-2 border-t border-slate-200 pt-3 text-xs text-slate-700 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="font-bold text-slate-950">{historySaveTitle}</p>
-              <p className="mt-0.5 leading-5 text-slate-500">
-                {historySaveDetail}
-              </p>
-            </div>
-            {isSyncConfigured && !authUser ? (
-              <button
-                className="min-h-9 shrink-0 rounded-md border border-sky-200 bg-sky-50 px-3 text-xs font-bold text-sky-700"
-                disabled={authLoading}
-                onClick={() => signInWithGoogle()}
-                type="button"
-              >
-                Googleで保存する
-              </button>
-            ) : null}
-          </div>
-
           {missionDone ? (
             <p className="mt-2 text-sm leading-6 text-emerald-800">
               ミッション完了！ 今日{todayAnswered}問・正答率{todayAccuracy}
@@ -1138,6 +1150,25 @@ function App() {
                 ? "今日の続きへ"
                 : `今日の${missionTarget}問を始める`}
           </button>
+
+          <div className="mt-3 flex flex-col gap-2 border-t border-slate-200 pt-3 text-xs text-slate-700 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-bold text-slate-950">{historySaveTitle}</p>
+              <p className="mt-0.5 leading-5 text-slate-500">
+                {historySaveDetail}
+              </p>
+            </div>
+            {isSyncConfigured && !authUser ? (
+              <button
+                className="min-h-9 shrink-0 rounded-md border border-sky-200 bg-sky-50 px-3 text-xs font-bold text-sky-700"
+                disabled={authLoading}
+                onClick={() => signInWithGoogle()}
+                type="button"
+              >
+                Googleで保存する
+              </button>
+            ) : null}
+          </div>
         </section>
 
         <section
@@ -1158,8 +1189,8 @@ function App() {
             </div>
             <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-500">
               <span>
-                表示 {filteredQuestions.length ? currentIndex + 1 : 0}/
-                {filteredQuestions.length}
+                {filteredQuestions.length ? currentIndex + 1 : 0}問目 / 全
+                {filteredQuestions.length}問
               </span>
               <a
                 className="min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 font-bold text-sky-700"
@@ -1181,6 +1212,12 @@ function App() {
           </div>
 
           <div className="space-y-5 p-4">
+            {!currentAnswer ? (
+              <p className="text-sm font-medium text-slate-500">
+                問題文を読んで、正解だと思う番号をタップしてください。
+              </p>
+            ) : null}
+
             <ChoiceButtons
               answer={currentAnswer}
               onAnswer={answerQuestion}
@@ -1220,9 +1257,7 @@ function App() {
                     : "復習リストに追加しました。"}
                 </p>
                 <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
-                  <p className="text-sm font-bold text-sky-700">
-                    公式の答え
-                  </p>
+                  <p className="text-sm font-bold text-sky-700">公式の答え</p>
                   <p className="mt-2 text-sm leading-6 text-slate-700">
                     {currentQuestion.officialExplanation}
                   </p>
@@ -1256,7 +1291,6 @@ function App() {
                 value={currentNote}
               />
             </label>
-
           </div>
         </section>
 
@@ -1277,7 +1311,9 @@ function App() {
             onClick={() => setQuestionPickerOpen(!questionPickerOpen)}
             type="button"
           >
-            <span className="text-base font-bold text-slate-950">問題を選ぶ</span>
+            <span className="text-base font-bold text-slate-950">
+              問題を選ぶ
+            </span>
             <span className="text-right text-sm text-slate-500">
               {filterSummary}
               <span className="ml-2 text-slate-400">
@@ -1354,7 +1390,9 @@ function App() {
             onClick={() => setBoardOpen(!boardOpen)}
             type="button"
           >
-            <span className="text-base font-bold text-slate-950">成績を見る</span>
+            <span className="text-base font-bold text-slate-950">
+              成績を見る
+            </span>
             <span className="text-right text-sm text-slate-500">
               学習状況 {totalAnswered}/{takkenQuestions.length}・予想{" "}
               {projectedTotal}/{passLine.fullMarks}点
@@ -1553,6 +1591,69 @@ function App() {
           </button>
         </div>
       </nav>
+
+      {showGuide ? (
+        <div className="fixed inset-0 z-30 flex items-end justify-center bg-slate-950/60 px-4 pb-4 sm:items-center">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
+            <p className="text-xs font-bold uppercase tracking-wide text-sky-700">
+              はじめての方へ
+            </p>
+            <h2 className="mt-1 text-lg font-bold text-slate-950">
+              宅建の過去問を、毎日少しずつ。
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              直近5回分の公式過去問を収録。1日10問の「ミッション」をこなすだけで、
+              試験日から逆算して合格ラインに届く設計です。
+            </p>
+
+            <ol className="mt-4 space-y-3">
+              <li className="flex gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
+                  1
+                </span>
+                <p className="text-sm leading-6 text-slate-700">
+                  <span className="font-bold text-slate-950">
+                    「今日の◯問を始める」
+                  </span>
+                  を押すと、解くべき問題が自動で並びます。
+                </p>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
+                  2
+                </span>
+                <p className="text-sm leading-6 text-slate-700">
+                  問題を読んで、
+                  <span className="font-bold text-slate-950">
+                    正解だと思う番号をタップ
+                  </span>
+                  。すぐに正誤と解説が出ます。
+                </p>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
+                  3
+                </span>
+                <p className="text-sm leading-6 text-slate-700">
+                  間違えた問題は
+                  <span className="font-bold text-slate-950">
+                    忘れた頃に自動で再出題
+                  </span>
+                  。「次へ」で解き進めるだけでOK。
+                </p>
+              </li>
+            </ol>
+
+            <button
+              className="mt-5 min-h-12 w-full rounded-lg bg-sky-700 text-base font-bold text-white"
+              onClick={dismissGuide}
+              type="button"
+            >
+              はじめる
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {mockPicker ? (
         <div
