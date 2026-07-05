@@ -31,7 +31,7 @@ type AnswerRecord = {
   nextReviewAt: string;
 };
 
-/** 1日ごとの学習量。ストリーク・カレンダー・今日のミッションの進捗に使う。 */
+/** Daily study volume used by streak, calendar, and today's work. */
 type DayLog = {
   answered: number;
   correct: number;
@@ -68,7 +68,7 @@ const DAILY_TARGET = 10;
 const MASTER_STREAK = 2;
 /** 宅建試験は例年10月の第3日曜。2026年は10月18日。 */
 const DEFAULT_EXAM_DATE = "2026-10-18";
-/** 1日のミッション問題数の上限（詰め込みすぎ防止）。 */
+/** Maximum daily target to avoid overloading the learner. */
 const MISSION_CAP = 50;
 
 const localDateKey = (date: Date) => {
@@ -135,7 +135,7 @@ const buildAnswerRecord = (
   };
 };
 
-// 日次ログに回答を加算する（今日のミッション・ストリーク・カレンダーの元データ）。
+// Add one study event to the daily log used by streaks, calendar, and today's work.
 const addToDailyLog = (
   log: Record<string, DayLog>,
   count: number,
@@ -427,7 +427,7 @@ function App() {
   const [statusFilter, setStatusFilter] = useState(
     initialSettings.statusFilter,
   );
-  // 学習導線（おすすめ順）モード: 合格者の鉄則順に復習期限→未回答を優先出題する。
+  // Guided study mode prioritizes due reviews and unanswered questions in exam strategy order.
   const [studyMode, setStudyMode] = useState(initialSettings.studyMode);
   const [boardOpen, setBoardOpen] = useState(initialSettings.boardOpen);
   const [questionPickerOpen, setQuestionPickerOpen] = useState(
@@ -442,6 +442,7 @@ function App() {
   const feedbackRef = useRef<HTMLElement | null>(null);
   // 「次へ」で問題本体（カード）の先頭まで自動スクロールするための参照。
   const questionRef = useRef<HTMLElement | null>(null);
+  const questionPickerRef = useRef<HTMLElement | null>(null);
   const forceCloudReplaceRef = useRef(false);
 
   // 模試モード。進行中はlocalStorageに保存され、リロードしても再開できる。
@@ -637,6 +638,29 @@ function App() {
   const dueCount = takkenQuestions.filter((question) =>
     isDueRecord(progress.answers[question.id]),
   ).length;
+  const wrongCount = takkenQuestions.filter(
+    (question) => progress.answers[question.id]?.correct === false,
+  ).length;
+  const reviewQueue = useMemo(() => {
+    return [...takkenQuestions]
+      .filter((question) => {
+        const answer = progress.answers[question.id];
+        return isDueRecord(answer) || answer?.correct === false;
+      })
+      .sort((a, b) => {
+        const aDue = isDueRecord(progress.answers[a.id]) ? 1 : 0;
+        const bDue = isDueRecord(progress.answers[b.id]) ? 1 : 0;
+
+        if (aDue !== bDue) {
+          return bDue - aDue;
+        }
+
+        return (
+          studyOrderByCategory(a.category) - studyOrderByCategory(b.category)
+        );
+      });
+  }, [progress.answers]);
+  const reviewCount = reviewQueue.length;
   const todayKey = localDateKey(new Date());
   const todayLog = progress.dailyLog[todayKey] ?? { answered: 0, correct: 0 };
   const todayAnswered = todayLog.answered;
@@ -678,7 +702,7 @@ function App() {
   const paceNeeded =
     daysToExam > 0 ? Math.ceil(remainingEvents / daysToExam) : remainingEvents;
 
-  // 今日のミッション: 逆算ペースと最低ノルマ（10問）の大きい方。上限50問。
+  // Today's work uses the larger of the countdown pace and the minimum target, capped at 50.
   const missionTarget = Math.min(
     MISSION_CAP,
     Math.max(DAILY_TARGET, paceNeeded),
@@ -779,8 +803,7 @@ function App() {
     }
   };
 
-  // 今日のミッション開始: フィルタを解除しておすすめ順モードに入り、
-  // 復習期限 → 未回答（合格者の鉄則順）の先頭から1タップで学習を始める。
+  // Start today's work with filters cleared, then pick the first due review or unanswered question.
   const startMission = () => {
     setExamFilter(ALL);
     setCategoryFilter(ALL);
@@ -799,6 +822,26 @@ function App() {
     if (first) {
       goToQuestion(first.id, "question");
     }
+  };
+
+  const startReview = () => {
+    if (!reviewQueue.length) {
+      startMission();
+      return;
+    }
+
+    setExamFilter(ALL);
+    setCategoryFilter(ALL);
+    setStatusFilter(dueCount > 0 ? DUE : WRONG);
+    setStudyMode(true);
+    goToQuestion(reviewQueue[0].id, "question");
+  };
+
+  const openQuestionPicker = () => {
+    setQuestionPickerOpen(true);
+    window.requestAnimationFrame(() => {
+      questionPickerRef.current?.scrollIntoView({ block: "start" });
+    });
   };
 
   const answerQuestion = (choice: number) => {
@@ -1034,7 +1077,7 @@ function App() {
             <p className="mt-0.5 text-xs font-medium text-slate-500">
               <span className="font-bold text-sky-700">連続{streakDays}日</span>
               <span className="mx-1.5 text-slate-300">·</span>
-              要復習{dueCount}問<span className="mx-1.5 text-slate-300">·</span>
+              復習{dueCount}問<span className="mx-1.5 text-slate-300">·</span>
               試験まで{daysToExam > 0 ? `あと${daysToExam}日` : "—"}
             </p>
           </div>
@@ -1081,8 +1124,8 @@ function App() {
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-sky-700">
-                今日の学習
+              <p className="text-xs font-bold text-sky-700">
+                今日やる
               </p>
               <h2 className="mt-1 text-xl font-bold text-slate-950">
                 {missionDone ? "今日の目標達成" : `今日の${missionTarget}問`}
@@ -1117,18 +1160,18 @@ function App() {
             </div>
             <div className="rounded-lg bg-slate-50 p-2">
               <p className="font-bold text-slate-950">{missionNewPart}</p>
-              <p className="text-slate-500">新規</p>
+              <p className="text-slate-500">新しい問題</p>
             </div>
           </div>
 
           {missionDone ? (
             <p className="mt-2 text-sm leading-6 text-emerald-800">
-              ミッション完了！ 今日{todayAnswered}問・正答率{todayAccuracy}
+              今日の分は完了！ 今日{todayAnswered}問・正答率{todayAccuracy}
               %。{streakDays}日連続。余力があればもう少し進めましょう。
             </p>
           ) : (
             <p className="mt-2 text-sm leading-6 text-slate-700">
-              残り{missionRemaining}問（復習{missionReviewPart}・新規
+              残り{missionRemaining}問（復習{missionReviewPart}・新しい問題
               {missionNewPart}）。
               {daysToExam > 0
                 ? `1日${missionTarget}問ペースで試験日までに全問習得できます。`
@@ -1170,6 +1213,153 @@ function App() {
             ) : null}
           </div>
         </section>
+
+        <section className="mb-4 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-3 px-1">
+            <div>
+              <h2 className="text-base font-bold text-slate-950">
+                ほかの学習
+              </h2>
+              <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                普段は上の「今日の◯問」だけでOK。目的がある時だけ使います。
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            <button
+              className="min-h-20 rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
+              onClick={startReview}
+              type="button"
+            >
+              <span className="text-sm font-bold text-emerald-800">
+                復習
+              </span>
+              <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
+                {reviewCount > 0 ? `${reviewCount}問` : "なし"}
+              </span>
+              <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
+                {dueCount > 0
+                  ? "今日もう一度やる問題"
+                  : wrongCount > 0
+                    ? "間違えた問題を解き直す"
+                    : "間違えた問題が出たらここへ"}
+              </span>
+            </button>
+
+            <button
+              className="min-h-20 rounded-lg border border-amber-200 bg-amber-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
+              onClick={() => setMockPicker(true)}
+              type="button"
+            >
+              <span className="text-sm font-bold text-amber-800">
+                模試
+              </span>
+              <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
+                50問
+              </span>
+              <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
+                月1回・直前期に本番形式で確認
+              </span>
+            </button>
+
+            <button
+              className="min-h-20 rounded-lg border border-slate-200 bg-slate-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
+              onClick={openQuestionPicker}
+              type="button"
+            >
+              <span className="text-sm font-bold text-slate-800">
+                年度・分野
+              </span>
+              <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
+                選ぶ
+              </span>
+              <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
+                苦手分野や年度を指定して解く
+              </span>
+            </button>
+          </div>
+        </section>
+
+        {questionPickerOpen ? (
+          <section
+            ref={questionPickerRef}
+            className="mb-4 rounded-lg border border-slate-200 bg-white shadow-sm"
+          >
+            <button
+              aria-expanded={questionPickerOpen}
+              className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
+              onClick={() => setQuestionPickerOpen(false)}
+              type="button"
+            >
+              <span className="text-base font-bold text-slate-950">
+                年度・分野を選ぶ
+              </span>
+              <span className="text-right text-sm text-slate-500">
+                {filterSummary}
+                <span className="ml-2 text-slate-400">▲</span>
+              </span>
+            </button>
+
+            <div className="border-t border-slate-200 p-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <select
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
+                  onChange={(event) => {
+                    setStudyMode(false);
+                    setExamFilter(event.target.value);
+                    setTimeout(() => {
+                      const first = takkenQuestions.find((question) =>
+                        event.target.value === ALL
+                          ? true
+                          : question.examId === event.target.value,
+                      );
+                      if (first) goToQuestion(first.id);
+                    }, 0);
+                  }}
+                  value={examFilter}
+                >
+                  <option value={ALL}>すべての年度</option>
+                  {takkenExams.map((exam) => (
+                    <option key={exam.id} value={exam.id}>
+                      {exam.year}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
+                  onChange={(event) => {
+                    setStudyMode(false);
+                    setCategoryFilter(event.target.value);
+                  }}
+                  value={categoryFilter}
+                >
+                  <option value={ALL}>すべての分野</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
+                  onChange={(event) => {
+                    setStudyMode(false);
+                    setStatusFilter(event.target.value);
+                  }}
+                  value={statusFilter}
+                >
+                  <option value={ALL}>すべての問題</option>
+                  <option value={UNANSWERED}>まだ解いていない</option>
+                  <option value={WRONG}>間違えた問題</option>
+                  <option value={DUE}>復習する問題</option>
+                </select>
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         <section
           ref={questionRef}
@@ -1292,95 +1482,6 @@ function App() {
               />
             </label>
           </div>
-        </section>
-
-        <section className="mt-5 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
-          <button
-            className="min-h-12 w-full rounded-lg border border-amber-200 bg-amber-50 px-3 text-sm font-bold text-amber-700"
-            onClick={() => setMockPicker(true)}
-            type="button"
-          >
-            模試を始める
-          </button>
-        </section>
-
-        <section className="mt-3 rounded-lg border border-slate-200 bg-white shadow-sm">
-          <button
-            aria-expanded={questionPickerOpen}
-            className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
-            onClick={() => setQuestionPickerOpen(!questionPickerOpen)}
-            type="button"
-          >
-            <span className="text-base font-bold text-slate-950">
-              問題を選ぶ
-            </span>
-            <span className="text-right text-sm text-slate-500">
-              {filterSummary}
-              <span className="ml-2 text-slate-400">
-                {questionPickerOpen ? "▲" : "▼"}
-              </span>
-            </span>
-          </button>
-
-          {questionPickerOpen ? (
-            <div className="border-t border-slate-200 p-3">
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <select
-                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
-                  onChange={(event) => {
-                    setStudyMode(false);
-                    setExamFilter(event.target.value);
-                    setTimeout(() => {
-                      const first = takkenQuestions.find((question) =>
-                        event.target.value === ALL
-                          ? true
-                          : question.examId === event.target.value,
-                      );
-                      if (first) goToQuestion(first.id);
-                    }, 0);
-                  }}
-                  value={examFilter}
-                >
-                  <option value={ALL}>すべての年度</option>
-                  {takkenExams.map((exam) => (
-                    <option key={exam.id} value={exam.id}>
-                      {exam.year}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
-                  onChange={(event) => {
-                    setStudyMode(false);
-                    setCategoryFilter(event.target.value);
-                  }}
-                  value={categoryFilter}
-                >
-                  <option value={ALL}>すべての分野</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
-                  onChange={(event) => {
-                    setStudyMode(false);
-                    setStatusFilter(event.target.value);
-                  }}
-                  value={statusFilter}
-                >
-                  <option value={ALL}>すべての問題</option>
-                  <option value={UNANSWERED}>まだ解いていない</option>
-                  <option value={WRONG}>間違えた問題</option>
-                  <option value={DUE}>復習する問題</option>
-                </select>
-              </div>
-            </div>
-          ) : null}
         </section>
 
         <section className="mt-3 rounded-lg border border-slate-200 bg-white shadow-sm">
@@ -1550,10 +1651,10 @@ function App() {
           ) : null}
         </section>
 
-        <section className="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-base font-bold text-slate-950">
+        <details className="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <summary className="cursor-pointer text-base font-bold text-slate-950">
             入っている過去問
-          </h2>
+          </summary>
           <div className="mt-3 space-y-2">
             {takkenExams.map((exam) => (
               <div
@@ -1567,7 +1668,7 @@ function App() {
               </div>
             ))}
           </div>
-        </section>
+        </details>
       </main>
 
       <nav
@@ -1602,7 +1703,7 @@ function App() {
               宅建の過去問を、毎日少しずつ。
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              直近5回分の公式過去問を収録。1日10問の「ミッション」をこなすだけで、
+              直近5回分の公式過去問を収録。まずは「今日やる」をこなすだけで、
               試験日から逆算して合格ラインに届く設計です。
             </p>
 
@@ -1639,7 +1740,7 @@ function App() {
                   <span className="font-bold text-slate-950">
                     忘れた頃に自動で再出題
                   </span>
-                  。「次へ」で解き進めるだけでOK。
+                  。復習・模試・自由選択は、必要な時だけ使えばOK。
                 </p>
               </li>
             </ol>
