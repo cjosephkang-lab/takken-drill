@@ -1740,7 +1740,7 @@ function App() {
                   <span className="font-bold text-slate-950">
                     忘れた頃に自動で再出題
                   </span>
-                  。復習・模試・自由選択は、必要な時だけ使えばOK。
+                  。復習、模試、年度・分野の指定は必要な時だけでOK。
                 </p>
               </li>
             </ol>
