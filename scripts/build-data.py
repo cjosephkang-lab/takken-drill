@@ -444,11 +444,27 @@ def is_unstable_ocr_text(text: str) -> bool:
     symbol_noise = re.search(r'[=~_|]|ー{2,}', text)
     return bool(long_latin_words or residual_ocr_terms or symbol_noise)
 
+RESTORED = ROOT / 'src' / 'data' / 'restoredQuestions.json'
+
+def load_restored() -> dict:
+    # Scanned-PDF years are recovered from OCR by hand and committed as data,
+    # because build/ and source-pdfs/ are gitignored and cannot be rebuilt everywhere.
+    if not RESTORED.exists():
+        return {}
+    return json.loads(RESTORED.read_text(encoding='utf-8'))
+
 def fallback_by_pages(exam_id: str, text: str):
     # OCR marker repair is imperfect. For missing years, still create all answerable cards,
     # attaching the nearest raw OCR excerpt if available and always linking to the official PDF.
     if exam_id in {'r4', 'r3_12'}:
-        return [{'number': n, 'text': official_pdf_fallback(n)} for n in range(1, 51)]
+        restored = load_restored().get(exam_id, {})
+        return [
+            {
+                'number': n,
+                'text': restored.get(str(n), {}).get('text') or official_pdf_fallback(n),
+            }
+            for n in range(1, 51)
+        ]
 
     parsed = {q['number']: q['text'] for q in parse_questions(text, exam_id)}
     fallback = []
