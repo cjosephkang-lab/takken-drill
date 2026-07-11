@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { TakkenExam, TakkenQuestion } from "./data/questions";
 import { passLine, studyOrder } from "./data/studyGuide";
 import { formatQuestionText } from "./lib/formatQuestionText";
+import { hasUnreadableCorrectChoice } from "./lib/unreadableChoices";
+import { trackMetric } from "./firebase";
 
 // 進行中の模試。localStorageに保存してリロードしても再開できるようにする。
 export type MockRun = {
@@ -12,6 +14,9 @@ export type MockRun = {
 
 /** 本番と同じ2時間。 */
 const MOCK_MINUTES = 120;
+
+const elapsedMockSeconds = (startedAt: string) =>
+  Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 1000));
 
 const formatRemaining = (ms: number) => {
   const totalSec = Math.floor(ms / 1000);
@@ -47,6 +52,8 @@ export function MockExam({
   });
   const [showResult, setShowResult] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const resumeTrackedRef = useRef(false);
+  const timeUpTrackedRef = useRef(false);
 
   const deadline = new Date(run.startedAt).getTime() + MOCK_MINUTES * 60 * 1000;
   const remaining = Math.max(0, deadline - now);
@@ -56,19 +63,54 @@ export function MockExam({
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (resumeTrackedRef.current) return;
+    resumeTrackedRef.current = true;
+
+    trackMetric("mock_resume", {
+      answered_count: Object.keys(run.answers).length,
+      elapsed_sec: elapsedMockSeconds(run.startedAt),
+      exam_id: run.examId,
+      total_questions: questions.length,
+    });
+  }, [questions.length, run.answers, run.examId, run.startedAt]);
+
   // 時間切れになったら自動で採点画面へ。
   const timeUp = remaining === 0;
   useEffect(() => {
     if (timeUp) {
+      if (!timeUpTrackedRef.current) {
+        timeUpTrackedRef.current = true;
+        trackMetric("mock_time_up", {
+          answered_count: Object.keys(run.answers).length,
+          exam_id: run.examId,
+          total_questions: questions.length,
+        });
+        trackMetric("mock_score_view", {
+          answered_count: Object.keys(run.answers).length,
+          exam_id: run.examId,
+          source: "time_up",
+          unanswered_count: questions.length - Object.keys(run.answers).length,
+        });
+      }
       setShowResult(true);
     }
-  }, [timeUp]);
+  }, [questions.length, run.answers, run.examId, timeUp]);
 
   const question = questions[index];
   const answeredCount = Object.keys(run.answers).length;
   const selected = run.answers[question.id];
 
   const select = (choice: number) => {
+    trackMetric("mock_answer", {
+      answered_count_before: answeredCount,
+      changed_answer: selected !== undefined,
+      exam_id: run.examId,
+      question_index: index + 1,
+      question_number: question.number,
+      remaining_sec: Math.round(remaining / 1000),
+    });
+
     onChange({
       ...run,
       answers: { ...run.answers, [question.id]: choice },
@@ -154,7 +196,9 @@ export function MockExam({
                   className="flex items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-sm shadow-sm"
                   key={row.category}
                 >
-                  <span className="font-bold text-slate-950">{row.category}</span>
+                  <span className="font-bold text-slate-950">
+                    {row.category}
+                  </span>
                   <span
                     className={reached ? "text-emerald-700" : "text-rose-700"}
                   >
@@ -176,7 +220,14 @@ export function MockExam({
           <div className="mt-3 grid grid-cols-2 gap-3">
             <button
               className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700"
-              onClick={() => setShowResult(false)}
+              onClick={() => {
+                trackMetric("mock_result_back", {
+                  answered_count: answeredCount,
+                  exam_id: run.examId,
+                  score,
+                });
+                setShowResult(false);
+              }}
               disabled={timeUp}
               type="button"
             >
@@ -216,7 +267,18 @@ export function MockExam({
                   "模試を中断して、この模試の回答を消します。よろしいですか？",
                 )
               ) {
+                trackMetric("mock_abort_confirm", {
+                  answered_count: answeredCount,
+                  elapsed_sec: elapsedMockSeconds(run.startedAt),
+                  exam_id: run.examId,
+                });
                 onAbort();
+              } else {
+                trackMetric("mock_abort_cancel", {
+                  answered_count: answeredCount,
+                  elapsed_sec: elapsedMockSeconds(run.startedAt),
+                  exam_id: run.examId,
+                });
               }
             }}
             type="button"
@@ -236,6 +298,12 @@ export function MockExam({
               {index + 1}/{questions.length}
             </span>
           </div>
+
+          {hasUnreadableCorrectChoice(question) ? (
+            <p className="mt-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm leading-6 text-rose-800">
+              この問題は公式PDFがスキャン画像で、正解の選択肢がOCRで読み取れませんでした。正解を選ぶことができないため、採点では不正解になります。
+            </p>
+          ) : null}
 
           <div className="mt-3 whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-slate-50 p-4 text-base leading-7 text-slate-950">
             {formatQuestionText(question.questionText)}
@@ -269,7 +337,19 @@ export function MockExam({
                 `まだ答えていない問題が${unanswered}問あります。採点しますか？`,
               )
             ) {
+              trackMetric("mock_score_view", {
+                answered_count: answeredCount,
+                exam_id: run.examId,
+                source: "manual",
+                unanswered_count: unanswered,
+              });
               setShowResult(true);
+            } else {
+              trackMetric("mock_score_cancel", {
+                answered_count: answeredCount,
+                exam_id: run.examId,
+                unanswered_count: unanswered,
+              });
             }
           }}
           type="button"
@@ -286,6 +366,11 @@ export function MockExam({
           <button
             className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-base font-bold text-slate-700"
             onClick={() => {
+              trackMetric("mock_navigate", {
+                direction: "prev",
+                exam_id: run.examId,
+                question_index: index + 1,
+              });
               setIndex((i) => Math.max(i - 1, 0));
               window.scrollTo({ top: 0 });
             }}
@@ -296,6 +381,11 @@ export function MockExam({
           <button
             className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
             onClick={() => {
+              trackMetric("mock_navigate", {
+                direction: "next",
+                exam_id: run.examId,
+                question_index: index + 1,
+              });
               setIndex((i) => Math.min(i + 1, questions.length - 1));
               window.scrollTo({ top: 0 });
             }}

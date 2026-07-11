@@ -7,14 +7,22 @@ import {
 } from "./data/questions";
 import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
 import { formatQuestionText } from "./lib/formatQuestionText";
+import {
+  countUnreadableCorrectChoices,
+  hasUnreadableCorrectChoice,
+} from "./lib/unreadableChoices";
 import { MockExam, type MockRun } from "./MockExam";
 import {
   fetchSyncedProgress,
   isSyncConfigured,
+  observeWebVitals,
   pushSyncedProgress,
+  setMetricUserProperties,
   signInWithGoogle,
   signOutUser,
+  trackMetric,
   watchAuthUser,
+  type MetricParams,
 } from "./firebase";
 
 type AnswerRecord = {
@@ -70,6 +78,43 @@ const MASTER_STREAK = 2;
 const DEFAULT_EXAM_DATE = "2026-10-18";
 /** Maximum daily target to avoid overloading the learner. */
 const MISSION_CAP = 50;
+
+const metricErrorName = (error: unknown) => {
+  if (error && typeof error === "object" && "code" in error) {
+    return String((error as { code: unknown }).code);
+  }
+
+  if (error instanceof Error) {
+    return error.name;
+  }
+
+  return "unknown";
+};
+
+const viewportBucket = () => {
+  if (typeof window === "undefined") return "unknown";
+  if (window.innerWidth < 640) return "mobile";
+  if (window.innerWidth < 1024) return "tablet";
+  return "desktop";
+};
+
+const daysUntil = (dateValue: string) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const date = new Date(`${dateValue}T00:00:00`);
+  return Math.ceil((date.getTime() - today.getTime()) / 86400000);
+};
+
+const noteLengthBucket = (length: number) => {
+  if (length === 0) return "empty";
+  if (length <= 50) return "1_50";
+  if (length <= 200) return "51_200";
+  if (length <= 1000) return "201_1000";
+  return "1001_plus";
+};
+
+const elapsedSeconds = (startedAt: string) =>
+  Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 1000));
 
 const localDateKey = (date: Date) => {
   const year = date.getFullYear();
@@ -214,6 +259,10 @@ const loadProgress = (): ProgressState => {
     };
   } catch (error) {
     console.error("Failed to load progress.", error);
+    trackMetric("client_storage_error", {
+      operation: "load_progress",
+      error_code: metricErrorName(error),
+    });
     return fallback;
   }
 };
@@ -223,6 +272,10 @@ const saveProgress = (progress: ProgressState) => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
   } catch (error) {
     console.error("Failed to save progress.", error);
+    trackMetric("client_storage_error", {
+      operation: "save_progress",
+      error_code: metricErrorName(error),
+    });
   }
 };
 
@@ -320,6 +373,10 @@ const loadSettings = (): UiSettings => {
     };
   } catch (error) {
     console.error("Failed to load settings.", error);
+    trackMetric("client_storage_error", {
+      operation: "load_settings",
+      error_code: metricErrorName(error),
+    });
     return fallback;
   }
 };
@@ -329,6 +386,10 @@ const saveSettings = (settings: UiSettings) => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   } catch (error) {
     console.error("Failed to save settings.", error);
+    trackMetric("client_storage_error", {
+      operation: "save_settings",
+      error_code: metricErrorName(error),
+    });
   }
 };
 
@@ -353,6 +414,10 @@ const loadMockRun = (): MockRun | null => {
     return parsed as MockRun;
   } catch (error) {
     console.error("Failed to load mock run.", error);
+    trackMetric("client_storage_error", {
+      operation: "load_mock",
+      error_code: metricErrorName(error),
+    });
     return null;
   }
 };
@@ -366,6 +431,10 @@ const saveMockRun = (run: MockRun | null) => {
     }
   } catch (error) {
     console.error("Failed to save mock run.", error);
+    trackMetric("client_storage_error", {
+      operation: "save_mock",
+      error_code: metricErrorName(error),
+    });
   }
 };
 
@@ -386,10 +455,16 @@ const resultText = (question: TakkenQuestion) => {
 type ChoiceButtonsProps = {
   question: TakkenQuestion;
   answer?: AnswerRecord;
-  onAnswer: (choice: number) => void;
+  placement: "top" | "bottom";
+  onAnswer: (choice: number, placement: "top" | "bottom") => void;
 };
 
-function ChoiceButtons({ question, answer, onAnswer }: ChoiceButtonsProps) {
+function ChoiceButtons({
+  question,
+  answer,
+  placement,
+  onAnswer,
+}: ChoiceButtonsProps) {
   return (
     <div className="grid grid-cols-4 gap-2">
       {[1, 2, 3, 4].map((choice) => {
@@ -407,7 +482,7 @@ function ChoiceButtons({ question, answer, onAnswer }: ChoiceButtonsProps) {
                   : "border-slate-300 bg-white text-slate-900 shadow-sm"
             }`}
             key={choice}
-            onClick={() => onAnswer(choice)}
+            onClick={() => onAnswer(choice, placement)}
             type="button"
           >
             {choice}
@@ -444,6 +519,17 @@ function App() {
   const questionRef = useRef<HTMLElement | null>(null);
   const questionPickerRef = useRef<HTMLElement | null>(null);
   const forceCloudReplaceRef = useRef(false);
+  const lastSyncPushMetricAtRef = useRef(0);
+  const questionEnteredAtRef = useRef(Date.now());
+  const trackedNoteValuesRef = useRef<Record<string, string>>({});
+  const sessionStartedAtRef = useRef(Date.now());
+  const sessionStartAnsweredRef = useRef(Object.keys(progress.answers).length);
+  const latestSessionSnapshotRef = useRef({
+    boardOpen: initialSettings.boardOpen,
+    mockActive: false,
+    totalAnswered: Object.keys(progress.answers).length,
+  });
+  const appOpenTrackedRef = useRef(false);
 
   // 模試モード。進行中はlocalStorageに保存され、リロードしても再開できる。
   const [mockRun, setMockRun] = useState<MockRun | null>(() => loadMockRun());
@@ -458,11 +544,18 @@ function App() {
     }
   });
   const dismissGuide = () => {
+    trackMetric("guide_dismiss", {
+      answered_count: Object.keys(progress.answers).length,
+    });
     setShowGuide(false);
     try {
       window.localStorage.setItem(GUIDE_SEEN_KEY, "1");
     } catch (error) {
       console.error("Failed to save guide flag.", error);
+      trackMetric("client_storage_error", {
+        operation: "save_guide",
+        error_code: metricErrorName(error),
+      });
     }
   };
 
@@ -502,13 +595,25 @@ function App() {
       setSyncReady(false);
 
       if (!user) {
+        trackMetric("auth_state", {
+          signed_in: false,
+        });
         setSyncState("idle");
         return;
       }
 
+      trackMetric("auth_state", {
+        signed_in: true,
+      });
       setSyncState("syncing");
       fetchSyncedProgress(user.uid)
         .then((remote) => {
+          trackMetric("sync_pull_success", {
+            remote_answer_count:
+              remote && remote.answers ? Object.keys(remote.answers).length : 0,
+            remote_exists: Boolean(remote),
+          });
+
           if (!remote) {
             setSyncReady(true);
             setSyncState("synced");
@@ -529,6 +634,9 @@ function App() {
         })
         .catch((error) => {
           console.error("Failed to fetch synced progress.", error);
+          trackMetric("sync_pull_error", {
+            error_code: metricErrorName(error),
+          });
           setSyncReady(false);
           setSyncState("error");
         });
@@ -556,11 +664,29 @@ function App() {
       writeMode,
     )
       .then(() => {
+        const now = Date.now();
+        if (
+          writeMode === "replace" ||
+          now - lastSyncPushMetricAtRef.current > 30000
+        ) {
+          lastSyncPushMetricAtRef.current = now;
+          trackMetric("sync_push_success", {
+            answer_count: Object.keys(progress.answers).length,
+            mode: writeMode,
+            note_count: Object.keys(progress.notes).filter(
+              (id) => progress.notes[id],
+            ).length,
+          });
+        }
         forceCloudReplaceRef.current = false;
         setSyncState("synced");
       })
       .catch((error) => {
         console.error("Failed to push synced progress.", error);
+        trackMetric("sync_push_error", {
+          error_code: metricErrorName(error),
+          mode: writeMode,
+        });
         setSyncState("error");
       });
   }, [
@@ -691,10 +817,7 @@ function App() {
   // 「未回答は2回・回答済みで未習得は1回解く必要がある」という近似で
   // 残りの回答回数を見積もり、残り日数で割って1日あたりの必要問題数を出す。
   const daysToExam = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const exam = new Date(`${examDate}T00:00:00`);
-    return Math.ceil((exam.getTime() - today.getTime()) / 86400000);
+    return daysUntil(examDate);
   }, [examDate]);
   const remainingEvents =
     (takkenQuestions.length - totalAnswered) * 2 +
@@ -770,6 +893,166 @@ function App() {
   );
   const gapToSafe = passLine.safe - projectedTotal;
 
+  useEffect(() => {
+    return observeWebVitals();
+  }, []);
+
+  useEffect(() => {
+    setMetricUserProperties({
+      has_progress: totalAnswered > 0 ? "yes" : "no",
+      mock_active: mockRun ? "yes" : "no",
+      storage_mode: authUser ? "cloud" : "local",
+      sync_ready: syncReady ? "yes" : "no",
+      viewport: viewportBucket(),
+    });
+  }, [authUser, mockRun, syncReady, totalAnswered]);
+
+  useEffect(() => {
+    latestSessionSnapshotRef.current = {
+      boardOpen,
+      mockActive: Boolean(mockRun),
+      totalAnswered,
+    };
+  }, [boardOpen, mockRun, totalAnswered]);
+
+  useEffect(() => {
+    if (appOpenTrackedRef.current) return;
+    appOpenTrackedRef.current = true;
+
+    trackMetric("app_open", {
+      answered_count: totalAnswered,
+      days_to_exam: daysToExam,
+      due_count: dueCount,
+      guide_visible: showGuide,
+      mastered_count: totalMastered,
+      mock_active: Boolean(mockRun),
+      streak_days: streakDays,
+      sync_configured: isSyncConfigured,
+      total_questions: takkenQuestions.length,
+      viewport: viewportBucket(),
+    });
+  }, [
+    daysToExam,
+    dueCount,
+    mockRun,
+    showGuide,
+    streakDays,
+    totalAnswered,
+    totalMastered,
+  ]);
+
+  useEffect(() => {
+    let reported = false;
+
+    const reportSessionEnd = () => {
+      if (reported) return;
+      reported = true;
+
+      const latest = latestSessionSnapshotRef.current;
+      trackMetric("session_end", {
+        answer_delta: Math.max(
+          0,
+          latest.totalAnswered - sessionStartAnsweredRef.current,
+        ),
+        board_open: latest.boardOpen,
+        duration_sec: Math.round(
+          (Date.now() - sessionStartedAtRef.current) / 1000,
+        ),
+        mock_active: latest.mockActive,
+      });
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        reportSessionEnd();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("beforeunload", reportSessionEnd);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("beforeunload", reportSessionEnd);
+      reportSessionEnd();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mockRun) return;
+
+    const previousAnswer = progress.answers[currentQuestion.id];
+    questionEnteredAtRef.current = Date.now();
+
+    trackMetric("question_view", {
+      category: currentQuestion.category,
+      exam_id: currentQuestion.examId,
+      filtered_count: filteredQuestions.length,
+      has_previous_answer: Boolean(previousAnswer),
+      is_due: isDueRecord(previousAnswer),
+      question_index: Math.max(currentIndex + 1, 0),
+      question_number: currentQuestion.number,
+      study_mode: studyMode ? "guided" : "manual",
+    });
+  }, [
+    currentIndex,
+    currentQuestion.category,
+    currentQuestion.examId,
+    currentQuestion.id,
+    currentQuestion.number,
+    filteredQuestions.length,
+    mockRun,
+    studyMode,
+  ]);
+
+  const questionMetricParams = (
+    question: TakkenQuestion = currentQuestion,
+  ): MetricParams => {
+    const answer = progress.answers[question.id];
+
+    return {
+      category: question.category,
+      exam_id: question.examId,
+      has_previous_answer: Boolean(answer),
+      is_due: isDueRecord(answer),
+      question_number: question.number,
+      study_mode: studyMode ? "guided" : "manual",
+    };
+  };
+
+  const requestGoogleSignIn = (source: "header" | "mission_card") => {
+    trackMetric("auth_sign_in_start", {
+      source,
+    });
+
+    signInWithGoogle()
+      .then(() => {
+        trackMetric("auth_sign_in_success", {
+          source,
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to sign in with Google.", error);
+        trackMetric("auth_sign_in_error", {
+          error_code: metricErrorName(error),
+          source,
+        });
+      });
+  };
+
+  const requestSignOut = () => {
+    trackMetric("auth_sign_out", {
+      answered_count: totalAnswered,
+    });
+
+    signOutUser().catch((error) => {
+      console.error("Failed to sign out.", error);
+      trackMetric("auth_sign_out_error", {
+        error_code: metricErrorName(error),
+      });
+    });
+  };
+
   const updateProgress = (
     updater: (previous: ProgressState) => ProgressState,
   ) => {
@@ -805,6 +1088,16 @@ function App() {
 
   // Start today's work with filters cleared, then pick the first due review or unanswered question.
   const startMission = () => {
+    trackMetric("study_mission_start", {
+      answered_count: totalAnswered,
+      due_count: dueCount,
+      mission_done: missionDone,
+      mission_remaining: missionRemaining,
+      mission_target: missionTarget,
+      streak_days: streakDays,
+      today_answered: todayAnswered,
+    });
+
     setExamFilter(ALL);
     setCategoryFilter(ALL);
     setStatusFilter(ALL);
@@ -826,9 +1119,19 @@ function App() {
 
   const startReview = () => {
     if (!reviewQueue.length) {
+      trackMetric("study_review_empty", {
+        due_count: dueCount,
+        wrong_count: wrongCount,
+      });
       startMission();
       return;
     }
+
+    trackMetric("study_review_start", {
+      due_count: dueCount,
+      review_count: reviewCount,
+      wrong_count: wrongCount,
+    });
 
     setExamFilter(ALL);
     setCategoryFilter(ALL);
@@ -838,26 +1141,45 @@ function App() {
   };
 
   const openQuestionPicker = () => {
+    trackMetric("question_picker_open", {
+      filtered_count: filteredQuestions.length,
+    });
     setQuestionPickerOpen(true);
     window.requestAnimationFrame(() => {
       questionPickerRef.current?.scrollIntoView({ block: "start" });
     });
   };
 
-  const answerQuestion = (choice: number) => {
+  const answerQuestion = (choice: number, placement: "top" | "bottom") => {
     // この起動中に一度解いた問題は上書きしない
     // （正解を見た後にタップし直して成績が濁るのを防ぐ）。
     if (sessionAnswers[currentQuestion.id]) {
+      trackMetric("question_reanswer_blocked", {
+        placement,
+        ...questionMetricParams(),
+      });
       return;
     }
 
+    const previousAnswer = progress.answers[currentQuestion.id];
     const correct = currentQuestion.correctChoices.includes(choice);
     const record = buildAnswerRecord(
-      progress.answers[currentQuestion.id],
+      previousAnswer,
       choice,
       correct,
       new Date().toISOString(),
     );
+
+    trackMetric("question_answer", {
+      attempt: record.attempts,
+      correct,
+      lapses: record.lapses,
+      placement,
+      time_to_answer_sec: Math.round(
+        (Date.now() - questionEnteredAtRef.current) / 1000,
+      ),
+      ...questionMetricParams(),
+    });
 
     setSessionAnswers((prev) => ({ ...prev, [currentQuestion.id]: record }));
     updateProgress((prev) => ({
@@ -888,8 +1210,25 @@ function App() {
     }));
   };
 
-  const goNext = () => {
+  const trackNoteBlur = () => {
+    if (trackedNoteValuesRef.current[currentQuestion.id] === currentNote) {
+      return;
+    }
+
+    trackedNoteValuesRef.current[currentQuestion.id] = currentNote;
+    trackMetric("note_save", {
+      has_note: currentNote.trim().length > 0,
+      length_bucket: noteLengthBucket(currentNote.length),
+      ...questionMetricParams(),
+    });
+  };
+
+  const goNext = (source: "bottom_nav" | "feedback" = "bottom_nav") => {
     if (!filteredQuestions.length) {
+      trackMetric("question_navigate_empty", {
+        direction: "next",
+        source,
+      });
       return;
     }
 
@@ -901,6 +1240,12 @@ function App() {
           q.id !== currentQuestion.id && isDueRecord(progress.answers[q.id]),
       );
       if (due) {
+        trackMetric("question_navigate", {
+          direction: "next",
+          source,
+          target_reason: "due",
+          ...questionMetricParams(),
+        });
         goToQuestion(due.id, "question");
         return;
       }
@@ -909,6 +1254,12 @@ function App() {
         (q) => q.id !== currentQuestion.id && !progress.answers[q.id],
       );
       if (unanswered) {
+        trackMetric("question_navigate", {
+          direction: "next",
+          source,
+          target_reason: "unanswered",
+          ...questionMetricParams(),
+        });
         goToQuestion(unanswered.id, "question");
         return;
       }
@@ -918,11 +1269,21 @@ function App() {
       filteredQuestions[
         (Math.max(currentIndex, 0) + 1) % filteredQuestions.length
       ];
+    trackMetric("question_navigate", {
+      direction: "next",
+      source,
+      target_reason: "sequential",
+      ...questionMetricParams(),
+    });
     goToQuestion(nextQuestion.id, "question");
   };
 
-  const goPrev = () => {
+  const goPrev = (source: "bottom_nav" = "bottom_nav") => {
     if (!filteredQuestions.length) {
+      trackMetric("question_navigate_empty", {
+        direction: "prev",
+        source,
+      });
       return;
     }
 
@@ -931,7 +1292,35 @@ function App() {
         (Math.max(currentIndex, 0) - 1 + filteredQuestions.length) %
           filteredQuestions.length
       ];
+    trackMetric("question_navigate", {
+      direction: "prev",
+      source,
+      target_reason: "sequential",
+      ...questionMetricParams(),
+    });
     goToQuestion(prevQuestion.id, "question");
+  };
+
+  const toggleBoard = () => {
+    const nextOpen = !boardOpen;
+    trackMetric("score_board_toggle", {
+      answered_count: totalAnswered,
+      open: nextOpen,
+      projected_total: projectedTotal,
+    });
+    setBoardOpen(nextOpen);
+  };
+
+  const updateExamDate = (value: string) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return;
+    }
+
+    trackMetric("exam_date_change", {
+      days_to_exam_after: daysUntil(value),
+      days_to_exam_before: daysToExam,
+    });
+    setExamDate(value);
   };
 
   const resetProgress = () => {
@@ -940,8 +1329,21 @@ function App() {
     );
 
     if (!shouldReset) {
+      trackMetric("progress_reset_cancel", {
+        answered_count: totalAnswered,
+        note_count: Object.keys(progress.notes).filter(
+          (id) => progress.notes[id],
+        ).length,
+      });
       return;
     }
+
+    trackMetric("progress_reset", {
+      answered_count: totalAnswered,
+      mastered_count: totalMastered,
+      note_count: Object.keys(progress.notes).filter((id) => progress.notes[id])
+        .length,
+    });
 
     const next: ProgressState = {
       answers: {},
@@ -955,12 +1357,31 @@ function App() {
     window.localStorage.removeItem(STORAGE_KEY);
   };
 
+  const openMockPicker = () => {
+    trackMetric("mock_picker_open", {
+      eligible_exam_count: takkenExams.filter(
+        (exam) => exam.extractedCount === exam.questionCount,
+      ).length,
+    });
+    setMockPicker(true);
+  };
+
+  const closeMockPicker = (source: "backdrop" | "cancel") => {
+    trackMetric("mock_picker_close", {
+      source,
+    });
+    setMockPicker(false);
+  };
+
   const startMock = (examId: string) => {
     const run: MockRun = {
       examId,
       startedAt: new Date().toISOString(),
       answers: {},
     };
+    trackMetric("mock_start", {
+      exam_id: examId,
+    });
     setMockRun(run);
     saveMockRun(run);
     setMockPicker(false);
@@ -973,6 +1394,13 @@ function App() {
   };
 
   const abortMock = () => {
+    if (mockRun) {
+      trackMetric("mock_abort", {
+        answered_count: Object.keys(mockRun.answers).length,
+        elapsed_sec: elapsedSeconds(mockRun.startedAt),
+        exam_id: mockRun.examId,
+      });
+    }
     setMockRun(null);
     saveMockRun(null);
   };
@@ -982,13 +1410,21 @@ function App() {
   const commitMock = (run: MockRun) => {
     const answeredAt = new Date().toISOString();
     const questionById = new Map(takkenQuestions.map((q) => [q.id, q]));
+    const runAnswers = Object.entries(run.answers);
+    const mockCorrectCount = runAnswers.filter(([qid, choice]) => {
+      const question = questionById.get(qid);
+      return (
+        question &&
+        (question.isAllCorrect || question.correctChoices.includes(choice))
+      );
+    }).length;
 
     updateProgress((prev) => {
       const answers = { ...prev.answers };
       let count = 0;
       let correctCount = 0;
 
-      for (const [qid, choice] of Object.entries(run.answers)) {
+      for (const [qid, choice] of runAnswers) {
         const question = questionById.get(qid);
         if (!question) continue;
 
@@ -1011,6 +1447,12 @@ function App() {
       };
     });
 
+    trackMetric("mock_commit", {
+      answered_count: Object.keys(run.answers).length,
+      elapsed_sec: elapsedSeconds(run.startedAt),
+      exam_id: run.examId,
+      score: mockCorrectCount,
+    });
     setMockRun(null);
     saveMockRun(null);
     window.scrollTo({ top: 0 });
@@ -1093,7 +1535,7 @@ function App() {
                   </span>
                   <button
                     className="min-h-8 rounded-md border border-slate-300 bg-white px-2 text-xs font-bold text-slate-700"
-                    onClick={() => signOutUser()}
+                    onClick={requestSignOut}
                     type="button"
                   >
                     ログアウト
@@ -1103,7 +1545,7 @@ function App() {
                 <button
                   className="min-h-8 rounded-md border border-sky-200 bg-sky-50 px-2 text-xs font-bold text-sky-700"
                   disabled={authLoading}
-                  onClick={() => signInWithGoogle()}
+                  onClick={() => requestGoogleSignIn("header")}
                   type="button"
                 >
                   Googleで保存
@@ -1124,9 +1566,7 @@ function App() {
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-bold text-sky-700">
-                今日やる
-              </p>
+              <p className="text-xs font-bold text-sky-700">今日やる</p>
               <h2 className="mt-1 text-xl font-bold text-slate-950">
                 {missionDone ? "今日の目標達成" : `今日の${missionTarget}問`}
               </h2>
@@ -1205,7 +1645,7 @@ function App() {
               <button
                 className="min-h-9 shrink-0 rounded-md border border-sky-200 bg-sky-50 px-3 text-xs font-bold text-sky-700"
                 disabled={authLoading}
-                onClick={() => signInWithGoogle()}
+                onClick={() => requestGoogleSignIn("mission_card")}
                 type="button"
               >
                 Googleで保存する
@@ -1217,9 +1657,7 @@ function App() {
         <section className="mb-4 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
           <div className="flex items-center justify-between gap-3 px-1">
             <div>
-              <h2 className="text-base font-bold text-slate-950">
-                ほかの学習
-              </h2>
+              <h2 className="text-base font-bold text-slate-950">ほかの学習</h2>
               <p className="mt-0.5 text-xs leading-5 text-slate-500">
                 普段は上の「今日の◯問」だけでOK。目的がある時だけ使います。
               </p>
@@ -1232,9 +1670,7 @@ function App() {
               onClick={startReview}
               type="button"
             >
-              <span className="text-sm font-bold text-emerald-800">
-                復習
-              </span>
+              <span className="text-sm font-bold text-emerald-800">復習</span>
               <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
                 {reviewCount > 0 ? `${reviewCount}問` : "なし"}
               </span>
@@ -1249,12 +1685,10 @@ function App() {
 
             <button
               className="min-h-20 rounded-lg border border-amber-200 bg-amber-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
-              onClick={() => setMockPicker(true)}
+              onClick={openMockPicker}
               type="button"
             >
-              <span className="text-sm font-bold text-amber-800">
-                模試
-              </span>
+              <span className="text-sm font-bold text-amber-800">模試</span>
               <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
                 50問
               </span>
@@ -1289,7 +1723,12 @@ function App() {
             <button
               aria-expanded={questionPickerOpen}
               className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
-              onClick={() => setQuestionPickerOpen(false)}
+              onClick={() => {
+                trackMetric("question_picker_close", {
+                  filtered_count: filteredQuestions.length,
+                });
+                setQuestionPickerOpen(false);
+              }}
               type="button"
             >
               <span className="text-base font-bold text-slate-950">
@@ -1307,6 +1746,10 @@ function App() {
                   className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
                     setStudyMode(false);
+                    trackMetric("filter_change", {
+                      filter_type: "exam",
+                      value: event.target.value,
+                    });
                     setExamFilter(event.target.value);
                     setTimeout(() => {
                       const first = takkenQuestions.find((question) =>
@@ -1331,6 +1774,10 @@ function App() {
                   className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
                     setStudyMode(false);
+                    trackMetric("filter_change", {
+                      filter_type: "category",
+                      value: event.target.value,
+                    });
                     setCategoryFilter(event.target.value);
                   }}
                   value={categoryFilter}
@@ -1347,6 +1794,10 @@ function App() {
                   className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
                     setStudyMode(false);
+                    trackMetric("filter_change", {
+                      filter_type: "status",
+                      value: event.target.value,
+                    });
                     setStatusFilter(event.target.value);
                   }}
                   value={statusFilter}
@@ -1376,6 +1827,11 @@ function App() {
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-sm font-bold text-slate-700">
                 {currentQuestion.category}
               </span>
+              {hasUnreadableCorrectChoice(currentQuestion) ? (
+                <span className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-sm font-bold text-rose-700">
+                  正解の選択肢が判読不能
+                </span>
+              ) : null}
             </div>
             <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-500">
               <span>
@@ -1385,6 +1841,9 @@ function App() {
               <a
                 className="min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 font-bold text-sky-700"
                 href={currentQuestion.sourceUrl}
+                onClick={() => {
+                  trackMetric("official_pdf_open", questionMetricParams());
+                }}
                 rel="noreferrer"
                 target="_blank"
               >
@@ -1411,8 +1870,24 @@ function App() {
             <ChoiceButtons
               answer={currentAnswer}
               onAnswer={answerQuestion}
+              placement="top"
               question={currentQuestion}
             />
+
+            {hasUnreadableCorrectChoice(currentQuestion) ? (
+              <p className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm leading-6 text-rose-800">
+                この問題は公式PDFがスキャン画像で、正解の選択肢がOCRで読み取れませんでした。原本にない文章は補っていないため、正解を選ぶことができません。
+                <a
+                  className="font-bold underline"
+                  href={currentQuestion.sourceUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  公式PDF
+                </a>
+                で原本をご確認ください。
+              </p>
+            ) : null}
 
             <div className="whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-slate-50 p-4 text-base leading-7 text-slate-950">
               {formatQuestionText(currentQuestion.questionText)}
@@ -1421,6 +1896,7 @@ function App() {
             <ChoiceButtons
               answer={currentAnswer}
               onAnswer={answerQuestion}
+              placement="bottom"
               question={currentQuestion}
             />
 
@@ -1454,6 +1930,9 @@ function App() {
                   <a
                     className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-bold text-sky-700"
                     href={currentQuestion.externalExplanationUrl}
+                    onClick={() => {
+                      trackMetric("explanation_open", questionMetricParams());
+                    }}
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -1462,7 +1941,7 @@ function App() {
                 </div>
                 <button
                   className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
-                  onClick={goNext}
+                  onClick={() => goNext("feedback")}
                   type="button"
                 >
                   次へ
@@ -1477,6 +1956,7 @@ function App() {
               <textarea
                 className="mt-2 min-h-28 w-full rounded-lg border border-slate-300 bg-white p-3 text-base leading-7 text-slate-900 outline-none focus:border-sky-500"
                 onChange={(event) => saveNote(event.target.value)}
+                onBlur={trackNoteBlur}
                 placeholder="条文、間違えた理由、覚えることを自分用に書く"
                 value={currentNote}
               />
@@ -1488,7 +1968,7 @@ function App() {
           <button
             aria-expanded={boardOpen}
             className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
-            onClick={() => setBoardOpen(!boardOpen)}
+            onClick={toggleBoard}
             type="button"
           >
             <span className="text-base font-bold text-slate-950">
@@ -1625,9 +2105,7 @@ function App() {
                   <input
                     className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900"
                     onChange={(event) => {
-                      if (/^\d{4}-\d{2}-\d{2}$/.test(event.target.value)) {
-                        setExamDate(event.target.value);
-                      }
+                      updateExamDate(event.target.value);
                     }}
                     type="date"
                     value={examDate}
@@ -1678,14 +2156,14 @@ function App() {
         <div className="mx-auto grid max-w-3xl grid-cols-[1fr_2fr] gap-2">
           <button
             className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-base font-bold text-slate-700"
-            onClick={goPrev}
+            onClick={() => goPrev("bottom_nav")}
             type="button"
           >
             前へ
           </button>
           <button
             className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
-            onClick={goNext}
+            onClick={() => goNext("bottom_nav")}
             type="button"
           >
             次へ
@@ -1759,7 +2237,7 @@ function App() {
       {mockPicker ? (
         <div
           className="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/60 px-6"
-          onClick={() => setMockPicker(false)}
+          onClick={() => closeMockPicker("backdrop")}
         >
           <div
             className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-4 shadow-xl"
@@ -1771,19 +2249,31 @@ function App() {
             </p>
             {takkenExams
               .filter((exam) => exam.extractedCount === exam.questionCount)
-              .map((exam) => (
-                <button
-                  className="mt-2 min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-bold text-slate-900"
-                  key={exam.id}
-                  onClick={() => startMock(exam.id)}
-                  type="button"
-                >
-                  {exam.year}（{exam.questionCount}問）
-                </button>
-              ))}
+              .map((exam) => {
+                const unreadable = countUnreadableCorrectChoices(
+                  takkenQuestions,
+                  exam.id,
+                );
+                return (
+                  <button
+                    className="mt-2 min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900"
+                    key={exam.id}
+                    onClick={() => startMock(exam.id)}
+                    type="button"
+                  >
+                    {exam.year}（{exam.questionCount}問）
+                    {unreadable ? (
+                      <span className="mt-0.5 block text-xs font-normal text-rose-700">
+                        うち{unreadable}
+                        問は正解の選択肢がOCRで判読できず、正解を選べません
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
             <button
               className="mt-3 min-h-10 w-full text-xs text-slate-500"
-              onClick={() => setMockPicker(false)}
+              onClick={() => closeMockPicker("cancel")}
               type="button"
             >
               キャンセル

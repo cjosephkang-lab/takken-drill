@@ -1,5 +1,12 @@
 import { initializeApp } from "firebase/app";
 import {
+  getAnalytics,
+  isSupported as isAnalyticsSupported,
+  logEvent,
+  setUserProperties,
+  type Analytics,
+} from "firebase/analytics";
+import {
   GoogleAuthProvider,
   getAuth,
   onAuthStateChanged,
@@ -22,6 +29,7 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // 環境変数が無い（.env未設定）場合は同期機能自体を無効化し、
@@ -31,6 +39,182 @@ export const isSyncConfigured = Boolean(firebaseConfig.apiKey);
 const app = isSyncConfigured ? initializeApp(firebaseConfig) : null;
 const auth = app ? getAuth(app) : null;
 const db = app ? getFirestore(app) : null;
+let analyticsPromise: Promise<Analytics | null> | null = null;
+
+export type MetricValue = string | number | boolean | null | undefined;
+export type MetricParams = Record<string, MetricValue>;
+
+const getOptionalAnalytics = () => {
+  if (!app || typeof window === "undefined") {
+    return Promise.resolve(null);
+  }
+
+  analyticsPromise ??= isAnalyticsSupported()
+    .then((supported) => (supported ? getAnalytics(app) : null))
+    .catch((error) => {
+      console.error("Failed to initialize analytics.", error);
+      return null;
+    });
+
+  return analyticsPromise;
+};
+
+const cleanMetricParams = (params: MetricParams = {}) => {
+  const cleaned: Record<string, string | number> = {};
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue;
+
+    if (typeof value === "boolean") {
+      cleaned[key] = value ? 1 : 0;
+    } else if (typeof value === "string") {
+      cleaned[key] = value.slice(0, 100);
+    } else {
+      cleaned[key] = value;
+    }
+  }
+
+  return cleaned;
+};
+
+export const trackMetric = (name: string, params: MetricParams = {}) => {
+  void getOptionalAnalytics()
+    .then((analytics) => {
+      if (!analytics) return;
+      logEvent(analytics, name, cleanMetricParams(params));
+    })
+    .catch((error) => {
+      console.error("Failed to send analytics event.", error);
+    });
+};
+
+export const setMetricUserProperties = (params: MetricParams) => {
+  void getOptionalAnalytics()
+    .then((analytics) => {
+      if (!analytics) return;
+      const properties: Record<string, string> = {};
+
+      for (const [key, value] of Object.entries(params)) {
+        if (value === undefined || value === null) continue;
+        properties[key] = String(value).slice(0, 36);
+      }
+
+      setUserProperties(analytics, properties);
+    })
+    .catch((error) => {
+      console.error("Failed to set analytics properties.", error);
+    });
+};
+
+export const observeWebVitals = () => {
+  if (typeof window === "undefined" || typeof PerformanceObserver === "undefined") {
+    return () => {};
+  }
+
+  const observers: PerformanceObserver[] = [];
+  let largestContentfulPaint = 0;
+  let cumulativeLayoutShift = 0;
+  let worstInteraction = 0;
+
+  const observe = (
+    type: string,
+    callback: (entries: PerformanceEntry[]) => void,
+    options: PerformanceObserverInit = {},
+  ) => {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        callback(list.getEntries());
+      });
+      observer.observe({ type, buffered: true, ...options });
+      observers.push(observer);
+    } catch (error) {
+      console.error(`Failed to observe ${type}.`, error);
+    }
+  };
+
+  observe("paint", (entries) => {
+    for (const entry of entries) {
+      if (entry.name === "first-contentful-paint") {
+        trackMetric("perf_fcp", {
+          fcp_ms: Math.round(entry.startTime),
+        });
+      }
+    }
+  });
+
+  observe("largest-contentful-paint", (entries) => {
+    const last = entries.at(-1);
+    if (last) {
+      largestContentfulPaint = last.startTime;
+    }
+  });
+
+  observe("layout-shift", (entries) => {
+    for (const entry of entries) {
+      const layoutShift = entry as PerformanceEntry & {
+        hadRecentInput?: boolean;
+        value?: number;
+      };
+      if (!layoutShift.hadRecentInput) {
+        cumulativeLayoutShift += layoutShift.value ?? 0;
+      }
+    }
+  });
+
+  observe(
+    "event",
+    (entries) => {
+      for (const entry of entries) {
+        const eventEntry = entry as PerformanceEntry & {
+          duration?: number;
+          interactionId?: number;
+        };
+        if (eventEntry.interactionId) {
+          worstInteraction = Math.max(worstInteraction, eventEntry.duration ?? 0);
+        }
+      }
+    },
+    { durationThreshold: 40 } as PerformanceObserverInit,
+  );
+
+  window.setTimeout(() => {
+    const navigation = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming | undefined;
+
+    if (!navigation) return;
+
+    trackMetric("perf_navigation", {
+      dom_complete_ms: Math.round(navigation.domComplete),
+      load_ms: Math.round(navigation.loadEventEnd),
+      transfer_kb: Math.round((navigation.transferSize ?? 0) / 1024),
+    });
+  }, 0);
+
+  const reportSummary = () => {
+    trackMetric("perf_web_vitals", {
+      lcp_ms: Math.round(largestContentfulPaint),
+      cls_milli: Math.round(cumulativeLayoutShift * 1000),
+      inp_ms: Math.round(worstInteraction),
+    });
+  };
+
+  const onVisibilityChange = () => {
+    if (document.visibilityState === "hidden") {
+      reportSummary();
+    }
+  };
+
+  document.addEventListener("visibilitychange", onVisibilityChange);
+
+  return () => {
+    reportSummary();
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+    for (const observer of observers) {
+      observer.disconnect();
+    }
+  };
+};
 
 export const watchAuthUser = (callback: (user: User | null) => void) => {
   if (!auth) {
