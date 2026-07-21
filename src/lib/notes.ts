@@ -51,3 +51,23 @@ export const mergeNotes = (
 
   return merged;
 };
+
+export type NoteExportItem = {
+  heading: string;
+  text: string;
+  updatedAt: string;
+};
+
+export const buildStudyLogMarkdown = (
+  items: NoteExportItem[],
+  dateKey: string,
+): string => {
+  const header = `# 学習ログ ${dateKey}`;
+  if (items.length === 0) {
+    return `${header}\n\n（この日のメモはありません）\n`;
+  }
+  const body = items
+    .map((item) => `## ${item.heading}\n\n${item.text}\n`)
+    .join("\n");
+  return `${header}\n\n${body}`;
+};

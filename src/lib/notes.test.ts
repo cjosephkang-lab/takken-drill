@@ -72,3 +72,34 @@ describe("mergeNotes", () => {
     });
   });
 });
+
+import { buildStudyLogMarkdown } from "./notes";
+
+describe("buildStudyLogMarkdown", () => {
+  it("見出しと各メモをMarkdownにする", () => {
+    const md = buildStudyLogMarkdown(
+      [
+        {
+          heading: "抵当権（令和4年 問6）",
+          text: "被担保債権の範囲を復習",
+          updatedAt: "2026-07-21T05:00:00.000Z",
+        },
+        {
+          heading: "都市計画法（令和3年12月 問15）",
+          text: "用途地域の一覧を暗記",
+          updatedAt: "2026-07-21T06:00:00.000Z",
+        },
+      ],
+      "2026-07-21",
+    );
+    expect(md).toContain("# 学習ログ 2026-07-21");
+    expect(md).toContain("## 抵当権（令和4年 問6）");
+    expect(md).toContain("被担保債権の範囲を復習");
+    expect(md).toContain("## 都市計画法（令和3年12月 問15）");
+  });
+  it("メモが無ければ不在メッセージを返す", () => {
+    const md = buildStudyLogMarkdown([], "2026-07-21");
+    expect(md).toContain("# 学習ログ 2026-07-21");
+    expect(md).toContain("（この日のメモはありません）");
+  });
+});
