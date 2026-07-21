@@ -8,12 +8,22 @@ import {
 import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
 import { formatQuestionText } from "./lib/formatQuestionText";
 import {
+  buildStudyLogMarkdown,
+  localDateKey,
+  mergeNotes,
+  normalizeNotes,
+  selectTodayNotes,
+  type NoteEntry,
+  type NoteExportItem,
+} from "./lib/notes";
+import {
   countUnreadableCorrectChoices,
   hasUnreadableCorrectChoice,
 } from "./lib/unreadableChoices";
 import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
 import {
+  fetchCoaching,
   fetchSyncedProgress,
   isSyncConfigured,
   observeWebVitals,
@@ -24,6 +34,7 @@ import {
   trackMetric,
   watchAuthUser,
   type MetricParams,
+  type Coaching,
 } from "./firebase";
 
 type AnswerRecord = {
@@ -48,7 +59,7 @@ type DayLog = {
 
 type ProgressState = {
   answers: Record<string, AnswerRecord>;
-  notes: Record<string, string>;
+  notes: Record<string, NoteEntry>;
   currentId: string;
   dailyLog: Record<string, DayLog>;
 };
@@ -118,14 +129,6 @@ const noteLengthBucket = (length: number) => {
 
 const elapsedSeconds = (startedAt: string) =>
   Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 1000));
-
-const localDateKey = (date: Date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
 
 // 間隔反復の復習間隔。間違えたら翌日、正解を重ねるほど間隔を広げて、
 // 忘れかけた頃に再出題する。
@@ -252,8 +255,8 @@ const loadProgress = (): ProgressState => {
 
     return {
       answers,
-      notes:
-        parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
+      // 旧 string 形式のメモは normalizeNotes が {text, updatedAt:""} に移行する。
+      notes: normalizeNotes(parsed.notes),
       currentId,
       dailyLog:
         parsed.dailyLog && typeof parsed.dailyLog === "object"
@@ -283,12 +286,12 @@ const saveProgress = (progress: ProgressState) => {
 };
 
 // 端末間マージ: 問題ごとに answeredAt が新しい方を採用する。
-// メモは空でない方を優先し、両方にあればローカル優先（直前の入力を失わないため）。
+// メモは updatedAt が新しい方を採用する（旧 string 形式も両対応。純粋関数はテスト済み）。
 const mergeProgress = (
   local: ProgressState,
   remote: {
     answers: Record<string, AnswerRecord>;
-    notes: Record<string, string>;
+    notes: Record<string, NoteEntry | string>;
     dailyLog: Record<string, DayLog>;
   },
 ): ProgressState => {
@@ -301,13 +304,10 @@ const mergeProgress = (
     }
   }
 
-  const notes: Record<string, string> = { ...remote.notes };
-
-  for (const [id, note] of Object.entries(local.notes)) {
-    if (note) {
-      notes[id] = note;
-    }
-  }
+  const notes: Record<string, NoteEntry> = mergeNotes(
+    local.notes,
+    remote.notes,
+  );
 
   // 日次ログは日付ごとに大きい方を採用（同じ端末の履歴が二重計上されるのを防ぐ）。
   const dailyLog: Record<string, DayLog> = { ...remote.dailyLog };
@@ -512,11 +512,20 @@ function App() {
   // Guided study mode prioritizes due reviews and unanswered questions in exam strategy order.
   const [studyMode, setStudyMode] = useState(initialSettings.studyMode);
   const [boardOpen, setBoardOpen] = useState(initialSettings.boardOpen);
+  const [coachingOpen, setCoachingOpen] = useState(false);
+  const [coaching, setCoaching] = useState<Coaching | null>(null);
+  const [coachingChecked, setCoachingChecked] = useState(false);
+  // コーチのチェックは、その日の画面内で確認するためだけの一時状態。
+  const [checkedCoachingTasks, setCheckedCoachingTasks] = useState<
+    Record<number, boolean>
+  >({});
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const [questionPickerOpen, setQuestionPickerOpen] = useState(
     initialSettings.questionPickerOpen,
   );
   const [examDate, setExamDate] = useState(initialSettings.examDate);
+  // 「今日の学習を書き出す」を押した後の一時フィードバック（数秒表示）。
+  const [studyLogStatus, setStudyLogStatus] = useState("");
   // この起動中に解いた問題の回答。過去の回答は画面に出さないので、
   // 再訪時は毎回「思い出して解く」テスト形式になる（想起練習）。
   const [sessionAnswers, setSessionAnswers] = useState<
@@ -611,6 +620,9 @@ function App() {
       setAuthUser(user);
       setAuthLoading(false);
       setSyncReady(false);
+      setCoaching(null);
+      setCoachingChecked(false);
+      setCheckedCoachingTasks({});
 
       if (!user) {
         trackMetric("auth_state", {
@@ -623,6 +635,15 @@ function App() {
       trackMetric("auth_state", {
         signed_in: true,
       });
+      fetchCoaching(user.uid)
+        .then((remote) => {
+          setCoaching(remote);
+          setCoachingChecked(true);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch coaching.", error);
+          setCoachingChecked(true);
+        });
       setSyncState("syncing");
       fetchSyncedProgress(user.uid)
         .then((remote) => {
@@ -692,7 +713,7 @@ function App() {
             answer_count: Object.keys(progress.answers).length,
             mode: writeMode,
             note_count: Object.keys(progress.notes).filter(
-              (id) => progress.notes[id],
+              (id) => progress.notes[id]?.text,
             ).length,
           });
         }
@@ -776,11 +797,10 @@ function App() {
     filteredQuestions.length > 0 &&
     currentIndex === filteredQuestions.length - 1 &&
     (examFilter !== ALL || categoryFilter !== ALL) &&
-    filteredQuestions.every(
-      (question) =>
-        question.id === currentQuestion.id
-          ? Boolean(sessionAnswers[question.id])
-          : Boolean(progress.answers[question.id]),
+    filteredQuestions.every((question) =>
+      question.id === currentQuestion.id
+        ? Boolean(sessionAnswers[question.id])
+        : Boolean(progress.answers[question.id]),
     );
 
   // 履歴の末尾を「実際に表示している問題」に追従させる。
@@ -802,7 +822,7 @@ function App() {
   const storedAnswer = progress.answers[currentQuestion.id];
   const currentAnswer = sessionAnswers[currentQuestion.id];
   const answerRevealed = revealedQuestionId === currentQuestion.id;
-  const currentNote = progress.notes[currentQuestion.id] ?? "";
+  const currentNote = progress.notes[currentQuestion.id]?.text ?? "";
   const totalAnswered = Object.keys(progress.answers).length;
   const totalCorrect = Object.values(progress.answers).filter(
     (answer) => answer.correct,
@@ -880,7 +900,8 @@ function App() {
   const daysToMasteryDeadline = Math.max(0, daysToExam - reviewReserveDays);
   const totalWorkload = takkenQuestions.length * MASTER_STREAK;
   const completedWorkload = Object.values(progress.answers).reduce(
-    (total, answer) => total + 1 + Math.max(0, Math.min(answer.streak - 1, MASTER_STREAK - 1)),
+    (total, answer) =>
+      total + 1 + Math.max(0, Math.min(answer.streak - 1, MASTER_STREAK - 1)),
     0,
   );
   const remainingEvents = totalWorkload - completedWorkload;
@@ -910,7 +931,9 @@ function App() {
     );
     const planDays = elapsedDays + daysToMasteryDeadline;
     const expectedWorkload =
-      planDays > 0 ? Math.round((totalWorkload * elapsedDays) / planDays) : totalWorkload;
+      planDays > 0
+        ? Math.round((totalWorkload * elapsedDays) / planDays)
+        : totalWorkload;
     const completionPercent = Math.round(
       (completedWorkload / totalWorkload) * 100,
     );
@@ -945,7 +968,8 @@ function App() {
   );
   const isGuidedMission = studyMode && statusFilter === ALL;
   const guidedMissionComplete =
-    isGuidedMission && (missionDone || (dueCount === 0 && unansweredCount === 0));
+    isGuidedMission &&
+    (missionDone || (dueCount === 0 && unansweredCount === 0));
   const guidedQuestionKind = isDueRecord(storedAnswer)
     ? "復習期限"
     : !storedAnswer
@@ -1398,13 +1422,75 @@ function App() {
   };
 
   const saveNote = (value: string) => {
+    // 保存時に更新日時を刻む（端末間マージで新しい方を採るため）。
+    // 空メモは updatedAt を空にして、他端末の実メモを時刻比較で潰さないようにする。
+    const entry: NoteEntry = {
+      text: value,
+      updatedAt: value ? new Date().toISOString() : "",
+    };
     updateProgress((previous) => ({
       ...previous,
       notes: {
         ...previous.notes,
-        [currentQuestion.id]: value,
+        [currentQuestion.id]: entry,
       },
     }));
+  };
+
+  // 「今日の学習を書き出す」: 当日メモを Markdown にして、クリップボードとファイルの両方で渡す。
+  // 姜さんはこれを docs/study-log/YYYY-MM-DD.md に保存する（この一手間だけ手動）。
+  const exportTodayStudyLog = async () => {
+    const dateKey = localDateKey(new Date());
+    const todays = selectTodayNotes(progress.notes, dateKey, (iso) =>
+      localDateKey(new Date(iso)),
+    );
+    const items: NoteExportItem[] = todays.map((note) => {
+      const question = takkenQuestions.find((q) => q.id === note.id);
+      // 見出しは「分野（和暦 問番号）」。問題が見つからない場合は id をそのまま使う。
+      const heading = question
+        ? `${question.category}（${question.label.split(" / ")[1] ?? question.label} 問${question.number}）`
+        : note.id;
+      return { heading, text: note.text, updatedAt: note.updatedAt };
+    });
+    const markdown = buildStudyLogMarkdown(items, dateKey);
+
+    trackMetric("study_log_export", {
+      note_count: items.length,
+      ...questionMetricParams(),
+    });
+
+    // ファイルは常にダウンロードし、クリップボードは対応環境でのみコピーする。
+    try {
+      const blob = new Blob([markdown], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `takken-drill-studylog-${dateKey}.md`;
+      anchor.click();
+      // click 直後の同期 revoke はダウンロード開始前に URL を無効化しうるので、次tickまで遅らせる。
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (error) {
+      console.error("Failed to download study log.", error);
+    }
+
+    let copied = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(markdown);
+        copied = true;
+      }
+    } catch (error) {
+      console.error("Failed to copy study log.", error);
+    }
+
+    const label =
+      items.length === 0
+        ? "今日のメモはまだありません"
+        : copied
+          ? `${items.length}件をコピー＆保存しました`
+          : `${items.length}件をファイルに保存しました`;
+    setStudyLogStatus(label);
+    window.setTimeout(() => setStudyLogStatus(""), 4000);
   };
 
   const trackNoteBlur = () => {
@@ -1554,7 +1640,7 @@ function App() {
       trackMetric("progress_reset_cancel", {
         answered_count: totalAnswered,
         note_count: Object.keys(progress.notes).filter(
-          (id) => progress.notes[id],
+          (id) => progress.notes[id]?.text,
         ).length,
       });
       return;
@@ -1563,8 +1649,9 @@ function App() {
     trackMetric("progress_reset", {
       answered_count: totalAnswered,
       mastered_count: totalMastered,
-      note_count: Object.keys(progress.notes).filter((id) => progress.notes[id])
-        .length,
+      note_count: Object.keys(progress.notes).filter(
+        (id) => progress.notes[id]?.text,
+      ).length,
     });
 
     const next: ProgressState = {
@@ -1729,6 +1816,22 @@ function App() {
     : isSyncConfigured
       ? "Googleで保存するとスマホ・PCに引き継げます。"
       : "別のスマホ・PCでは履歴を引き継げません。";
+  const coachingGeneratedAt = coaching ? new Date(coaching.generatedAt) : null;
+  const coachingGeneratedLabel =
+    coachingGeneratedAt && !Number.isNaN(coachingGeneratedAt.getTime())
+      ? `${coachingGeneratedAt.getMonth() + 1}月${coachingGeneratedAt.getDate()}日 生成`
+      : "生成日不明";
+  const coachingIsStale = Boolean(
+    coachingGeneratedAt &&
+    !Number.isNaN(coachingGeneratedAt.getTime()) &&
+    Date.now() - coachingGeneratedAt.getTime() >= 3 * 86400000,
+  );
+  const coachingVerdictStyle =
+    coaching?.verdict === "green"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+      : coaching?.verdict === "yellow"
+        ? "border-amber-200 bg-amber-50 text-amber-800"
+        : "border-rose-200 bg-rose-50 text-rose-800";
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -1833,7 +1936,8 @@ function App() {
             </p>
           ) : (
             <p className="mt-2 text-sm leading-6 text-slate-700">
-              自動出題は{missionAvailablePart}問（復習{missionReviewPart}・新しい問題
+              自動出題は{missionAvailablePart}問（復習{missionReviewPart}
+              ・新しい問題
               {missionNewPart}）。
               {missionShortfallPart > 0
                 ? `目標まであと${missionShortfallPart}問は、復習期限の到来を待つか、年度・分野を指定して取り組めます。`
@@ -1863,9 +1967,9 @@ function App() {
               ? "年度・分野を選んで追加で解く"
               : missionAvailablePart === 0
                 ? "年度・分野を選んで解く"
-              : todayAnswered > 0
-                ? "今日の続きへ"
-                : `今日の自動出題${missionAvailablePart}問を始める`}
+                : todayAnswered > 0
+                  ? "今日の続きへ"
+                  : `今日の自動出題${missionAvailablePart}問を始める`}
           </button>
 
           <div className="mt-3 flex flex-col gap-2 border-t border-slate-200 pt-3 text-xs text-slate-700 sm:flex-row sm:items-center sm:justify-between">
@@ -1952,7 +2056,9 @@ function App() {
               onClick={() => setCheatSheetOpen(true)}
               type="button"
             >
-              <span className="text-sm font-bold text-sky-800">チートシート</span>
+              <span className="text-sm font-bold text-sky-800">
+                チートシート
+              </span>
               <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
                 弱点順
               </span>
@@ -1961,6 +2067,94 @@ function App() {
               </span>
             </button>
           </div>
+        </section>
+
+        <section className="mb-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+          <button
+            aria-expanded={coachingOpen}
+            className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left"
+            onClick={() => setCoachingOpen((open) => !open)}
+            type="button"
+          >
+            <span className="text-base font-bold text-slate-950">コーチ</span>
+            <span className="text-right text-sm text-slate-500">
+              {coaching ? coaching.verdictLine : "今日の学習アドバイス"}
+              <span className="ml-2 text-slate-400">
+                {coachingOpen ? "▲" : "▼"}
+              </span>
+            </span>
+          </button>
+
+          {coachingOpen ? (
+            <div className="border-t border-slate-200 p-3">
+              {!authUser || (coachingChecked && !coaching) ? (
+                <p className="rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                  まだアドバイスがありません
+                </p>
+              ) : coaching ? (
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span
+                      className={`rounded-full border px-2.5 py-1 text-xs font-bold ${coachingVerdictStyle}`}
+                    >
+                      {coaching.verdictLine}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      {coachingGeneratedLabel}
+                    </span>
+                  </div>
+                  {coachingIsStale ? (
+                    <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
+                      更新されていません
+                    </p>
+                  ) : null}
+                  <h3 className="mt-3 text-lg font-bold text-slate-950">
+                    {coaching.headline}
+                  </h3>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-6 text-slate-700">
+                    {coaching.advice}
+                  </p>
+
+                  <div className="mt-4 border-t border-slate-200 pt-3">
+                    <p className="text-sm font-bold text-slate-950">
+                      今日必ずやること
+                    </p>
+                    <ul className="mt-2 space-y-2">
+                      {coaching.todayMustDo.map((task, index) => (
+                        <li key={`${task.label}-${index}`}>
+                          <label className="flex cursor-pointer items-start gap-3 rounded-lg bg-slate-50 p-3">
+                            <input
+                              checked={checkedCoachingTasks[index] ?? false}
+                              className="mt-0.5 h-4 w-4 accent-sky-700"
+                              onChange={() => {
+                                setCheckedCoachingTasks((previous) => ({
+                                  ...previous,
+                                  [index]: !previous[index],
+                                }));
+                              }}
+                              type="checkbox"
+                            />
+                            <span>
+                              <span className="block text-sm font-bold text-slate-900">
+                                {task.label}
+                              </span>
+                              <span className="mt-0.5 block text-xs leading-5 text-slate-600">
+                                {task.detail}
+                              </span>
+                            </span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <p className="rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                  アドバイスを読み込んでいます…
+                </p>
+              )}
+            </div>
+          ) : null}
         </section>
 
         {questionPickerOpen ? (
@@ -2142,7 +2336,9 @@ function App() {
               revealCorrect={answerRevealed}
             />
 
-            {!currentAnswer && !answerRevealed && !hasUnreadableCorrectChoice(currentQuestion) ? (
+            {!currentAnswer &&
+            !answerRevealed &&
+            !hasUnreadableCorrectChoice(currentQuestion) ? (
               <button
                 className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700"
                 onClick={revealAnswer}
@@ -2203,8 +2399,8 @@ function App() {
                     ? "回答していないため、学習履歴・正答率には記録されていません。"
                     : currentAnswer?.correct
                       ? currentAnswer.streak >= MASTER_STREAK
-                      ? `身につきました。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
-                      : `あと${MASTER_STREAK - currentAnswer.streak}回正解で身につきます。`
+                        ? `身につきました。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
+                        : `あと${MASTER_STREAK - currentAnswer.streak}回正解で身につきます。`
                       : "復習リストに追加しました。"}
                 </p>
                 <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
@@ -2243,7 +2439,8 @@ function App() {
                 ) : isAtEndOfSelectedSet ? (
                   <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
                     <p className="text-base font-bold text-emerald-800">
-                      {currentQuestion.year}・{currentQuestion.category}はここまでです
+                      {currentQuestion.year}・{currentQuestion.category}
+                      はここまでです
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-700">
                       おつかれさまでした。次は年度・分野を選んで続けましょう。
@@ -2289,6 +2486,21 @@ function App() {
                 value={currentNote}
               />
             </label>
+
+            <div className="mt-3">
+              <button
+                className="min-h-11 w-full rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-sky-700"
+                onClick={exportTodayStudyLog}
+                type="button"
+              >
+                今日の学習を書き出す
+              </button>
+              {studyLogStatus ? (
+                <p className="mt-2 text-center text-xs font-bold text-slate-600">
+                  {studyLogStatus}
+                </p>
+              ) : null}
+            </div>
           </div>
         </section>
 
@@ -2319,7 +2531,9 @@ function App() {
               <div className="rounded-lg border border-sky-200 bg-sky-50 p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold text-sky-700">ペースメーカー</p>
+                    <p className="text-xs font-bold text-sky-700">
+                      ペースメーカー
+                    </p>
                     <h3 className="mt-0.5 text-base font-bold text-slate-950">
                       {paceStatus
                         ? paceStatus.difference >= 0
@@ -2339,12 +2553,15 @@ function App() {
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-sky-100">
                       <div
                         className="h-full rounded-full bg-sky-600"
-                        style={{ width: `${Math.min(100, paceStatus.completionPercent)}%` }}
+                        style={{
+                          width: `${Math.min(100, paceStatus.completionPercent)}%`,
+                        }}
                       />
                     </div>
                     <p className="mt-2 text-xs leading-5 text-slate-600">
                       進捗{paceStatus.completionPercent}%（今日の目安
-                      {paceStatus.expectedPercent}%）。習得完了は試験14日前までに設定しています。
+                      {paceStatus.expectedPercent}
+                      %）。習得完了は試験14日前までに設定しています。
                     </p>
                   </>
                 ) : (

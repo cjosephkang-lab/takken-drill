@@ -21,6 +21,7 @@ import {
   runTransaction,
   setDoc,
 } from "firebase/firestore";
+import { mergeNotes, type NoteEntry } from "./lib/notes";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -238,9 +239,20 @@ export const signOutUser = async () => {
 
 export type SyncedProgress = {
   answers: Record<string, unknown>;
-  notes?: Record<string, string>;
+  // メモは {text, updatedAt} 形式で保存する。旧 string 形式も読込時に移行する（mergeNotes が両対応）。
+  notes?: Record<string, NoteEntry | string>;
   dailyLog?: Record<string, { answered: number; correct: number }>;
   updatedAt: string;
+};
+
+export type Coaching = {
+  generatedAt: string;
+  examDate: string;
+  verdict: "green" | "yellow" | "red";
+  verdictLine: string;
+  headline: string;
+  advice: string;
+  todayMustDo: { label: string; detail: string }[];
 };
 
 type SyncWriteMode = "merge" | "replace";
@@ -267,13 +279,8 @@ const mergeSyncedProgress = (
     }
   }
 
-  const notes: Record<string, string> = { ...(remote.notes ?? {}) };
-
-  for (const [id, note] of Object.entries(local.notes ?? {})) {
-    if (note) {
-      notes[id] = note;
-    }
-  }
+  // メモは updatedAt が新しい方を採る（旧 string 形式も両対応）。純粋関数はテスト済み。
+  const notes: Record<string, NoteEntry> = mergeNotes(local.notes, remote.notes);
 
   const dailyLog = { ...(remote.dailyLog ?? {}) };
 
@@ -298,6 +305,12 @@ export const fetchSyncedProgress = async (
   if (!db) return null;
   const snapshot = await getDoc(doc(db, "progress", uid));
   return snapshot.exists() ? (snapshot.data() as SyncedProgress) : null;
+};
+
+export const fetchCoaching = async (uid: string): Promise<Coaching | null> => {
+  if (!db) return null;
+  const snapshot = await getDoc(doc(db, "coaching", uid));
+  return snapshot.exists() ? (snapshot.data() as Coaching) : null;
 };
 
 export const pushSyncedProgress = async (
