@@ -14,7 +14,7 @@ describe("computeCheatSheet", () => {
     expect(weak).toBeDefined();
     expect(strong).toBeDefined();
     expect(weak!.rank).toBeLessThan(strong!.rank);
-    expect(weak!.reasonLabel).toBe("苦手");
+    expect(weak!.reasonLabel).toBe("頻出なのに苦手");
   });
 
   it("treats untouched topics as moderately weak, not the single strongest signal", () => {
@@ -50,7 +50,9 @@ describe("computeCheatSheet", () => {
     const ranks = rows.map((r) => r.rank);
     expect(ranks).toEqual(Array.from({ length: 50 }, (_, i) => i + 1));
     for (let i = 1; i < rows.length; i++) {
-      expect(rows[i - 1].priorityScore).toBeGreaterThanOrEqual(rows[i].priorityScore);
+      expect(rows[i - 1].priorityScore).toBeGreaterThanOrEqual(
+        rows[i].priorityScore,
+      );
     }
   });
 });
