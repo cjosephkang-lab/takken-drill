@@ -12,6 +12,7 @@ import {
   hasUnreadableCorrectChoice,
 } from "./lib/unreadableChoices";
 import { MockExam, type MockRun } from "./MockExam";
+import { CheatSheet } from "./CheatSheet";
 import {
   fetchSyncedProgress,
   isSyncConfigured,
@@ -511,6 +512,7 @@ function App() {
   // Guided study mode prioritizes due reviews and unanswered questions in exam strategy order.
   const [studyMode, setStudyMode] = useState(initialSettings.studyMode);
   const [boardOpen, setBoardOpen] = useState(initialSettings.boardOpen);
+  const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const [questionPickerOpen, setQuestionPickerOpen] = useState(
     initialSettings.questionPickerOpen,
   );
@@ -1896,7 +1898,7 @@ function App() {
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <button
               className="min-h-20 rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
               onClick={startReview}
@@ -1942,6 +1944,20 @@ function App() {
               </span>
               <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
                 苦手分野や年度を指定して解く
+              </span>
+            </button>
+
+            <button
+              className="min-h-20 rounded-lg border border-sky-200 bg-sky-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
+              onClick={() => setCheatSheetOpen(true)}
+              type="button"
+            >
+              <span className="text-sm font-bold text-sky-800">チートシート</span>
+              <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
+                弱点順
+              </span>
+              <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
+                優先して学ぶ論点を見る
               </span>
             </button>
           </div>
@@ -2642,6 +2658,13 @@ function App() {
           </div>
         </div>
       ) : null}
+
+      {cheatSheetOpen && (
+        <CheatSheet
+          answers={progress.answers}
+          onClose={() => setCheatSheetOpen(false)}
+        />
+      )}
 
       {mockPicker ? (
         <div
