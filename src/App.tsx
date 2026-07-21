@@ -73,7 +73,7 @@ const WRONG = "wrong";
 const DUE = "due";
 const DAILY_TARGET = 10;
 /** この回数連続で正解したら「習得済み」とみなす。 */
-const MASTER_STREAK = 2;
+const MASTER_STREAK = 3;
 /** 宅建試験は例年10月の第3日曜。2026年は10月18日。 */
 const DEFAULT_EXAM_DATE = "2026-10-18";
 /** Maximum daily target to avoid overloading the learner. */
@@ -104,6 +104,8 @@ const daysUntil = (dateValue: string) => {
   const date = new Date(`${dateValue}T00:00:00`);
   return Math.ceil((date.getTime() - today.getTime()) / 86400000);
 };
+
+const dateFromLocalKey = (key: string) => new Date(`${key}T00:00:00`);
 
 const noteLengthBucket = (length: number) => {
   if (length === 0) return "empty";
@@ -330,7 +332,8 @@ const loadSettings = (): UiSettings => {
     categoryFilter: ALL,
     statusFilter: ALL,
     studyMode: false,
-    boardOpen: false,
+    // 成績ボードは初期表示（年度別・分野別の達成状況を最初から見せて進捗を実感させる）。
+    boardOpen: true,
     questionPickerOpen: false,
     examDate: DEFAULT_EXAM_DATE,
   };
@@ -456,6 +459,7 @@ type ChoiceButtonsProps = {
   question: TakkenQuestion;
   answer?: AnswerRecord;
   placement: "top" | "bottom";
+  revealCorrect?: boolean;
   onAnswer: (choice: number, placement: "top" | "bottom") => void;
 };
 
@@ -463,6 +467,7 @@ function ChoiceButtons({
   question,
   answer,
   placement,
+  revealCorrect = false,
   onAnswer,
 }: ChoiceButtonsProps) {
   return (
@@ -470,7 +475,7 @@ function ChoiceButtons({
       {[1, 2, 3, 4].map((choice) => {
         const selected = answer?.selected === choice;
         const correct = question.correctChoices.includes(choice);
-        const answered = Boolean(answer);
+        const answered = Boolean(answer) || revealCorrect;
 
         return (
           <button
@@ -483,6 +488,7 @@ function ChoiceButtons({
             }`}
             key={choice}
             onClick={() => onAnswer(choice, placement)}
+            disabled={revealCorrect}
             type="button"
           >
             {choice}
@@ -514,6 +520,16 @@ function App() {
   const [sessionAnswers, setSessionAnswers] = useState<
     Record<string, AnswerRecord>
   >({});
+  // 正答を先に確認した問題は学習記録に残さない。画面を移動するまでの表示専用状態。
+  const [revealedQuestionId, setRevealedQuestionId] = useState<string | null>(
+    null,
+  );
+  // 「前へ」で直前に見ていた問題へ確実に戻すための閲覧履歴。
+  // studyMode の「次へ」は復習/未回答へジャンプするため、表示順＝配列順ではない。
+  // 実際に表示した問題IDを積んでおき、「前へ」はこの履歴を1つ戻る（配列の前隣ではない）。
+  // セッション内 state（リロードで消えてよい。進捗記録には影響しない）。
+  const [history, setHistory] = useState<string[]>(() => [progress.currentId]);
+  const [historyPos, setHistoryPos] = useState(0);
   const feedbackRef = useRef<HTMLElement | null>(null);
   // 「次へ」で問題本体（カード）の先頭まで自動スクロールするための参照。
   const questionRef = useRef<HTMLElement | null>(null);
@@ -751,8 +767,39 @@ function App() {
   const currentIndex = filteredQuestions.findIndex(
     (question) => question.id === currentQuestion.id,
   );
+  // 年度または分野を絞っているときは、末尾で先頭へ戻さず完了を伝える。
+  // 全問題を通しで解いている場合は、従来どおり「次へ」で循環できる。
+  const isAtEndOfSelectedSet =
+    !studyMode &&
+    filteredQuestions.length > 0 &&
+    currentIndex === filteredQuestions.length - 1 &&
+    (examFilter !== ALL || categoryFilter !== ALL) &&
+    filteredQuestions.every(
+      (question) =>
+        question.id === currentQuestion.id
+          ? Boolean(sessionAnswers[question.id])
+          : Boolean(progress.answers[question.id]),
+    );
+
+  // 履歴の末尾を「実際に表示している問題」に追従させる。
+  // currentId が現在のフィルタに含まれないと currentQuestion は filteredQuestions[0] へ
+  // フォールバックするため、history[historyPos]（= progress.currentId ベース）とずれる。
+  // このずれを放置すると「前へ」で画面に出ていない問題へ飛ぶ。表示が確定するたびに
+  // 履歴末尾を実表示IDへ補正し、履歴の真実源を「実際に見た問題」に一本化する。
+  useEffect(() => {
+    if (mockRun) return;
+    if (history[historyPos] === currentQuestion.id) return;
+
+    setHistory((prev) => {
+      const next = prev.slice(0, historyPos + 1);
+      next[historyPos] = currentQuestion.id;
+      return next;
+    });
+  }, [currentQuestion.id, history, historyPos, mockRun]);
+
   const storedAnswer = progress.answers[currentQuestion.id];
   const currentAnswer = sessionAnswers[currentQuestion.id];
+  const answerRevealed = revealedQuestionId === currentQuestion.id;
   const currentNote = progress.notes[currentQuestion.id] ?? "";
   const totalAnswered = Object.keys(progress.answers).length;
   const totalCorrect = Object.values(progress.answers).filter(
@@ -761,8 +808,16 @@ function App() {
   const totalMastered = Object.values(progress.answers).filter(
     (answer) => answer.streak >= MASTER_STREAK,
   ).length;
+  // 「3回連続正解」だけでなく、次の復習期限をまだ迎えていないことも満たす問題。
+  // 過去に覚えた問題数と、今この時点で定着確認できている問題数を分けて表示する。
+  const retainedMastered = Object.values(progress.answers).filter(
+    (answer) => answer.streak >= MASTER_STREAK && !isDueRecord(answer),
+  ).length;
   const dueCount = takkenQuestions.filter((question) =>
     isDueRecord(progress.answers[question.id]),
+  ).length;
+  const unansweredCount = takkenQuestions.filter(
+    (question) => !progress.answers[question.id],
   ).length;
   const wrongCount = takkenQuestions.filter(
     (question) => progress.answers[question.id]?.correct === false,
@@ -771,7 +826,7 @@ function App() {
     return [...takkenQuestions]
       .filter((question) => {
         const answer = progress.answers[question.id];
-        return isDueRecord(answer) || answer?.correct === false;
+        return isDueRecord(answer);
       })
       .sort((a, b) => {
         const aDue = isDueRecord(progress.answers[a.id]) ? 1 : 0;
@@ -814,16 +869,59 @@ function App() {
   }, [progress.dailyLog]);
 
   // 試験日カウントダウンと逆算ペース。
-  // 「未回答は2回・回答済みで未習得は1回解く必要がある」という近似で
-  // 残りの回答回数を見積もり、残り日数で割って1日あたりの必要問題数を出す。
+  // 1問は「初回回答 + 追加2回の連続正解での習得」の3単位として扱う。
+  // 最後の14日は新規消化ではなく、間隔反復と本試験形式の確認に確保する。
   const daysToExam = useMemo(() => {
     return daysUntil(examDate);
   }, [examDate]);
-  const remainingEvents =
-    (takkenQuestions.length - totalAnswered) * 2 +
-    (totalAnswered - totalMastered);
+  const reviewReserveDays = 14;
+  const daysToMasteryDeadline = Math.max(0, daysToExam - reviewReserveDays);
+  const totalWorkload = takkenQuestions.length * MASTER_STREAK;
+  const completedWorkload = Object.values(progress.answers).reduce(
+    (total, answer) => total + 1 + Math.max(0, Math.min(answer.streak - 1, MASTER_STREAK - 1)),
+    0,
+  );
+  const remainingEvents = totalWorkload - completedWorkload;
   const paceNeeded =
-    daysToExam > 0 ? Math.ceil(remainingEvents / daysToExam) : remainingEvents;
+    daysToMasteryDeadline > 0
+      ? Math.ceil(remainingEvents / daysToMasteryDeadline)
+      : remainingEvents;
+
+  // 実際に学習を始めた日を基準に、今日までに終えているべき量を算出する。
+  // 固定の開始日を要求しないので、途中から使い始めても実態に即した基準線になる。
+  const studyStartedOn = useMemo(
+    () =>
+      Object.keys(progress.dailyLog)
+        .filter((key) => (progress.dailyLog[key]?.answered ?? 0) > 0)
+        .sort()[0] ?? null,
+    [progress.dailyLog],
+  );
+  const paceStatus = useMemo(() => {
+    if (!studyStartedOn) return null;
+
+    const startedAt = dateFromLocalKey(studyStartedOn);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const elapsedDays = Math.max(
+      0,
+      Math.floor((today.getTime() - startedAt.getTime()) / 86400000),
+    );
+    const planDays = elapsedDays + daysToMasteryDeadline;
+    const expectedWorkload =
+      planDays > 0 ? Math.round((totalWorkload * elapsedDays) / planDays) : totalWorkload;
+    const completionPercent = Math.round(
+      (completedWorkload / totalWorkload) * 100,
+    );
+    const expectedPercent = Math.round(
+      (expectedWorkload / totalWorkload) * 100,
+    );
+
+    return {
+      completionPercent,
+      expectedPercent,
+      difference: completionPercent - expectedPercent,
+    };
+  }, [completedWorkload, daysToMasteryDeadline, studyStartedOn, totalWorkload]);
 
   // Today's work uses the larger of the countdown pace and the minimum target, capped at 50.
   const missionTarget = Math.min(
@@ -833,11 +931,24 @@ function App() {
   const missionDone = todayAnswered >= missionTarget;
   const missionRemaining = Math.max(0, missionTarget - todayAnswered);
   const missionReviewPart = Math.min(dueCount, missionRemaining);
-  const missionNewPart = missionRemaining - missionReviewPart;
+  const missionNewPart = Math.min(
+    unansweredCount,
+    Math.max(0, missionRemaining - missionReviewPart),
+  );
+  const missionAvailablePart = missionReviewPart + missionNewPart;
+  const missionShortfallPart = missionRemaining - missionAvailablePart;
   const missionPercent = Math.min(
     100,
     Math.round((todayAnswered / missionTarget) * 100),
   );
+  const isGuidedMission = studyMode && statusFilter === ALL;
+  const guidedMissionComplete =
+    isGuidedMission && (missionDone || (dueCount === 0 && unansweredCount === 0));
+  const guidedQuestionKind = isDueRecord(storedAnswer)
+    ? "復習期限"
+    : !storedAnswer
+      ? "新しい問題"
+      : "今日解いた問題";
 
   // 学習カレンダー: 直近12週（今日を含む週まで、日曜始まり）。
   const calendarDays = useMemo(() => {
@@ -892,6 +1003,36 @@ function App() {
     0,
   );
   const gapToSafe = passLine.safe - projectedTotal;
+
+  // 年度別の達成状況ダッシュボード: 「どの年度をどこまでやったか」の実感を出す。
+  // 解いた問題数・正答数・習得済み数を年度ごとに集計し、全問習得で「クリア」バッジを出す。
+  const examStats = useMemo(() => {
+    return takkenExams.map((exam) => {
+      const inExam = takkenQuestions.filter((q) => q.examId === exam.id);
+      const answered = inExam.filter((q) => progress.answers[q.id]);
+      const correct = answered.filter((q) => progress.answers[q.id]?.correct);
+      const mastered = inExam.filter(
+        (q) => (progress.answers[q.id]?.streak ?? 0) >= MASTER_STREAK,
+      );
+      const total = inExam.length;
+
+      return {
+        id: exam.id,
+        year: exam.year,
+        totalCount: total,
+        answeredCount: answered.length,
+        correctCount: correct.length,
+        masteredCount: mastered.length,
+        ratePercent: answered.length
+          ? Math.round((correct.length / answered.length) * 100)
+          : 0,
+        // 全問に一度は解答した＝ひと通り演習した年度。
+        completed: total > 0 && answered.length === total,
+        // 全問を習得済み（3回連続正解）にした＝クリアした年度。
+        cleared: total > 0 && mastered.length === total,
+      };
+    });
+  }, [progress.answers]);
 
   useEffect(() => {
     return observeWebVitals();
@@ -1066,8 +1207,23 @@ function App() {
   const goToQuestion = (
     questionId: string,
     scrollTarget: "top" | "question" = "top",
+    // 履歴への積み方。
+    // "push": 新しい遷移（次へ・フィルタジャンプ・ミッション開始）。現在位置以降を切って末尾に積む。
+    // "none": 履歴内の移動（前へ／履歴上の次へ）。履歴は goPrev/goNext 側で更新済みなので触らない。
+    historyMode: "push" | "none" = "push",
   ) => {
     updateProgress((previous) => ({ ...previous, currentId: questionId }));
+
+    if (historyMode === "push") {
+      // 現在位置より後（前へで戻った後の「先」の履歴）を切り捨て、末尾に積む。
+      const trimmed = history.slice(0, historyPos + 1);
+      // 同じ問題を連続で積まない（フィルタ再選択で先頭が変わらない場合など）。
+      if (trimmed[trimmed.length - 1] !== questionId) {
+        const next = [...trimmed, questionId];
+        setHistory(next);
+        setHistoryPos(next.length - 1);
+      }
+    }
 
     if (scrollTarget === "question") {
       // 「次へ」: 問題本体（カード）の先頭まで戻す。ヘッダーやボードが縦に長いため
@@ -1084,6 +1240,27 @@ function App() {
     } else {
       window.scrollTo({ top: 0 });
     }
+  };
+
+  // フィルタ（年度・分野・状態）を変えた直後に、その絞り込みに合う先頭問題へ移動する。
+  // currentId が前の絞り込みの問題IDのまま残ると、その組み合わせに問題が無い時に
+  // 別の絞り込みへフォールバックして「解答が出ない／別の問題に飛ぶ」ように見えるため。
+  const jumpToFirstMatch = (
+    nextExam: string,
+    nextCategory: string,
+    nextStatus: string,
+  ) => {
+    const first = takkenQuestions.find((question) => {
+      const record = progress.answers[question.id];
+      if (nextExam !== ALL && question.examId !== nextExam) return false;
+      if (nextCategory !== ALL && question.category !== nextCategory)
+        return false;
+      if (nextStatus === UNANSWERED && record) return false;
+      if (nextStatus === WRONG && (!record || record.correct)) return false;
+      if (nextStatus === DUE && !isDueRecord(record)) return false;
+      return true;
+    });
+    if (first) goToQuestion(first.id);
   };
 
   // Start today's work with filters cleared, then pick the first due review or unanswered question.
@@ -1109,8 +1286,7 @@ function App() {
     );
     const first =
       pool.find((q) => isDueRecord(progress.answers[q.id])) ??
-      pool.find((q) => !progress.answers[q.id]) ??
-      pool[0];
+      pool.find((q) => !progress.answers[q.id]);
 
     if (first) {
       goToQuestion(first.id, "question");
@@ -1118,7 +1294,7 @@ function App() {
   };
 
   const startReview = () => {
-    if (!reviewQueue.length) {
+    if (!dueCount) {
       trackMetric("study_review_empty", {
         due_count: dueCount,
         wrong_count: wrongCount,
@@ -1135,7 +1311,7 @@ function App() {
 
     setExamFilter(ALL);
     setCategoryFilter(ALL);
-    setStatusFilter(dueCount > 0 ? DUE : WRONG);
+    setStatusFilter(DUE);
     setStudyMode(true);
     goToQuestion(reviewQueue[0].id, "question");
   };
@@ -1200,6 +1376,25 @@ function App() {
     }, 80);
   };
 
+  const revealAnswer = () => {
+    if (hasUnreadableCorrectChoice(currentQuestion) || currentAnswer) return;
+
+    trackMetric("question_answer_reveal", {
+      time_to_reveal_sec: Math.round(
+        (Date.now() - questionEnteredAtRef.current) / 1000,
+      ),
+      ...questionMetricParams(),
+    });
+    setRevealedQuestionId(currentQuestion.id);
+
+    window.setTimeout(() => {
+      feedbackRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 80);
+  };
+
   const saveNote = (value: string) => {
     updateProgress((previous) => ({
       ...previous,
@@ -1224,6 +1419,22 @@ function App() {
   };
 
   const goNext = (source: "bottom_nav" | "feedback" = "bottom_nav") => {
+    // 「前へ」で履歴を戻っている最中なら、まず履歴の次へ進む（元いた場所へ戻す）。
+    // 末尾まで戻り切っている場合だけ、下の通常ロジックで新しい問題を選ぶ。
+    if (historyPos < history.length - 1) {
+      const nextPos = historyPos + 1;
+      const nextId = history[nextPos];
+      setHistoryPos(nextPos);
+      trackMetric("question_navigate", {
+        direction: "next",
+        source,
+        target_reason: "history",
+        ...questionMetricParams(),
+      });
+      goToQuestion(nextId, "question", "none");
+      return;
+    }
+
     if (!filteredQuestions.length) {
       trackMetric("question_navigate_empty", {
         direction: "next",
@@ -1263,6 +1474,15 @@ function App() {
         goToQuestion(unanswered.id, "question");
         return;
       }
+
+      // 自動学習では、復習期限と未回答を終えたら終了する。
+      // 既回答問題を循環させず、年度・分野の個別演習で必要な問題だけ選べるようにする。
+      trackMetric("guided_study_complete", {
+        due_count: dueCount,
+        unanswered_count: unansweredCount,
+        ...questionMetricParams(),
+      });
+      return;
     }
 
     const nextQuestion =
@@ -1279,7 +1499,9 @@ function App() {
   };
 
   const goPrev = (source: "bottom_nav" = "bottom_nav") => {
-    if (!filteredQuestions.length) {
+    // 「前へ」は閲覧履歴を1つ戻る。studyMode の「次へ」がジャンプしても、
+    // 直前に見ていた問題へ確実に戻れる（配列の前隣ではない）。
+    if (historyPos <= 0) {
       trackMetric("question_navigate_empty", {
         direction: "prev",
         source,
@@ -1287,18 +1509,16 @@ function App() {
       return;
     }
 
-    const prevQuestion =
-      filteredQuestions[
-        (Math.max(currentIndex, 0) - 1 + filteredQuestions.length) %
-          filteredQuestions.length
-      ];
+    const prevPos = historyPos - 1;
+    const prevId = history[prevPos];
+    setHistoryPos(prevPos);
     trackMetric("question_navigate", {
       direction: "prev",
       source,
-      target_reason: "sequential",
+      target_reason: "history",
       ...questionMetricParams(),
     });
-    goToQuestion(prevQuestion.id, "question");
+    goToQuestion(prevId, "question", "none");
   };
 
   const toggleBoard = () => {
@@ -1592,7 +1812,7 @@ function App() {
           <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
             <div className="rounded-lg bg-slate-50 p-2">
               <p className="font-bold text-slate-950">{missionRemaining}</p>
-              <p className="text-slate-500">残り</p>
+              <p className="text-slate-500">目標まで</p>
             </div>
             <div className="rounded-lg bg-slate-50 p-2">
               <p className="font-bold text-slate-950">{missionReviewPart}</p>
@@ -1611,27 +1831,39 @@ function App() {
             </p>
           ) : (
             <p className="mt-2 text-sm leading-6 text-slate-700">
-              残り{missionRemaining}問（復習{missionReviewPart}・新しい問題
+              自動出題は{missionAvailablePart}問（復習{missionReviewPart}・新しい問題
               {missionNewPart}）。
+              {missionShortfallPart > 0
+                ? `目標まであと${missionShortfallPart}問は、復習期限の到来を待つか、年度・分野を指定して取り組めます。`
+                : ""}
               {daysToExam > 0
-                ? `1日${missionTarget}問ペースで試験日までに全問習得できます。`
+                ? `1日${missionTarget}問ペースで試験14日前までに全問習得を目指せます。`
                 : "試験日を設定すると逆算ペースが表示されます。"}
             </p>
           )}
+          <p className="mt-2 rounded-lg bg-sky-50 px-3 py-2 text-xs leading-5 text-sky-800">
+            自動出題は「復習期限の問題」→「まだ解いていない問題」の順です。解いたばかりの問題は次回の復習期限まで出ません。
+          </p>
           <button
             className={`mt-3 min-h-12 w-full rounded-lg font-bold ${
               missionDone
                 ? "border border-slate-300 bg-white text-slate-900"
                 : "bg-sky-700 text-white"
             }`}
-            onClick={startMission}
+            onClick={
+              missionDone || missionAvailablePart === 0
+                ? openQuestionPicker
+                : startMission
+            }
             type="button"
           >
             {missionDone
-              ? "さらに解く"
+              ? "年度・分野を選んで追加で解く"
+              : missionAvailablePart === 0
+                ? "年度・分野を選んで解く"
               : todayAnswered > 0
                 ? "今日の続きへ"
-                : `今日の${missionTarget}問を始める`}
+                : `今日の自動出題${missionAvailablePart}問を始める`}
           </button>
 
           <div className="mt-3 flex flex-col gap-2 border-t border-slate-200 pt-3 text-xs text-slate-700 sm:flex-row sm:items-center sm:justify-between">
@@ -1745,19 +1977,15 @@ function App() {
                 <select
                   className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
+                    const nextExam = event.target.value;
                     setStudyMode(false);
                     trackMetric("filter_change", {
                       filter_type: "exam",
-                      value: event.target.value,
+                      value: nextExam,
                     });
-                    setExamFilter(event.target.value);
+                    setExamFilter(nextExam);
                     setTimeout(() => {
-                      const first = takkenQuestions.find((question) =>
-                        event.target.value === ALL
-                          ? true
-                          : question.examId === event.target.value,
-                      );
-                      if (first) goToQuestion(first.id);
+                      jumpToFirstMatch(nextExam, categoryFilter, statusFilter);
                     }, 0);
                   }}
                   value={examFilter}
@@ -1773,12 +2001,16 @@ function App() {
                 <select
                   className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
+                    const nextCategory = event.target.value;
                     setStudyMode(false);
                     trackMetric("filter_change", {
                       filter_type: "category",
-                      value: event.target.value,
+                      value: nextCategory,
                     });
-                    setCategoryFilter(event.target.value);
+                    setCategoryFilter(nextCategory);
+                    setTimeout(() => {
+                      jumpToFirstMatch(examFilter, nextCategory, statusFilter);
+                    }, 0);
                   }}
                   value={categoryFilter}
                 >
@@ -1793,12 +2025,16 @@ function App() {
                 <select
                   className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
+                    const nextStatus = event.target.value;
                     setStudyMode(false);
                     trackMetric("filter_change", {
                       filter_type: "status",
-                      value: event.target.value,
+                      value: nextStatus,
                     });
-                    setStatusFilter(event.target.value);
+                    setStatusFilter(nextStatus);
+                    setTimeout(() => {
+                      jumpToFirstMatch(examFilter, categoryFilter, nextStatus);
+                    }, 0);
                   }}
                   value={statusFilter}
                 >
@@ -1817,6 +2053,21 @@ function App() {
           className="scroll-mt-3 rounded-lg border border-slate-200 bg-white shadow-sm"
         >
           <div className="border-b border-slate-200 bg-white p-4">
+            {isGuidedMission ? (
+              <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
+                <p className="font-bold">
+                  今日の{missionTarget}問 · {todayAnswered}/{missionTarget}問
+                </p>
+                <p className="mt-0.5 text-xs leading-5">
+                  この問題：{guidedQuestionKind}
+                  {guidedQuestionKind === "復習期限"
+                    ? "。忘れかけた頃の確認です。"
+                    : guidedQuestionKind === "新しい問題"
+                      ? "。初めて取り組む問題です。"
+                      : "。この問題への解答は完了しています。"}
+                </p>
+              </div>
+            ) : null}
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1 text-sm font-bold text-sky-700">
                 {currentQuestion.year}
@@ -1872,7 +2123,18 @@ function App() {
               onAnswer={answerQuestion}
               placement="top"
               question={currentQuestion}
+              revealCorrect={answerRevealed}
             />
+
+            {!currentAnswer && !answerRevealed && !hasUnreadableCorrectChoice(currentQuestion) ? (
+              <button
+                className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700"
+                onClick={revealAnswer}
+                type="button"
+              >
+                回答せずに正解・解説を見る
+              </button>
+            ) : null}
 
             {hasUnreadableCorrectChoice(currentQuestion) ? (
               <p className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm leading-6 text-rose-800">
@@ -1898,29 +2160,36 @@ function App() {
               onAnswer={answerQuestion}
               placement="bottom"
               question={currentQuestion}
+              revealCorrect={answerRevealed}
             />
 
-            {currentAnswer ? (
+            {currentAnswer || answerRevealed ? (
               <section
                 ref={feedbackRef}
                 className={`rounded-lg border p-4 ${
-                  currentAnswer.correct
+                  currentAnswer?.correct || answerRevealed
                     ? "border-emerald-200 bg-emerald-50"
                     : "border-rose-200 bg-rose-50"
                 }`}
               >
                 <p className="text-base font-bold">
-                  {currentAnswer.correct ? "正解" : "不正解"}
+                  {answerRevealed
+                    ? "正解・解説を確認中"
+                    : currentAnswer?.correct
+                      ? "正解"
+                      : "不正解"}
                 </p>
                 <p className="mt-1 text-base leading-7 text-slate-950">
                   {resultText(currentQuestion)}
                 </p>
                 <p className="mt-1 text-sm leading-6 text-slate-700">
-                  {currentAnswer.correct
-                    ? currentAnswer.streak >= MASTER_STREAK
+                  {answerRevealed
+                    ? "回答していないため、学習履歴・正答率には記録されていません。"
+                    : currentAnswer?.correct
+                      ? currentAnswer.streak >= MASTER_STREAK
                       ? `身につきました。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
                       : `あと${MASTER_STREAK - currentAnswer.streak}回正解で身につきます。`
-                    : "復習リストに追加しました。"}
+                      : "復習リストに追加しました。"}
                 </p>
                 <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
                   <p className="text-sm font-bold text-sky-700">公式の答え</p>
@@ -1939,13 +2208,56 @@ function App() {
                     解答解説を見る
                   </a>
                 </div>
-                <button
-                  className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
-                  onClick={() => goNext("feedback")}
-                  type="button"
-                >
-                  次へ
-                </button>
+                {guidedMissionComplete ? (
+                  <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
+                    <p className="text-base font-bold text-emerald-800">
+                      今日の自動学習はここまでです
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-slate-700">
+                      復習期限と未回答の問題を優先して出題しました。追加で解く場合は、年度・分野を指定して選べます。
+                    </p>
+                    <button
+                      className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
+                      onClick={openQuestionPicker}
+                      type="button"
+                    >
+                      年度・分野を選ぶ
+                    </button>
+                  </div>
+                ) : isAtEndOfSelectedSet ? (
+                  <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
+                    <p className="text-base font-bold text-emerald-800">
+                      {currentQuestion.year}・{currentQuestion.category}はここまでです
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-slate-700">
+                      おつかれさまでした。次は年度・分野を選んで続けましょう。
+                    </p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <button
+                        className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
+                        onClick={openQuestionPicker}
+                        type="button"
+                      >
+                        次の問題を選ぶ
+                      </button>
+                      <button
+                        className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-base font-bold text-slate-700"
+                        onClick={() => goNext("feedback")}
+                        type="button"
+                      >
+                        もう一度解く
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
+                    onClick={() => goNext("feedback")}
+                    type="button"
+                  >
+                    次へ
+                  </button>
+                )}
               </section>
             ) : null}
 
@@ -1988,6 +2300,44 @@ function App() {
 
           {boardOpen ? (
             <div className="border-t border-slate-200 p-3">
+              <div className="rounded-lg border border-sky-200 bg-sky-50 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-bold text-sky-700">ペースメーカー</p>
+                    <h3 className="mt-0.5 text-base font-bold text-slate-950">
+                      {paceStatus
+                        ? paceStatus.difference >= 0
+                          ? `予定より${paceStatus.difference}ポイント前倒し`
+                          : `予定より${Math.abs(paceStatus.difference)}ポイント遅れ`
+                        : "最初の1問を解くとペースを測れます"}
+                    </h3>
+                  </div>
+                  {paceStatus ? (
+                    <span className="shrink-0 text-sm font-bold text-sky-700">
+                      {paceStatus.completionPercent}%
+                    </span>
+                  ) : null}
+                </div>
+                {paceStatus ? (
+                  <>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-sky-100">
+                      <div
+                        className="h-full rounded-full bg-sky-600"
+                        style={{ width: `${Math.min(100, paceStatus.completionPercent)}%` }}
+                      />
+                    </div>
+                    <p className="mt-2 text-xs leading-5 text-slate-600">
+                      進捗{paceStatus.completionPercent}%（今日の目安
+                      {paceStatus.expectedPercent}%）。習得完了は試験14日前までに設定しています。
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-2 text-xs leading-5 text-slate-600">
+                    初回回答と追加2回の連続正解を各1単位として、試験14日前までの進捗目安を表示します。
+                  </p>
+                )}
+              </div>
+
               <div className="grid grid-cols-3 gap-2 text-center text-sm">
                 <div className="rounded-lg bg-slate-50 p-2">
                   <p className="font-bold text-slate-950">
@@ -1996,8 +2346,10 @@ function App() {
                   <p className="text-slate-500">解いた問題</p>
                 </div>
                 <div className="rounded-lg bg-slate-50 p-2">
-                  <p className="font-bold text-slate-950">{totalMastered}</p>
-                  <p className="text-slate-500">身についた問題</p>
+                  <p className="font-bold text-slate-950">
+                    {retainedMastered}/{takkenQuestions.length}
+                  </p>
+                  <p className="text-slate-500">定着確認済み</p>
                 </div>
                 <div className="rounded-lg bg-slate-50 p-2">
                   <p className="font-bold text-slate-950">{todayAnswered}</p>
@@ -2009,7 +2361,7 @@ function App() {
                 正答率を本番1回（50問）に置き換えた予想点です（累計正答率
                 {accuracy}%）。合格ラインは過去10年で
                 33〜38点（平均35.5点）。まずは {passLine.safe}点を目指します。
-                「身についた問題」は2回連続で正解した問題です。
+                「定着確認済み」は、3回連続正解し、次回復習の期限内にある問題です。
               </p>
               <div
                 className={`mt-2 rounded-lg border px-3 py-2 text-sm font-bold ${
@@ -2023,7 +2375,64 @@ function App() {
                   : `目標の${passLine.safe}点まであと ${gapToSafe} 点。`}
               </div>
 
-              <div className="mt-3 space-y-2">
+              <div className="mt-4">
+                <p className="text-xs font-bold text-slate-700">
+                  年度別の達成状況
+                </p>
+                <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                  各年度50問。全問を3回連続で正解すると「クリア」です。
+                </p>
+                <div className="mt-2 space-y-2">
+                  {examStats.map((exam) => {
+                    const masterPercent = Math.round(
+                      (exam.masteredCount / exam.totalCount) * 100,
+                    );
+
+                    return (
+                      <div
+                        className="rounded-lg bg-slate-50 px-3 py-2"
+                        key={exam.id}
+                      >
+                        <div className="flex items-center justify-between gap-2 text-sm">
+                          <span className="flex items-center gap-2 font-bold text-slate-950">
+                            {exam.year}
+                            {exam.cleared ? (
+                              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-xs font-bold text-emerald-700">
+                                クリア
+                              </span>
+                            ) : exam.completed ? (
+                              <span className="rounded-md border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-xs font-bold text-sky-700">
+                                ひと通り完了
+                              </span>
+                            ) : null}
+                          </span>
+                          <span className="text-slate-700">
+                            習得 {exam.masteredCount}/{exam.totalCount}
+                          </span>
+                        </div>
+                        <div className="mt-1.5 h-1.5 rounded-full bg-slate-200">
+                          <div
+                            className={`h-1.5 rounded-full ${
+                              exam.cleared ? "bg-emerald-500" : "bg-sky-600"
+                            }`}
+                            style={{ width: `${masterPercent}%` }}
+                          />
+                        </div>
+                        <p className="mt-1 text-xs leading-5 text-slate-500">
+                          {exam.answeredCount > 0
+                            ? `解いた問題${exam.answeredCount}/${exam.totalCount}問・正答率${exam.ratePercent}%`
+                            : "まだ解いていません"}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <p className="mt-4 text-xs font-bold text-slate-700">
+                分野別の達成状況
+              </p>
+              <div className="mt-2 space-y-2">
                 {categoryStats.map((cat) => {
                   const reached =
                     cat.projectedScore !== null &&
@@ -2113,7 +2522,7 @@ function App() {
                 </label>
                 <p className="mt-1 text-xs leading-5 text-slate-500">
                   {daysToExam > 0
-                    ? `あと${daysToExam}日。まだ解いていない問題を2回、まだ身についていない問題を1回解く見込みで、1日${paceNeeded}問ペースなら間に合います。`
+                    ? `あと${daysToExam}日。試験14日前までの残り${daysToMasteryDeadline}日で、未回答は3回・未習得は残りの連続正解回数を解く見込みです。必要ペースは1日${paceNeeded}問です。`
                     : "試験日が過ぎています。次回の試験日を設定してください。"}
                 </p>
               </div>
