@@ -23,3 +23,31 @@ export const normalizeNotes = (raw: unknown): Record<string, NoteEntry> => {
   }
   return result;
 };
+
+export const mergeNotes = (
+  local: unknown,
+  remote: unknown,
+): Record<string, NoteEntry> => {
+  const localNotes = normalizeNotes(local);
+  const remoteNotes = normalizeNotes(remote);
+  const merged: Record<string, NoteEntry> = { ...remoteNotes };
+
+  for (const [id, localEntry] of Object.entries(localNotes)) {
+    const remoteEntry = merged[id];
+    if (!remoteEntry) {
+      merged[id] = localEntry;
+      continue;
+    }
+    if (localEntry.updatedAt > remoteEntry.updatedAt) {
+      merged[id] = localEntry;
+    } else if (
+      localEntry.updatedAt === remoteEntry.updatedAt &&
+      !remoteEntry.text &&
+      localEntry.text
+    ) {
+      merged[id] = localEntry;
+    }
+  }
+
+  return merged;
+};

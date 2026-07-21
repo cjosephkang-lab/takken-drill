@@ -40,3 +40,35 @@ describe("normalizeNotes", () => {
     expect(normalizeNotes(undefined)).toEqual({});
   });
 });
+
+import { mergeNotes } from "./notes";
+
+describe("mergeNotes", () => {
+  it("updatedAt が新しい方を採用する", () => {
+    const local = { q1: { text: "新", updatedAt: "2026-07-21T05:00:00.000Z" } };
+    const remote = {
+      q1: { text: "旧", updatedAt: "2026-07-20T05:00:00.000Z" },
+    };
+    expect(mergeNotes(local, remote).q1.text).toBe("新");
+  });
+  it("remote だけにあるメモは残す", () => {
+    const local = {};
+    const remote = {
+      q2: { text: "リモート", updatedAt: "2026-07-21T00:00:00.000Z" },
+    };
+    expect(mergeNotes(local, remote).q2.text).toBe("リモート");
+  });
+  it("updatedAt が空同士なら非空テキストを優先する", () => {
+    const local = { q3: { text: "", updatedAt: "" } };
+    const remote = { q3: { text: "中身あり", updatedAt: "" } };
+    expect(mergeNotes(local, remote).q3.text).toBe("中身あり");
+  });
+  it("旧string形式が混ざっても移行してマージする", () => {
+    const local = { q4: "ローカル旧" };
+    const remote = {};
+    expect(mergeNotes(local, remote).q4).toEqual({
+      text: "ローカル旧",
+      updatedAt: "",
+    });
+  });
+});
