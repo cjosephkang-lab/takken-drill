@@ -28,6 +28,7 @@ export function CheatSheet({ answers, onClose }: Props) {
         優先度＝あなたの弱点 × 出題の多さ × 科目の得点効率
         で並べています。上から順につぶすと当日の得点が伸びやすくなります。
       </p>
+      <p className="cheatsheet-progress-note">学習を進めるとここが更新されます。</p>
       <ol className="cheatsheet-list">
         {rows.map((row) => (
           <li
@@ -42,7 +43,7 @@ export function CheatSheet({ answers, onClose }: Props) {
             <span className="cheatsheet-label">{row.label}</span>
             <span className="cheatsheet-category">{row.category}</span>
             <span className="cheatsheet-reason">{row.reasonLabel}</span>
-            <span className="cheatsheet-accuracy">{accuracyLabel(row)}</span>
+            <span className="cheatsheet-accuracy">あなた: {accuracyLabel(row)}</span>
             <span className="cheatsheet-frequency">過去{row.questionCount}問 出題</span>
             <span className="cheatsheet-weight">
               得点効率{formatPercent(row.categoryWeight)}
