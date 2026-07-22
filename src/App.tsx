@@ -1452,10 +1452,11 @@ function App() {
         : note.id;
       return { heading, text: note.text, updatedAt: note.updatedAt };
     });
-    const markdown = buildStudyLogMarkdown(items, dateKey);
+    const markdown = buildStudyLogMarkdown(items, dateKey, todayLog);
 
     trackMetric("study_log_export", {
       note_count: items.length,
+      answered_count: todayLog.answered,
       ...questionMetricParams(),
     });
 
@@ -1484,11 +1485,11 @@ function App() {
     }
 
     const label =
-      items.length === 0
-        ? "今日のメモはまだありません"
+      items.length === 0 && todayLog.answered === 0
+        ? "今日はまだ学習していません"
         : copied
-          ? `${items.length}件をコピー＆保存しました`
-          : `${items.length}件をファイルに保存しました`;
+          ? `メモ${items.length}件・実績${todayLog.answered}問をコピー＆保存しました`
+          : `メモ${items.length}件・実績${todayLog.answered}問をファイルに保存しました`;
     setStudyLogStatus(label);
     window.setTimeout(() => setStudyLogStatus(""), 4000);
   };

@@ -113,6 +113,40 @@ describe("buildStudyLogMarkdown", () => {
     expect(md).toContain("# 学習ログ 2026-07-21");
     expect(md).toContain("（この日のメモはありません）");
   });
+
+  it("実績サマリーを渡すと「今日の実績」見出しに問数・正解数を出す", () => {
+    const md = buildStudyLogMarkdown([], "2026-07-21", {
+      answered: 12,
+      correct: 9,
+    });
+    expect(md).toContain("## 今日の実績");
+    expect(md).toContain("解いた問題: 12問（正解 9 / 不正解 3）");
+  });
+
+  it("実績が0問の日は実績サマリーを出さない", () => {
+    const md = buildStudyLogMarkdown([], "2026-07-21", {
+      answered: 0,
+      correct: 0,
+    });
+    expect(md).not.toContain("## 今日の実績");
+  });
+
+  it("実績サマリーとメモの両方があれば両方出す", () => {
+    const md = buildStudyLogMarkdown(
+      [
+        {
+          heading: "抵当権（令和4年 問6）",
+          text: "被担保債権の範囲を復習",
+          updatedAt: "2026-07-21T05:00:00.000Z",
+        },
+      ],
+      "2026-07-21",
+      { answered: 3, correct: 2 },
+    );
+    expect(md).toContain("## 今日の実績");
+    expect(md).toContain("解いた問題: 3問（正解 2 / 不正解 1）");
+    expect(md).toContain("## 抵当権（令和4年 問6）");
+  });
 });
 
 import { selectTodayNotes } from "./notes";

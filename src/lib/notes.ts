@@ -72,18 +72,32 @@ export type NoteExportItem = {
   updatedAt: string;
 };
 
+export type DailyAnswerSummary = { answered: number; correct: number };
+
 export const buildStudyLogMarkdown = (
   items: NoteExportItem[],
   dateKey: string,
+  summary?: DailyAnswerSummary,
 ): string => {
   const header = `# 学習ログ ${dateKey}`;
+  const summarySection =
+    summary && summary.answered > 0
+      ? `## 今日の実績\n\n解いた問題: ${summary.answered}問（正解 ${summary.correct} / 不正解 ${summary.answered - summary.correct}）\n`
+      : "";
+
   if (items.length === 0) {
-    return `${header}\n\n（この日のメモはありません）\n`;
+    const notesSection = "（この日のメモはありません）\n";
+    return summarySection
+      ? `${header}\n\n${summarySection}\n${notesSection}`
+      : `${header}\n\n${notesSection}`;
   }
-  const body = items
+
+  const notesBody = items
     .map((item) => `## ${item.heading}\n\n${item.text}\n`)
     .join("\n");
-  return `${header}\n\n${body}`;
+  return summarySection
+    ? `${header}\n\n${summarySection}\n${notesBody}`
+    : `${header}\n\n${notesBody}`;
 };
 
 export type TodayNote = {
