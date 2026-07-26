@@ -125,3 +125,33 @@ export const selectTodayNotes = (
     }))
     .sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
 };
+
+export type DailyLogEntry = { answered: number; correct: number };
+
+// 学習実績（dailyLog）またはメモ更新があった日のうち、書き出し記録(exports)が無い
+// 直近の日を返す。当日は「まだ書き出し途中」でよいので候補から除く。無ければ null。
+export const findLatestUnexportedDateKey = (
+  dailyLog: Record<string, DailyLogEntry>,
+  notes: Record<string, NoteEntry>,
+  exports: Record<string, string>,
+  todayKey: string,
+  toDateKey: (iso: string) => string = (iso) => localDateKey(new Date(iso)),
+): string | null => {
+  const candidateKeys = new Set<string>();
+
+  for (const [key, day] of Object.entries(dailyLog)) {
+    if (day.answered > 0) candidateKeys.add(key);
+  }
+
+  for (const entry of Object.values(notes)) {
+    if (entry.text && entry.updatedAt) {
+      candidateKeys.add(toDateKey(entry.updatedAt));
+    }
+  }
+
+  const unexported = Array.from(candidateKeys)
+    .filter((key) => key !== todayKey && !exports[key])
+    .sort();
+
+  return unexported.length > 0 ? unexported[unexported.length - 1] : null;
+};

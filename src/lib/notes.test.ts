@@ -204,3 +204,60 @@ describe("selectTodayNotes", () => {
     expect(result.map((item) => item.id)).toEqual(["q1"]);
   });
 });
+
+import { findLatestUnexportedDateKey } from "./notes";
+
+describe("findLatestUnexportedDateKey", () => {
+  it("学習実績がある日のうち、書き出し記録が無い最新日を返す", () => {
+    const dailyLog = {
+      "2026-07-24": { answered: 3, correct: 2 },
+      "2026-07-25": { answered: 5, correct: 4 },
+      "2026-07-26": { answered: 2, correct: 1 },
+    };
+    const exports = { "2026-07-26": "2026-07-26T10:00:00.000Z" };
+    expect(
+      findLatestUnexportedDateKey(dailyLog, {}, exports, "2026-07-27"),
+    ).toBe("2026-07-25");
+  });
+
+  it("メモだけの日（実績0）も未書き出し候補に含める", () => {
+    const dailyLog = {};
+    const notes = {
+      q1: { text: "メモのみ", updatedAt: "2026-07-25T05:00:00.000Z" },
+    };
+    expect(
+      findLatestUnexportedDateKey(
+        dailyLog,
+        notes,
+        {},
+        "2026-07-27",
+        (iso) => iso.slice(0, 10),
+      ),
+    ).toBe("2026-07-25");
+  });
+
+  it("当日は候補に含めない（今日はまだ書き出し途中でよいため）", () => {
+    const dailyLog = { "2026-07-27": { answered: 4, correct: 3 } };
+    expect(findLatestUnexportedDateKey(dailyLog, {}, {}, "2026-07-27")).toBe(
+      null,
+    );
+  });
+
+  it("全て書き出し済みなら null を返す", () => {
+    const dailyLog = { "2026-07-25": { answered: 3, correct: 2 } };
+    const exports = { "2026-07-25": "2026-07-25T23:00:00.000Z" };
+    expect(
+      findLatestUnexportedDateKey(dailyLog, {}, exports, "2026-07-27"),
+    ).toBe(null);
+  });
+
+  it("未書き出し日が複数あれば最新日を返す", () => {
+    const dailyLog = {
+      "2026-07-20": { answered: 1, correct: 1 },
+      "2026-07-23": { answered: 2, correct: 2 },
+    };
+    expect(findLatestUnexportedDateKey(dailyLog, {}, {}, "2026-07-27")).toBe(
+      "2026-07-23",
+    );
+  });
+});

@@ -108,7 +108,10 @@ export const setMetricUserProperties = (params: MetricParams) => {
 };
 
 export const observeWebVitals = () => {
-  if (typeof window === "undefined" || typeof PerformanceObserver === "undefined") {
+  if (
+    typeof window === "undefined" ||
+    typeof PerformanceObserver === "undefined"
+  ) {
     return () => {};
   }
 
@@ -171,7 +174,10 @@ export const observeWebVitals = () => {
           interactionId?: number;
         };
         if (eventEntry.interactionId) {
-          worstInteraction = Math.max(worstInteraction, eventEntry.duration ?? 0);
+          worstInteraction = Math.max(
+            worstInteraction,
+            eventEntry.duration ?? 0,
+          );
         }
       }
     },
@@ -179,9 +185,8 @@ export const observeWebVitals = () => {
   );
 
   window.setTimeout(() => {
-    const navigation = performance.getEntriesByType(
-      "navigation",
-    )[0] as PerformanceNavigationTiming | undefined;
+    const navigation = performance.getEntriesByType("navigation")[0] as
+      PerformanceNavigationTiming | undefined;
 
     if (!navigation) return;
 
@@ -242,6 +247,7 @@ export type SyncedProgress = {
   // メモは {text, updatedAt} 形式で保存する。旧 string 形式も読込時に移行する（mergeNotes が両対応）。
   notes?: Record<string, NoteEntry | string>;
   dailyLog?: Record<string, { answered: number; correct: number }>;
+  studyLogExports?: Record<string, string>;
   updatedAt: string;
 };
 
@@ -280,7 +286,10 @@ const mergeSyncedProgress = (
   }
 
   // メモは updatedAt が新しい方を採る（旧 string 形式も両対応）。純粋関数はテスト済み。
-  const notes: Record<string, NoteEntry> = mergeNotes(local.notes, remote.notes);
+  const notes: Record<string, NoteEntry> = mergeNotes(
+    local.notes,
+    remote.notes,
+  );
 
   const dailyLog = { ...(remote.dailyLog ?? {}) };
 
@@ -291,10 +300,20 @@ const mergeSyncedProgress = (
     }
   }
 
+  const studyLogExports = { ...(remote.studyLogExports ?? {}) };
+
+  for (const [key, exportedAt] of Object.entries(local.studyLogExports ?? {})) {
+    const remoteExportedAt = studyLogExports[key];
+    if (!remoteExportedAt || exportedAt > remoteExportedAt) {
+      studyLogExports[key] = exportedAt;
+    }
+  }
+
   return {
     answers,
     notes,
     dailyLog,
+    studyLogExports,
     updatedAt: local.updatedAt,
   };
 };

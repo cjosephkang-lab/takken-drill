@@ -9,6 +9,7 @@ import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
 import { formatQuestionText } from "./lib/formatQuestionText";
 import {
   buildStudyLogMarkdown,
+  findLatestUnexportedDateKey,
   localDateKey,
   mergeNotes,
   normalizeNotes,
@@ -62,6 +63,8 @@ type ProgressState = {
   notes: Record<string, NoteEntry>;
   currentId: string;
   dailyLog: Record<string, DayLog>;
+  /** 学習ログを書き出した日付キー→最後に書き出したISO時刻。 */
+  studyLogExports: Record<string, string>;
 };
 
 type UiSettings = {
@@ -227,6 +230,7 @@ const loadProgress = (): ProgressState => {
     notes: {},
     currentId: takkenQuestions[0]?.id ?? "",
     dailyLog: {},
+    studyLogExports: {},
   };
 
   try {
@@ -262,6 +266,10 @@ const loadProgress = (): ProgressState => {
         parsed.dailyLog && typeof parsed.dailyLog === "object"
           ? parsed.dailyLog
           : seedDailyLog(answers),
+      studyLogExports:
+        parsed.studyLogExports && typeof parsed.studyLogExports === "object"
+          ? parsed.studyLogExports
+          : {},
     };
   } catch (error) {
     console.error("Failed to load progress.", error);
@@ -293,6 +301,7 @@ const mergeProgress = (
     answers: Record<string, AnswerRecord>;
     notes: Record<string, NoteEntry | string>;
     dailyLog: Record<string, DayLog>;
+    studyLogExports?: Record<string, string>;
   },
 ): ProgressState => {
   const answers: Record<string, AnswerRecord> = { ...remote.answers };
@@ -319,7 +328,21 @@ const mergeProgress = (
     }
   }
 
-  return { ...local, answers, notes, dailyLog };
+  // 書き出し済み記録は日付ごとに新しい方（後から書き出した時刻）を採用する。
+  const studyLogExports: Record<string, string> = {
+    ...local.studyLogExports,
+  };
+
+  for (const [key, exportedAt] of Object.entries(
+    remote.studyLogExports ?? {},
+  )) {
+    const localExportedAt = studyLogExports[key];
+    if (!localExportedAt || exportedAt > localExportedAt) {
+      studyLogExports[key] = exportedAt;
+    }
+  }
+
+  return { ...local, answers, notes, dailyLog, studyLogExports };
 };
 
 const allCategories = Array.from(
@@ -524,8 +547,10 @@ function App() {
     initialSettings.questionPickerOpen,
   );
   const [examDate, setExamDate] = useState(initialSettings.examDate);
-  // 「今日の学習を書き出す」を押した後の一時フィードバック（数秒表示）。
+  // 「学習ログを書き出す」を押した後の一時フィードバック（数秒表示）。
   const [studyLogStatus, setStudyLogStatus] = useState("");
+  // 書き出し対象の日付キー。null なら今日を対象にする（未書き出し日があればそちらを既定選択）。
+  const [exportDateKey, setExportDateKey] = useState<string | null>(null);
   // この起動中に解いた問題の回答。過去の回答は画面に出さないので、
   // 再訪時は毎回「思い出して解く」テスト形式になる（想起練習）。
   const [sessionAnswers, setSessionAnswers] = useState<
@@ -664,6 +689,7 @@ function App() {
               answers: (remote.answers ?? {}) as Record<string, AnswerRecord>,
               notes: remote.notes ?? {},
               dailyLog: remote.dailyLog ?? {},
+              studyLogExports: remote.studyLogExports ?? {},
             });
             saveProgress(merged);
             return merged;
@@ -698,6 +724,7 @@ function App() {
         answers: progress.answers,
         notes: progress.notes,
         dailyLog: progress.dailyLog,
+        studyLogExports: progress.studyLogExports,
         updatedAt: new Date().toISOString(),
       },
       writeMode,
@@ -867,6 +894,18 @@ function App() {
   const todayKey = localDateKey(new Date());
   const todayLog = progress.dailyLog[todayKey] ?? { answered: 0, correct: 0 };
   const todayAnswered = todayLog.answered;
+  // 実績かメモがあるのに書き出していない直近日。あれば書き出しボタンの既定対象にする。
+  const unexportedDateKey = useMemo(
+    () =>
+      findLatestUnexportedDateKey(
+        progress.dailyLog,
+        progress.notes,
+        progress.studyLogExports,
+        todayKey,
+      ),
+    [progress.dailyLog, progress.notes, progress.studyLogExports, todayKey],
+  );
+  const activeExportDateKey = exportDateKey ?? unexportedDateKey ?? todayKey;
   const todayAccuracy = todayLog.answered
     ? Math.round((todayLog.correct / todayLog.answered) * 100)
     : 0;
@@ -1437,14 +1476,15 @@ function App() {
     }));
   };
 
-  // 「今日の学習を書き出す」: 当日メモを Markdown にして、クリップボードとファイルの両方で渡す。
+  // 「学習ログを書き出す」: 指定日のメモと実績を Markdown にして、クリップボードとファイルの両方で渡す。
   // 姜さんはこれを docs/study-log/YYYY-MM-DD.md に保存する（この一手間だけ手動）。
-  const exportTodayStudyLog = async () => {
-    const dateKey = localDateKey(new Date());
-    const todays = selectTodayNotes(progress.notes, dateKey, (iso) =>
+  // 対象日は今日固定ではなく、書き出しそびれた過去日も選んで書き出せる。
+  const exportStudyLog = async (dateKey: string) => {
+    const dayLog = progress.dailyLog[dateKey] ?? { answered: 0, correct: 0 };
+    const notesOfDay = selectTodayNotes(progress.notes, dateKey, (iso) =>
       localDateKey(new Date(iso)),
     );
-    const items: NoteExportItem[] = todays.map((note) => {
+    const items: NoteExportItem[] = notesOfDay.map((note) => {
       const question = takkenQuestions.find((q) => q.id === note.id);
       // 見出しは「分野（和暦 問番号）」。問題が見つからない場合は id をそのまま使う。
       const heading = question
@@ -1452,11 +1492,12 @@ function App() {
         : note.id;
       return { heading, text: note.text, updatedAt: note.updatedAt };
     });
-    const markdown = buildStudyLogMarkdown(items, dateKey, todayLog);
+    const markdown = buildStudyLogMarkdown(items, dateKey, dayLog);
 
     trackMetric("study_log_export", {
       note_count: items.length,
-      answered_count: todayLog.answered,
+      answered_count: dayLog.answered,
+      is_today: dateKey === todayKey,
       ...questionMetricParams(),
     });
 
@@ -1484,12 +1525,22 @@ function App() {
       console.error("Failed to copy study log.", error);
     }
 
+    // 書き出し済みとして記録する。当日は何度でも再書き出しでき、書き出すたびに時刻を更新する
+    // （途中版を出した後も学習を続けられ、未書き出しバナーの判定からは外れる）。
+    updateProgress((previous) => ({
+      ...previous,
+      studyLogExports: {
+        ...previous.studyLogExports,
+        [dateKey]: new Date().toISOString(),
+      },
+    }));
+
     const label =
-      items.length === 0 && todayLog.answered === 0
-        ? "今日はまだ学習していません"
+      items.length === 0 && dayLog.answered === 0
+        ? `${dateKey}はまだ学習していません`
         : copied
-          ? `メモ${items.length}件・実績${todayLog.answered}問をコピー＆保存しました`
-          : `メモ${items.length}件・実績${todayLog.answered}問をファイルに保存しました`;
+          ? `${dateKey}: メモ${items.length}件・実績${dayLog.answered}問をコピー＆保存しました`
+          : `${dateKey}: メモ${items.length}件・実績${dayLog.answered}問をファイルに保存しました`;
     setStudyLogStatus(label);
     window.setTimeout(() => setStudyLogStatus(""), 4000);
   };
@@ -1660,6 +1711,7 @@ function App() {
       notes: {},
       currentId: takkenQuestions[0]?.id ?? "",
       dailyLog: {},
+      studyLogExports: {},
     };
     forceCloudReplaceRef.current = true;
     setProgress(next);
@@ -2489,12 +2541,31 @@ function App() {
             </label>
 
             <div className="mt-3">
+              {unexportedDateKey ? (
+                <p className="mb-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
+                  {unexportedDateKey}の学習ログがまだ書き出されていません
+                </p>
+              ) : null}
+              <div className="mb-2 flex items-center gap-2">
+                <label className="flex-1">
+                  <span className="sr-only">書き出す日付</span>
+                  <input
+                    className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-sky-500"
+                    max={todayKey}
+                    onChange={(event) =>
+                      setExportDateKey(event.target.value || null)
+                    }
+                    type="date"
+                    value={activeExportDateKey}
+                  />
+                </label>
+              </div>
               <button
                 className="min-h-11 w-full rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-sky-700"
-                onClick={exportTodayStudyLog}
+                onClick={() => exportStudyLog(activeExportDateKey)}
                 type="button"
               >
-                今日の学習を書き出す
+                学習ログを書き出す
               </button>
               {studyLogStatus ? (
                 <p className="mt-2 text-center text-xs font-bold text-slate-600">
