@@ -86,7 +86,6 @@ const ALL = "all";
 const UNANSWERED = "unanswered";
 const WRONG = "wrong";
 const DUE = "due";
-const DAILY_TARGET = 10;
 /** この回数連続で正解したら「習得済み」とみなす。 */
 const MASTER_STREAK = 3;
 /** 宅建試験は例年10月の第3日曜。2026年は10月18日。 */
@@ -987,11 +986,8 @@ function App() {
     };
   }, [completedWorkload, daysToMasteryDeadline, studyStartedOn, totalWorkload]);
 
-  // Today's work uses the larger of the countdown pace and the minimum target, capped at 50.
-  const missionTarget = Math.min(
-    MISSION_CAP,
-    Math.max(DAILY_TARGET, paceNeeded),
-  );
+  // 今日の目標は残りの学習量÷残日数の逆算値そのもの。残日数が減れば増え、前倒しできていれば減る。
+  const missionTarget = Math.min(MISSION_CAP, Math.max(1, paceNeeded));
   const missionDone = todayAnswered >= missionTarget;
   const missionRemaining = Math.max(0, missionTarget - todayAnswered);
   const missionReviewPart = Math.min(dueCount, missionRemaining);
@@ -1996,7 +1992,9 @@ function App() {
                 ? `目標まであと${missionShortfallPart}問は、復習期限の到来を待つか、年度・分野を指定して取り組めます。`
                 : ""}
               {daysToExam > 0
-                ? `1日${missionTarget}問ペースで試験14日前までに全問習得を目指せます。`
+                ? daysToMasteryDeadline > 0
+                  ? `残りの学習量を試験14日前までの残り${daysToMasteryDeadline}日で割った、今日時点の逆算ノルマです。進みが早いほど減り、遅れるほど増えます。`
+                  : "試験直前期です。残りの学習量を消化しつつ、間隔反復の復習を優先しましょう。"
                 : "試験日を設定すると逆算ペースが表示されます。"}
             </p>
           )}
