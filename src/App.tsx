@@ -82,6 +82,8 @@ const STORAGE_KEY = "takken-drill.progress.v1";
 const SETTINGS_KEY = "takken-drill.settings.v1";
 /** 初回ガイドを見たかどうか。一度閉じたら二度と出さない。 */
 const GUIDE_SEEN_KEY = "takken-drill.guideSeen.v1";
+/** その日の逆算ノルマの固定値。日中に目標が増減して見えないよう初回計算値を保持する。 */
+const MISSION_TARGET_KEY = "takken-drill.missionTarget.v1";
 const ALL = "all";
 const UNANSWERED = "unanswered";
 const WRONG = "wrong";
@@ -987,7 +989,37 @@ function App() {
   }, [completedWorkload, daysToMasteryDeadline, studyStartedOn, totalWorkload]);
 
   // 今日の目標は残りの学習量÷残日数の逆算値そのもの。残日数が減れば増え、前倒しできていれば減る。
-  const missionTarget = Math.min(MISSION_CAP, Math.max(1, paceNeeded));
+  // 誤答による習得リセット等で日中に目標が増減して見えないよう、その日の初回計算値に固定する。
+  // 試験日を変更した時だけ同日でも再計算する。
+  const missionTarget = useMemo(() => {
+    const computed = Math.min(MISSION_CAP, Math.max(1, paceNeeded));
+    if (typeof window === "undefined") return computed;
+    try {
+      const raw = window.localStorage.getItem(MISSION_TARGET_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as {
+          date?: string;
+          examDate?: string;
+          target?: number;
+        };
+        if (
+          saved.date === todayKey &&
+          saved.examDate === examDate &&
+          typeof saved.target === "number" &&
+          saved.target >= 1
+        ) {
+          return saved.target;
+        }
+      }
+      window.localStorage.setItem(
+        MISSION_TARGET_KEY,
+        JSON.stringify({ date: todayKey, examDate, target: computed }),
+      );
+    } catch {
+      // localStorageが使えない環境ではその都度の計算値を使う。
+    }
+    return computed;
+  }, [paceNeeded, todayKey, examDate]);
   const missionDone = todayAnswered >= missionTarget;
   const missionRemaining = Math.max(0, missionTarget - todayAnswered);
   const missionReviewPart = Math.min(dueCount, missionRemaining);
