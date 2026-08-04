@@ -6,6 +6,7 @@ import {
   type TakkenQuestion,
 } from "./data/questions";
 import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
+import { phaseForDaysToExam, sortByPacing } from "./lib/pacing";
 import { formatQuestionText } from "./lib/formatQuestionText";
 import {
   buildStudyLogMarkdown,
@@ -1361,6 +1362,7 @@ function App() {
     trackMetric("study_mission_start", {
       answered_count: totalAnswered,
       due_count: dueCount,
+      pacing_phase: phaseForDaysToExam(daysToExam).key,
       mission_done: missionDone,
       mission_remaining: missionRemaining,
       mission_target: missionTarget,
@@ -1373,13 +1375,22 @@ function App() {
     setStatusFilter(ALL);
     setStudyMode(true);
 
-    const pool = [...takkenQuestions].sort(
-      (a, b) =>
-        studyOrderByCategory(a.category) - studyOrderByCategory(b.category),
-    );
+    // 表示リスト（filteredQuestions の studyMode 並び）と同じ基準で安定ソートし、
+    // 開始時と「次へ」で選ばれる問題が食い違わないようにする。
+    const pool = [...takkenQuestions].sort((a, b) => {
+      const orderDiff =
+        studyOrderByCategory(a.category) - studyOrderByCategory(b.category);
+      if (orderDiff !== 0) return orderDiff;
+      if (a.examId !== b.examId) return a.examId < b.examId ? 1 : -1;
+      return a.number - b.number;
+    });
+    // 復習期限は従来どおり最優先。新しい問題は時期に応じた科目配分で選ぶ。
     const first =
       pool.find((q) => isDueRecord(progress.answers[q.id])) ??
-      pool.find((q) => !progress.answers[q.id]);
+      sortByPacing(
+        pool.filter((q) => !progress.answers[q.id]),
+        daysToExam,
+      )[0];
 
     if (first) {
       goToQuestion(first.id, "question");
@@ -1629,9 +1640,14 @@ function App() {
         return;
       }
 
-      const unanswered = filteredQuestions.find(
-        (q) => q.id !== currentQuestion.id && !progress.answers[q.id],
-      );
+      // 新しい問題は時期に応じた科目配分（基礎固め期は業法・権利を主軸、
+      // 直前期は暗記科目を詰め込む）で次の1問を選ぶ。
+      const unanswered = sortByPacing(
+        filteredQuestions.filter(
+          (q) => q.id !== currentQuestion.id && !progress.answers[q.id],
+        ),
+        daysToExam,
+      )[0];
       if (unanswered) {
         trackMetric("question_navigate", {
           direction: "next",
@@ -2031,7 +2047,8 @@ function App() {
             </p>
           )}
           <p className="mt-2 rounded-lg bg-sky-50 px-3 py-2 text-xs leading-5 text-sky-800">
-            自動出題は「復習期限の問題」→「まだ解いていない問題」の順です。解いたばかりの問題は次回の復習期限まで出ません。
+            {phaseForDaysToExam(daysToExam).label}
+            。自動出題は「復習期限の問題」→「まだ解いていない問題」の順で、新しい問題は時期に合わせた科目配分で出します。解いたばかりの問題は次回の復習期限まで出ません。
           </p>
           <button
             className={`mt-3 min-h-12 w-full rounded-lg font-bold ${

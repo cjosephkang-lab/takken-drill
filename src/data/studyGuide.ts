@@ -87,3 +87,58 @@ export const passLine = {
 
 export const studyOrderByCategory = (category: string): number =>
   studyOrder.find((c) => c.category === category)?.order ?? 99;
+
+// ---- 時期に応じた出題ペーシング（2026-08-04 CEO要望） ----
+//
+// 「絶対に落とせない宅建業法・権利関係を今日の出題の主軸にし、
+//  暗記中心の法令・税・免除は記憶の鮮度が保てる直前期に詰め込む」ための
+// 科目重み。新規問題の出題順だけを制御し、間隔反復（復習優先）には触れない。
+//
+// 出典（時期配分のセオリー）:
+// - 伊藤塾「宅建の勉強スケジュールの組み方」
+//   https://column.itojuku.co.jp/takken/method/benkyou-sukejuuru/
+//   （序盤は権利関係・宅建業法から。法令・税は序盤「まだ手をつけなくてもいい」）
+// - 伊藤塾「勉強する順番」（既存出典）: 税その他は深追いしない捨て問戦略
+//
+// 切替45日は出典値ではなく逆算の設計値: 暗記3科目80問の初回一巡12〜16日
+// ＋習得までの間隔反復 +2日・+7日 ＋最終14日の復習予備（reviewReserveDays）。
+// 詳細: docs/superpowers/specs/2026-08-04-priority-pacing-design.md
+
+export type PacingPhase = {
+  key: "foundation" | "cram";
+  // 「今日やる」カードに出す1行説明（ペーシングが黙って動くと故障に見えるため）
+  label: string;
+  // 科目→新規出題の重み。0は「最後尾へ回す」（除外はしない＝出題は止めない）
+  weights: Record<string, number>;
+};
+
+// 暗記科目の詰め込みを開始する残日数の閾値
+export const CRAM_START_DAYS = 45;
+
+export const pacingPhases: PacingPhase[] = [
+  {
+    key: "foundation",
+    label: "いまは宅建業法・権利関係を固める時期",
+    // 出題数比（業法20:権利14/回）と目標配点（18:10）の双方に整合する3:2
+    weights: {
+      宅建業法: 3,
+      権利関係: 2,
+      法令上の制限: 0,
+      "税・価格評定": 0,
+      免除科目: 0,
+    },
+  },
+  {
+    key: "cram",
+    label: "直前期：法令・税・免除科目を詰め込む時期",
+    // 順調なら業法・権利の新規は残っておらず実効的に法令3:税1:免除2の詰め込み。
+    // 着手が遅れた場合でも業法+権利が新規枠の7/13を保つ安全弁（4:3）。
+    weights: {
+      宅建業法: 4,
+      権利関係: 3,
+      法令上の制限: 3,
+      "税・価格評定": 1,
+      免除科目: 2,
+    },
+  },
+];
