@@ -45,12 +45,19 @@ MASTER_STREAK = 3
 # 科目別の満点と目標得点。src/data/studyGuide.ts の studyOrder が正。
 TARGETS = {
     "宅建業法": (20, 18),
-    "権利関係": (14, 10),
+    # 権利関係は8点で打ち止め。他4科目で30点取れば合計38点（安全圏）に届く。
+    # 10点以上を狙って難問まで掘るのは時間効率が悪い（2026-09-05 codexレビュー）。
+    "権利関係": (14, 8),
     "法令上の制限": (8, 6),
     "税・価格評定": (3, 2),
     "免除科目": (5, 4),
 }
 CATEGORIES = list(TARGETS)
+
+# 模試用に温存する年度。ドリルでは解かず、初見のまま本番形式で使う。
+# 解いた問題で模試をやっても実力は測れないため（2026-09-05 codexレビュー）。
+# r4（着手0問）は9/6の模試で消費済みなので、以降はドリル対象に戻す。
+MOCK_RESERVED_EXAMS = {"r5"}
 
 # 合格ライン。src/data/studyGuide.ts の passLine が正。
 PASS_MIN, PASS_AVERAGE, PASS_SAFE = 33, 35.5, 38
@@ -61,8 +68,10 @@ TIME_WEIGHT = {"権利関係": 1.3}
 
 # 学習容量が落ちる期間（Googleカレンダーの確定予定から。両端を含む）。
 # ratio は通常日を1.0とした時の容量。予定が変わったらここを直す。
+# 旅行中は新規を積まず、期限が来た復習だけに充てる。移動中に新しい論点を
+# 入れるより既習の再確認の方が定着する（2026-09-05 codexレビュー）。
 LOW_CAPACITY_PERIODS = [
-    (date(2026, 9, 17), date(2026, 9, 24), 1 / 3, "奄美旅行"),
+    (date(2026, 9, 17), date(2026, 9, 24), 0.0, "奄美旅行（復習のみ）"),
     (date(2026, 10, 9), date(2026, 10, 10), 0.0, "オール不動産三田会"),
 ]
 
@@ -156,9 +165,11 @@ def load_question_categories() -> dict:
 
 
 def stock_by_category(categories: dict) -> dict:
-    """科目ごとの収録問題数。"""
+    """科目ごとの、ドリルで扱う問題数。模試用に温存した年度は数えない。"""
     stock = defaultdict(int)
-    for category in categories.values():
+    for question_id, category in categories.items():
+        if question_id.split("-")[0] in MOCK_RESERVED_EXAMS:
+            continue
         stock[category] += 1
     return dict(stock)
 
