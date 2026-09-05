@@ -8,6 +8,7 @@ import {
 import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
 import { phaseForDaysToExam, sortByPacing } from "./lib/pacing";
 import { formatQuestionText } from "./lib/formatQuestionText";
+import { isWithinRecentDays } from "./lib/recentWrong";
 import {
   buildStudyLogMarkdown,
   findLatestUnexportedDateKey,
@@ -89,6 +90,15 @@ const ALL = "all";
 const UNANSWERED = "unanswered";
 const WRONG = "wrong";
 const DUE = "due";
+/** 「間違えた問題」を直近◯日に絞る選択肢。days は今日を含む暦日数。 */
+const RECENT_WRONG_OPTIONS = [
+  { value: "wrong-1d", days: 2, label: "間違えた問題（今日・昨日）" },
+  { value: "wrong-3d", days: 3, label: "間違えた問題（直近3日）" },
+  { value: "wrong-7d", days: 7, label: "間違えた問題（直近7日）" },
+] as const;
+const recentWrongDays = (statusValue: string): number | null =>
+  RECENT_WRONG_OPTIONS.find((option) => option.value === statusValue)?.days ??
+  null;
 /** この回数連続で正解したら「習得済み」とみなす。 */
 const MASTER_STREAK = 3;
 /** 宅建試験は例年10月の第3日曜。2026年は10月18日。 */
@@ -170,6 +180,27 @@ const normalizeAnswer = (record: AnswerRecord): AnswerRecord => {
 
 const isDueRecord = (record?: AnswerRecord) =>
   Boolean(record && record.nextReviewAt <= new Date().toISOString());
+
+/**
+ * ステータス絞り込みに一致するか。一覧・ジャンプ先探索の両方で使う。
+ * record は未回答なら undefined。
+ */
+const matchesStatusFilter = (
+  statusValue: string,
+  record: AnswerRecord | undefined,
+): boolean => {
+  if (statusValue === UNANSWERED) return !record;
+  if (statusValue === WRONG) return Boolean(record) && !record!.correct;
+  if (statusValue === DUE) return isDueRecord(record);
+
+  const days = recentWrongDays(statusValue);
+  if (days !== null) {
+    if (!record || record.correct) return false;
+    return isWithinRecentDays(record.answeredAt, days);
+  }
+
+  return true;
+};
 
 // 通常ドリルと模試の両方で使う、回答1件ぶんの間隔反復レコード更新。
 const buildAnswerRecord = (
@@ -386,9 +417,11 @@ const loadSettings = (): UiSettings => {
           ? parsed.categoryFilter
           : ALL,
       statusFilter:
-        parsed.statusFilter === UNANSWERED ||
-        parsed.statusFilter === WRONG ||
-        parsed.statusFilter === DUE
+        typeof parsed.statusFilter === "string" &&
+        (parsed.statusFilter === UNANSWERED ||
+          parsed.statusFilter === WRONG ||
+          parsed.statusFilter === DUE ||
+          recentWrongDays(parsed.statusFilter) !== null)
           ? parsed.statusFilter
           : ALL,
       studyMode: parsed.studyMode === true,
@@ -779,15 +812,7 @@ function App() {
         return false;
       }
 
-      if (statusFilter === UNANSWERED && record) {
-        return false;
-      }
-
-      if (statusFilter === WRONG && (!record || record.correct)) {
-        return false;
-      }
-
-      if (statusFilter === DUE && !isDueRecord(record)) {
+      if (!matchesStatusFilter(statusFilter, record)) {
         return false;
       }
 
@@ -1349,10 +1374,7 @@ function App() {
       if (nextExam !== ALL && question.examId !== nextExam) return false;
       if (nextCategory !== ALL && question.category !== nextCategory)
         return false;
-      if (nextStatus === UNANSWERED && record) return false;
-      if (nextStatus === WRONG && (!record || record.correct)) return false;
-      if (nextStatus === DUE && !isDueRecord(record)) return false;
-      return true;
+      return matchesStatusFilter(nextStatus, record);
     });
     if (first) goToQuestion(first.id);
   };
@@ -1896,10 +1918,12 @@ function App() {
     statusFilter === UNANSWERED
       ? "まだ解いていない"
       : statusFilter === WRONG
-        ? "間違えた問題"
+        ? "間違えた問題（すべて）"
         : statusFilter === DUE
           ? "復習する問題"
-          : "すべての問題";
+          : (RECENT_WRONG_OPTIONS.find(
+              (option) => option.value === statusFilter,
+            )?.label ?? "すべての問題");
   const filterSummary = `${examFilterLabel} / ${categoryFilterLabel} / ${statusFilterLabel}`;
   const historySaveTitle = authUser
     ? syncState === "error"
@@ -2350,7 +2374,12 @@ function App() {
                 >
                   <option value={ALL}>すべての問題</option>
                   <option value={UNANSWERED}>まだ解いていない</option>
-                  <option value={WRONG}>間違えた問題</option>
+                  <option value={WRONG}>間違えた問題（すべて）</option>
+                  {RECENT_WRONG_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                   <option value={DUE}>復習する問題</option>
                 </select>
               </div>
