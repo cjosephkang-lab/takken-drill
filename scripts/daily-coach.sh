@@ -1,0 +1,29 @@
+#!/bin/bash
+# 宅建ドリルの日次コーチを毎朝生成する。launchd から呼ばれる。
+#
+# daily-coach.py が Firestore の実績を読んでレポートを docs/coach/ に書く。
+# gcloud のトークンが切れていると失敗するので、その時はログに残して静かに終わる
+# （毎朝ダイアログを出すより、次に手で叩いた時に気づく方がよい）。
+
+set -uo pipefail
+
+REPO="/Users/changju1109/AICompany/takken-drill"
+TODAY="$(date '+%Y-%m-%d')"
+LOG_DIR="${REPO}/docs/coach/logs"
+LOG_FILE="${LOG_DIR}/${TODAY}.log"
+
+mkdir -p "$LOG_DIR"
+
+{
+  echo "=== 宅建コーチ ${TODAY} $(date '+%H:%M:%S') ==="
+  cd "$REPO" || exit 1
+  python3 scripts/daily-coach.py
+  echo "exit=$?"
+} >>"$LOG_FILE" 2>&1
+
+# 生成できたらデスクトップ通知で今日の1行を出す。
+REPORT="${REPO}/docs/coach/${TODAY}.md"
+if [ -f "$REPORT" ]; then
+  PACE="$(grep -m1 '未着手' "$REPORT" | sed 's/\*//g')"
+  osascript -e "display notification \"${PACE}\" with title \"宅建コーチ ${TODAY}\"" 2>/dev/null || true
+fi
