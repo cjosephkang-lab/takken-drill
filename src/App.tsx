@@ -9,6 +9,7 @@ import { passLine, studyOrder, studyOrderByCategory } from "./data/studyGuide";
 import { phaseForDaysToExam, sortByPacing } from "./lib/pacing";
 import { formatQuestionText } from "./lib/formatQuestionText";
 import { isWithinRecentDays } from "./lib/recentWrong";
+import { questionTopics, topics } from "./data/topicTags";
 import {
   buildStudyLogMarkdown,
   findLatestUnexportedDateKey,
@@ -72,6 +73,7 @@ type ProgressState = {
 type UiSettings = {
   examFilter: string;
   categoryFilter: string;
+  topicFilter: string;
   statusFilter: string;
   studyMode: boolean;
   boardOpen: boolean;
@@ -381,12 +383,14 @@ const mergeProgress = (
 const allCategories = Array.from(
   new Set(takkenQuestions.map((question) => question.category)),
 );
+const allTopicIds = new Set(topics.map((topic) => topic.id));
 const validExamIds = new Set(takkenExams.map((exam) => exam.id));
 
 const loadSettings = (): UiSettings => {
   const fallback: UiSettings = {
     examFilter: ALL,
     categoryFilter: ALL,
+    topicFilter: ALL,
     statusFilter: ALL,
     studyMode: false,
     // 成績ボードは初期表示（年度別・分野別の達成状況を最初から見せて進捗を実感させる）。
@@ -415,6 +419,11 @@ const loadSettings = (): UiSettings => {
         (parsed.categoryFilter === ALL ||
           allCategories.includes(parsed.categoryFilter))
           ? parsed.categoryFilter
+          : ALL,
+      topicFilter:
+        typeof parsed.topicFilter === "string" &&
+        (parsed.topicFilter === ALL || allTopicIds.has(parsed.topicFilter))
+          ? parsed.topicFilter
           : ALL,
       statusFilter:
         typeof parsed.statusFilter === "string" &&
@@ -564,6 +573,7 @@ function App() {
   const [categoryFilter, setCategoryFilter] = useState(
     initialSettings.categoryFilter,
   );
+  const [topicFilter, setTopicFilter] = useState(initialSettings.topicFilter);
   const [statusFilter, setStatusFilter] = useState(
     initialSettings.statusFilter,
   );
@@ -658,6 +668,7 @@ function App() {
     saveSettings({
       examFilter,
       categoryFilter,
+      topicFilter,
       statusFilter,
       studyMode,
       boardOpen,
@@ -672,6 +683,7 @@ function App() {
     questionPickerOpen,
     statusFilter,
     studyMode,
+    topicFilter,
   ]);
 
   // ログイン状態を監視し、ログインしたらリモートの記録とローカルをマージして取り込む。
@@ -800,6 +812,16 @@ function App() {
 
   const categories = allCategories;
 
+  // 論点の選択肢。科目を選んでいる時はその科目の論点だけに絞る。
+  // 「宅建業法」を選んでから権利関係の論点が並ぶと選びようがないため。
+  const topicOptions = useMemo(
+    () =>
+      categoryFilter === ALL
+        ? topics
+        : topics.filter((topic) => topic.category === categoryFilter),
+    [categoryFilter],
+  );
+
   const filteredQuestions = useMemo(() => {
     const filtered = takkenQuestions.filter((question) => {
       const record = progress.answers[question.id];
@@ -809,6 +831,10 @@ function App() {
       }
 
       if (categoryFilter !== ALL && question.category !== categoryFilter) {
+        return false;
+      }
+
+      if (topicFilter !== ALL && questionTopics[question.id] !== topicFilter) {
         return false;
       }
 
@@ -835,7 +861,14 @@ function App() {
       if (a.examId !== b.examId) return a.examId < b.examId ? 1 : -1;
       return a.number - b.number;
     });
-  }, [categoryFilter, examFilter, progress.answers, statusFilter, studyMode]);
+  }, [
+    categoryFilter,
+    examFilter,
+    progress.answers,
+    statusFilter,
+    studyMode,
+    topicFilter,
+  ]);
 
   const currentQuestion =
     filteredQuestions.find((question) => question.id === progress.currentId) ??
@@ -1924,7 +1957,18 @@ function App() {
           : (RECENT_WRONG_OPTIONS.find(
               (option) => option.value === statusFilter,
             )?.label ?? "すべての問題");
-  const filterSummary = `${examFilterLabel} / ${categoryFilterLabel} / ${statusFilterLabel}`;
+  const topicFilterLabel =
+    topicFilter === ALL
+      ? null
+      : (topics.find((topic) => topic.id === topicFilter)?.label ?? null);
+  const filterSummary = [
+    examFilterLabel,
+    categoryFilterLabel,
+    topicFilterLabel,
+    statusFilterLabel,
+  ]
+    .filter(Boolean)
+    .join(" / ");
   const historySaveTitle = authUser
     ? syncState === "error"
       ? "Google保存でエラーが出ています"
@@ -2342,6 +2386,9 @@ function App() {
                       value: nextCategory,
                     });
                     setCategoryFilter(nextCategory);
+                    // 科目を変えたら論点は解除する。前の科目の論点が残ると
+                    // 該当0件になり、問題が1問も出ない状態に見えてしまう。
+                    setTopicFilter(ALL);
                     setTimeout(() => {
                       jumpToFirstMatch(examFilter, nextCategory, statusFilter);
                     }, 0);
@@ -2352,6 +2399,30 @@ function App() {
                   {categories.map((category) => (
                     <option key={category} value={category}>
                       {category}
+                    </option>
+                  ))}
+                </select>
+
+                {/* 論点で絞る。予備校が薦める順（1論点ずつ、全年度まとめて）で
+                    演習できるようにするための選択。都市計画法だけを4年分、
+                    農地法だけを4年分、という潰し方ができる。 */}
+                <select
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
+                  onChange={(event) => {
+                    const nextTopic = event.target.value;
+                    setStudyMode(false);
+                    trackMetric("filter_change", {
+                      filter_type: "topic",
+                      value: nextTopic,
+                    });
+                    setTopicFilter(nextTopic);
+                  }}
+                  value={topicFilter}
+                >
+                  <option value={ALL}>すべての論点</option>
+                  {topicOptions.map((topic) => (
+                    <option key={topic.id} value={topic.id}>
+                      {topic.label}
                     </option>
                   ))}
                 </select>
