@@ -259,32 +259,60 @@ export function MockExam({
               ・正解・不正解は採点まで表示されません
             </p>
           </div>
-          <button
-            className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "模試を中断して、この模試の回答を消します。よろしいですか？",
-                )
-              ) {
-                trackMetric("mock_abort_confirm", {
-                  answered_count: answeredCount,
-                  elapsed_sec: elapsedMockSeconds(run.startedAt),
-                  exam_id: run.examId,
-                });
-                onAbort();
-              } else {
-                trackMetric("mock_abort_cancel", {
-                  answered_count: answeredCount,
-                  elapsed_sec: elapsedMockSeconds(run.startedAt),
-                  exam_id: run.examId,
-                });
-              }
-            }}
-            type="button"
-          >
-            中断
-          </button>
+          <div className="flex items-center gap-2">
+            {/* 本番は解きやすい科目から着手する。宅建業法(問26)から始めるのに
+                「次へ」を25回押さずに済むよう、問番号で直接飛べるようにする。 */}
+            <label className="flex items-center gap-1 text-xs text-slate-600">
+              <span className="sr-only">問番号へ移動</span>
+              <select
+                className="min-h-10 rounded-lg border border-slate-300 bg-white px-2 text-xs font-bold text-slate-700"
+                onChange={(event) => {
+                  const nextIndex = Number(event.target.value);
+                  trackMetric("mock_navigate", {
+                    direction: "jump",
+                    exam_id: run.examId,
+                    question_index: nextIndex + 1,
+                  });
+                  setIndex(nextIndex);
+                  window.scrollTo({ top: 0 });
+                }}
+                value={index}
+              >
+                {questions.map((item, itemIndex) => (
+                  <option key={item.id} value={itemIndex}>
+                    問{item.number}
+                    {run.answers[item.id] === undefined ? "" : " ✓"}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
+                onClick={() => {
+                if (
+                  window.confirm(
+                    "模試を中断して、この模試の回答を消します。よろしいですか？",
+                  )
+                ) {
+                  trackMetric("mock_abort_confirm", {
+                    answered_count: answeredCount,
+                    elapsed_sec: elapsedMockSeconds(run.startedAt),
+                    exam_id: run.examId,
+                  });
+                  onAbort();
+                } else {
+                  trackMetric("mock_abort_cancel", {
+                    answered_count: answeredCount,
+                    elapsed_sec: elapsedMockSeconds(run.startedAt),
+                    exam_id: run.examId,
+                  });
+                }
+              }}
+              type="button"
+            >
+              中断
+            </button>
+          </div>
         </div>
       </header>
 
