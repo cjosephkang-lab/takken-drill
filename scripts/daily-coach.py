@@ -46,7 +46,9 @@ FIRESTORE_URL = (
 # 試験日。src/App.tsx の DEFAULT_EXAM_DATE と揃える。
 EXAM_DATE = date(2026, 10, 18)
 # 直前に模試と総復習のために空けておく日数。
-REVIEW_RESERVE_DAYS = 7
+# 直前に模試・総復習へ充てる日数。App.tsx の逆算ペースが14日を確保しており、
+# ここが7日だとアプリと日次コーチで必要ペースが食い違う（2026-09-06 codex指摘）。
+REVIEW_RESERVE_DAYS = 14
 # src/App.tsx の MASTER_STREAK と揃える（この回数連続正解で習得済み）。
 MASTER_STREAK = 3
 
@@ -66,6 +68,10 @@ CATEGORIES = list(TARGETS)
 # 解いた問題で模試をやっても実力は測れないため（2026-09-05 codexレビュー）。
 # r4（着手0問）は9/6の模試で消費済みなので、以降はドリル対象に戻す。
 MOCK_RESERVED_EXAMS = {"r5"}
+
+# この問数以上をこなした日は模試とみなし、平常ペースの計算から除く。
+# 通常の学習日で30問を超えることはまずない（実測の最高は13問）。
+MOCK_DAY_THRESHOLD = 30
 
 # 合格ライン。src/data/studyGuide.ts の passLine が正。
 PASS_MIN, PASS_AVERAGE, PASS_SAFE = 33, 35.5, 38
@@ -287,12 +293,14 @@ def format_report(
     predicted_total = 0.0
     target_total = 0
     gaps = {}
+    predicted_by_category: dict[str, float] = {}
     for category in CATEGORIES:
         entry = stats[category]
         held = stock.get(category, 0)
         full_marks, target = TARGETS[category]
         accuracy = entry["correct"] / entry["touched"] if entry["touched"] else 0.0
         predicted = full_marks * accuracy
+        predicted_by_category[category] = predicted
         predicted_total += predicted
         target_total += target
         gaps[category] = target - predicted
@@ -470,25 +478,72 @@ def format_report(
         ]
         actual = sum(window) / 7
         needed = remaining_total / work_days
+
+        # 模試の日（50問を一気に解いた日）を除いた平常ペースも出す。
+        # 模試込みの平均は実態より高く出て「足りている」と誤判定する
+        # （2026-09-06 codex指摘。11.9問/日の実体は模試を除くと4.7問/日だった）。
+        normal_days = [value for value in window if value < MOCK_DAY_THRESHOLD]
+        normal_pace = sum(normal_days) / 7
+
         add(f"直近7日の実績 **{actual:.1f}問/日**（休んだ日も0問として平均）"
             f" に対し、必要な新規ペースは **{needed:.1f}問/日**。")
-        if actual >= needed:
+        if len(normal_days) < len(window):
+            excluded = len(window) - len(normal_days)
+            add("")
+            add(f"うち{excluded}日は模試（{MOCK_DAY_THRESHOLD}問以上）。"
+                f"模試を除いた平常ペースは **{normal_pace:.1f}問/日**。"
+                "模試は1日で50問進むので、含めると実力より速く見える。")
+
+        judge_pace = normal_pace if len(normal_days) < len(window) else actual
+        add("")
+        if judge_pace >= needed:
             add("→ ペースは足りている。この調子を維持する。")
         else:
-            add(f"→ **{needed - actual:.1f}問/日 足りない。**"
-                f" このままだと未着手を{remaining_total / max(actual, 0.1):.0f}日かけて消化することになり、"
-                f"実働{work_days:.1f}日ぶんに間に合わない。")
+            add(f"→ **{needed - judge_pace:.1f}問/日 足りない。**"
+                f" このままだと未着手を{remaining_total / max(judge_pace, 0.1):.0f}日かけて"
+                f"消化することになり、実働{work_days:.1f}日ぶんに間に合わない。")
     else:
         add("dailyLog が空のため、ペースを判定できません。")
 
     add("")
     return "\n".join(lines), {
         "predicted": predicted_total,
+        "byCategory": predicted_by_category,
         "days_left": days_left,
         "priority": priority,
         "remaining": remaining,
         "base_pace": base_pace,
     }
+
+
+PREDICTION_LOG = OUT_DIR / "predictions.json"
+
+
+def record_prediction(today: date, predicted: float, by_category: dict) -> None:
+    """その日の予想点を追記で残す。後から模試の実績と突き合わせるため。
+
+    模試の結果は学習履歴に書き戻されるので、模試後に計算した予想点は
+    実績を織り込んでいて検証にならない（2026-09-06 codex指摘）。
+    毎日の予想を残しておけば、模試前日の値と実績を比べられる。
+    """
+    log = {}
+    if PREDICTION_LOG.exists():
+        log = json.loads(PREDICTION_LOG.read_text(encoding="utf-8"))
+
+    # 同じ日に複数回叩いても、その日の最初の値を残す（模試後の上書きを防ぐ）。
+    key = today.isoformat()
+    if key in log:
+        return
+
+    log[key] = {
+        "predicted": round(predicted, 1),
+        "byCategory": {name: round(value, 1) for name, value in by_category.items()},
+    }
+    PREDICTION_LOG.parent.mkdir(parents=True, exist_ok=True)
+    PREDICTION_LOG.write_text(
+        json.dumps(log, ensure_ascii=False, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
 
 
 def push_coaching(uid: str, coaching: dict) -> None:
@@ -634,6 +689,8 @@ def main() -> None:
     report, metrics = format_report(progress, categories, today)
 
     print(report)
+
+    record_prediction(today, metrics["predicted"], metrics["byCategory"])
 
     coaching = build_coaching(
         progress,

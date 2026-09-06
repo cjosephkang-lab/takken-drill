@@ -855,28 +855,38 @@ function App() {
   const [todayKey, setTodayKey] = useState(() => localDateKey(new Date()));
 
   useEffect(() => {
+    let timer = 0;
+
     const syncToday = () => setTodayKey(localDateKey(new Date()));
 
-    // 次のローカル0時ちょうどに合わせる。setTimeoutの上限を超えないよう、
-    // 遠い場合は最大1時間で刻んで近づける（スリープ復帰のずれもここで吸収する）。
-    const now = new Date();
-    const nextMidnight = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
-    ).getTime();
-    const delay = Math.min(
-      Math.max(nextMidnight - now.getTime(), 1000),
-      3_600_000,
-    );
-    const timer = window.setTimeout(syncToday, delay);
+    // 次のローカル0時に合わせて起こす。遠い場合は最大1時間で刻んで近づける
+    // （setTimeoutの上限を避けつつ、スリープ復帰のずれもここで吸収する）。
+    // 日付が変わらなかった時はstateが同じ値のまま＝このeffectは再実行されないので、
+    // タイマー自身が次を張り直す。張り直しをやめると跨ぎを検知できなくなる。
+    const scheduleNext = () => {
+      const now = new Date();
+      const nextMidnight = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+      ).getTime();
+      const delay = Math.min(
+        Math.max(nextMidnight - now.getTime(), 1000),
+        3_600_000,
+      );
+      timer = window.setTimeout(() => {
+        syncToday();
+        scheduleNext();
+      }, delay);
+    };
 
+    scheduleNext();
     document.addEventListener("visibilitychange", syncToday);
     return () => {
       window.clearTimeout(timer);
       document.removeEventListener("visibilitychange", syncToday);
     };
-  }, [todayKey]);
+  }, []);
 
   const filteredQuestions = useMemo(() => {
     const filtered = takkenQuestions.filter((question) => {
@@ -1889,6 +1899,7 @@ function App() {
     forceCloudReplaceRef.current = true;
     setProgress(next);
     setSessionAnswers({});
+    setPinnedQuestionId(null);
     window.localStorage.removeItem(STORAGE_KEY);
   };
 
@@ -1938,6 +1949,8 @@ function App() {
     }
     setMockRun(null);
     saveMockRun(null);
+    // 模試の前に解いていた問題のピンは持ち越さない。
+    setPinnedQuestionId(null);
   };
 
   // 模試の採点結果を学習記録へ反映する。回答した各問を通常ドリルと同じ
@@ -1993,6 +2006,8 @@ function App() {
     });
     setMockRun(null);
     saveMockRun(null);
+    // 模試の前に解いていた問題のピンは持ち越さない。
+    setPinnedQuestionId(null);
 
     // 採点画面から「誤答を解き直す」で戻ってきた時は、その年度の
     // 間違えた問題だけを開いた状態にする。復習に直行できるようにする。
@@ -2043,6 +2058,33 @@ function App() {
     RECENT_WRONG_OPTIONS.find((option) => option.value === statusFilter)
       ?.label ??
     "すべての問題";
+  // 年度を絞っている時、その年度の正誤を一覧で見せる。
+  // 模試の採点画面は終了すると消えるので、後から振り返る手段が要る。
+  const examReview = useMemo(() => {
+    if (examFilter === ALL) return null;
+
+    const rows = takkenQuestions
+      .filter((question) => question.examId === examFilter)
+      .sort((a, b) => a.number - b.number)
+      .map((question) => {
+        const record = progress.answers[question.id];
+        return {
+          question,
+          record,
+          correct: record?.correct ?? null,
+          unsure: record?.unsure ?? false,
+        };
+      });
+
+    const answered = rows.filter((row) => row.record);
+    return {
+      rows,
+      answered: answered.length,
+      correct: answered.filter((row) => row.correct).length,
+      unsure: answered.filter((row) => row.unsure).length,
+    };
+  }, [examFilter, progress.answers]);
+
   const topicFilterLabel =
     topicFilter === ALL
       ? null
@@ -2542,6 +2584,62 @@ function App() {
                   <option value={DUE}>復習する問題</option>
                 </select>
               </div>
+
+              {/* 年度を選んでいる時だけ、その年度の正誤を一覧で見せる。
+                  模試の採点画面は終了すると消えるので、後から
+                  「どれが合っててどれが間違いだったか」を辿る手段が要る。 */}
+              {examReview && examReview.answered > 0 ? (
+                <details className="mt-3 rounded-lg border border-slate-200 bg-slate-50">
+                  <summary className="cursor-pointer px-3 py-2 text-sm font-bold text-slate-900">
+                    この年度の正誤一覧（{examReview.correct}/
+                    {examReview.answered}問正解
+                    {examReview.unsure > 0
+                      ? `・自信なし${examReview.unsure}問`
+                      : ""}
+                    ）
+                  </summary>
+                  <div className="grid grid-cols-5 gap-1.5 p-3 sm:grid-cols-10">
+                    {examReview.rows.map((row) => {
+                      const label = row.record
+                        ? row.correct
+                          ? row.unsure
+                            ? "○?"
+                            : "○"
+                          : "×"
+                        : "—";
+                      const tone = !row.record
+                        ? "border-slate-200 bg-white text-slate-400"
+                        : !row.correct
+                          ? "border-rose-300 bg-rose-50 text-rose-700"
+                          : row.unsure
+                            ? "border-amber-300 bg-amber-50 text-amber-800"
+                            : "border-emerald-300 bg-emerald-50 text-emerald-700";
+                      return (
+                        <button
+                          className={`min-h-11 rounded-md border text-xs font-bold ${tone}`}
+                          key={row.question.id}
+                          onClick={() => {
+                            trackMetric("exam_review_jump", {
+                              correct: row.correct,
+                              exam_id: examFilter,
+                              question_number: row.question.number,
+                            });
+                            goToQuestion(row.question.id, "question");
+                          }}
+                          type="button"
+                        >
+                          <span className="block">問{row.question.number}</span>
+                          <span className="block">{label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="px-3 pb-3 text-xs leading-5 text-slate-500">
+                    ○=正解 ／ ○?=正解だが自信なし ／ ×=不正解 ／ —=未回答。
+                    タップするとその問題へ移動します。
+                  </p>
+                </details>
+              ) : null}
             </div>
           </section>
         ) : null}
