@@ -53,6 +53,11 @@ type AnswerRecord = {
   lapses: number;
   /** 次に復習すべき日時（間隔反復）。この日時を過ぎると「復習期限」に入る。 */
   nextReviewAt: string;
+  /**
+   * 自信がないまま答えたか。4択なので勘でも25%当たる。
+   * 正解でもこれが立っている間は習得済みにせず、復習に残す。
+   */
+  unsure?: boolean;
 };
 
 /** Daily study volume used by streak, calendar, and today's work. */
@@ -93,6 +98,8 @@ const UNANSWERED = "unanswered";
 const WRONG = "wrong";
 const DUE = "due";
 /** 「間違えた問題」を直近◯日に絞る選択肢。days は今日を含む暦日数。 */
+/** 自信なしで答えた問題（正解も含む）。まぐれ当たりを拾い直すための絞り込み。 */
+const UNSURE = "unsure";
 const RECENT_WRONG_OPTIONS = [
   { value: "wrong-1d", days: 2, label: "間違えた問題（今日・昨日）" },
   { value: "wrong-3d", days: 3, label: "間違えた問題（直近3日）" },
@@ -101,6 +108,14 @@ const RECENT_WRONG_OPTIONS = [
 const recentWrongDays = (statusValue: string): number | null =>
   RECENT_WRONG_OPTIONS.find((option) => option.value === statusValue)?.days ??
   null;
+/** 絞り込みの表示名。RECENT_WRONG_OPTIONS の3つはそちらのlabelを使う。 */
+const STATUS_LABELS: Record<string, string> = {
+  [UNANSWERED]: "まだ解いていない",
+  [WRONG]: "間違えた問題（すべて）",
+  [UNSURE]: "自信がなかった問題",
+  [DUE]: "復習する問題",
+};
+
 /** この回数連続で正解したら「習得済み」とみなす。 */
 const MASTER_STREAK = 3;
 /** 宅建試験は例年10月の第3日曜。2026年は10月18日。 */
@@ -194,6 +209,7 @@ const matchesStatusFilter = (
   if (statusValue === UNANSWERED) return !record;
   if (statusValue === WRONG) return Boolean(record) && !record!.correct;
   if (statusValue === DUE) return isDueRecord(record);
+  if (statusValue === UNSURE) return Boolean(record?.unsure);
 
   const days = recentWrongDays(statusValue);
   if (days !== null) {
@@ -210,8 +226,11 @@ const buildAnswerRecord = (
   selected: number,
   correct: boolean,
   answeredAt: string,
+  unsure = false,
 ): AnswerRecord => {
-  const streak = correct ? (previous?.streak ?? 0) + 1 : 0;
+  // 自信がないまま当てた正解は連続正解に数えない。4択は勘でも25%当たるので、
+  // まぐれ当たりを習得済みに積み上げると実力を過大評価する。
+  const streak = correct && !unsure ? (previous?.streak ?? 0) + 1 : 0;
 
   return {
     selected,
@@ -221,6 +240,7 @@ const buildAnswerRecord = (
     attempts: (previous?.attempts ?? 0) + 1,
     lapses: (previous?.lapses ?? 0) + (correct ? 0 : 1),
     nextReviewAt: addDays(answeredAt, reviewIntervalDays(streak)),
+    unsure,
   };
 };
 
@@ -430,6 +450,7 @@ const loadSettings = (): UiSettings => {
         (parsed.statusFilter === UNANSWERED ||
           parsed.statusFilter === WRONG ||
           parsed.statusFilter === DUE ||
+          parsed.statusFilter === UNSURE ||
           recentWrongDays(parsed.statusFilter) !== null)
           ? parsed.statusFilter
           : ALL,
@@ -605,6 +626,13 @@ function App() {
   const [revealedQuestionId, setRevealedQuestionId] = useState<string | null>(
     null,
   );
+  // いま画面に出している問題を絞り込みから守るための一時ピン。
+  // 「間違えた問題」で絞って解いている時、正解した瞬間に条件から外れて
+  // 問題と解説が消えてしまうため、次の問題へ移るまでは一覧に残す。
+  // 「自信なし」を押してから選択肢を選ぶと、正解でも習得済みにせず復習に残す。
+  // 4択は勘でも25%当たるため、まぐれ当たりを実力に数えないための印。
+  const [unsureMark, setUnsureMark] = useState(false);
+  const [pinnedQuestionId, setPinnedQuestionId] = useState<string | null>(null);
   // 「前へ」で直前に見ていた問題へ確実に戻すための閲覧履歴。
   // studyMode の「次へ」は復習/未回答へジャンプするため、表示順＝配列順ではない。
   // 実際に表示した問題IDを積んでおき、「前へ」はこの履歴を1つ戻る（配列の前隣ではない）。
@@ -822,6 +850,34 @@ function App() {
     [categoryFilter],
   );
 
+  // 画面を開いたまま日付をまたぐと「今日・昨日」等の絞り込みが前日基準のまま残る。
+  // 日付キーをstateで持ち、次のローカル0時とタブ復帰時に更新して再計算のきっかけにする。
+  const [todayKey, setTodayKey] = useState(() => localDateKey(new Date()));
+
+  useEffect(() => {
+    const syncToday = () => setTodayKey(localDateKey(new Date()));
+
+    // 次のローカル0時ちょうどに合わせる。setTimeoutの上限を超えないよう、
+    // 遠い場合は最大1時間で刻んで近づける（スリープ復帰のずれもここで吸収する）。
+    const now = new Date();
+    const nextMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+    ).getTime();
+    const delay = Math.min(
+      Math.max(nextMidnight - now.getTime(), 1000),
+      3_600_000,
+    );
+    const timer = window.setTimeout(syncToday, delay);
+
+    document.addEventListener("visibilitychange", syncToday);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", syncToday);
+    };
+  }, [todayKey]);
+
   const filteredQuestions = useMemo(() => {
     const filtered = takkenQuestions.filter((question) => {
       const record = progress.answers[question.id];
@@ -836,6 +892,12 @@ function App() {
 
       if (topicFilter !== ALL && questionTopics[question.id] !== topicFilter) {
         return false;
+      }
+
+      // 解いている最中の問題は、正解して条件から外れても一覧に残す。
+      // 外すと回答した瞬間に問題と解説が画面から消え、正誤を確認できなくなる。
+      if (question.id === pinnedQuestionId) {
+        return true;
       }
 
       if (!matchesStatusFilter(statusFilter, record)) {
@@ -864,12 +926,17 @@ function App() {
   }, [
     categoryFilter,
     examFilter,
+    pinnedQuestionId,
     progress.answers,
     statusFilter,
     studyMode,
+    todayKey,
     topicFilter,
   ]);
 
+  // 絞り込み結果が0件のとき。currentQuestion は下流の都合で常に値を持つが、
+  // それは絞り込みの対象外なので、問題カードの代わりに空状態を出して回答させない。
+  const noMatchingQuestions = filteredQuestions.length === 0;
   const currentQuestion =
     filteredQuestions.find((question) => question.id === progress.currentId) ??
     filteredQuestions[0] ??
@@ -951,7 +1018,6 @@ function App() {
       });
   }, [progress.answers]);
   const reviewCount = reviewQueue.length;
-  const todayKey = localDateKey(new Date());
   const todayLog = progress.dailyLog[todayKey] ?? { answered: 0, correct: 0 };
   const todayAnswered = todayLog.answered;
   // 実績かメモがあるのに書き出していない直近日。あれば書き出しボタンの既定対象にする。
@@ -1365,6 +1431,10 @@ function App() {
     historyMode: "push" | "none" = "push",
   ) => {
     updateProgress((previous) => ({ ...previous, currentId: questionId }));
+    // 別の問題へ移るので、前の問題を絞り込みから守るピンは解除する。
+    setPinnedQuestionId(null);
+    // 自信なしの印は問題ごと。持ち越すと次の問題まで復習送りになる。
+    setUnsureMark(false);
 
     if (historyMode === "push") {
       // 現在位置より後（前へで戻った後の「先」の履歴）を切り捨て、末尾に積む。
@@ -1503,6 +1573,7 @@ function App() {
       choice,
       correct,
       new Date().toISOString(),
+      unsureMark,
     );
 
     trackMetric("question_answer", {
@@ -1510,6 +1581,7 @@ function App() {
       correct,
       lapses: record.lapses,
       placement,
+      unsure: unsureMark,
       time_to_answer_sec: Math.round(
         (Date.now() - questionEnteredAtRef.current) / 1000,
       ),
@@ -1517,6 +1589,8 @@ function App() {
     });
 
     setSessionAnswers((prev) => ({ ...prev, [currentQuestion.id]: record }));
+    // 正解して絞り込み条件から外れても、次へ進むまでは解説を読めるようにする。
+    setPinnedQuestionId(currentQuestion.id);
     updateProgress((prev) => ({
       ...prev,
       answers: {
@@ -1948,15 +2022,10 @@ function App() {
   const categoryFilterLabel =
     categoryFilter === ALL ? "すべての分野" : categoryFilter;
   const statusFilterLabel =
-    statusFilter === UNANSWERED
-      ? "まだ解いていない"
-      : statusFilter === WRONG
-        ? "間違えた問題（すべて）"
-        : statusFilter === DUE
-          ? "復習する問題"
-          : (RECENT_WRONG_OPTIONS.find(
-              (option) => option.value === statusFilter,
-            )?.label ?? "すべての問題");
+    STATUS_LABELS[statusFilter] ??
+    RECENT_WRONG_OPTIONS.find((option) => option.value === statusFilter)
+      ?.label ??
+    "すべての問題";
   const topicFilterLabel =
     topicFilter === ALL
       ? null
@@ -2351,7 +2420,8 @@ function App() {
             </button>
 
             <div className="border-t border-slate-200 p-3">
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {/* セレクトは4つ。3列だと4つ目だけが次行に取り残されるため2列×2行で並べる。 */}
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <select
                   className="min-h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-900"
                   onChange={(event) => {
@@ -2451,6 +2521,7 @@ function App() {
                       {option.label}
                     </option>
                   ))}
+                  <option value={UNSURE}>自信がなかった問題</option>
                   <option value={DUE}>復習する問題</option>
                 </select>
               </div>
@@ -2458,270 +2529,335 @@ function App() {
           </section>
         ) : null}
 
-        <section
-          ref={questionRef}
-          className="scroll-mt-3 rounded-lg border border-slate-200 bg-white shadow-sm"
-        >
-          <div className="border-b border-slate-200 bg-white p-4">
-            {isGuidedMission ? (
-              <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
-                <p className="font-bold">
-                  今日の{missionTarget}問 · {todayAnswered}/{missionTarget}問
-                </p>
-                <p className="mt-0.5 text-xs leading-5">
-                  この問題：{guidedQuestionKind}
-                  {guidedQuestionKind === "復習期限"
-                    ? "。忘れかけた頃の確認です。"
-                    : guidedQuestionKind === "新しい問題"
-                      ? "。初めて取り組む問題です。"
-                      : "。この問題への解答は完了しています。"}
-                </p>
-              </div>
-            ) : null}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1 text-sm font-bold text-sky-700">
-                {currentQuestion.year}
-              </span>
-              <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-sm font-bold text-amber-700">
-                問{currentQuestion.number}
-              </span>
-              <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-sm font-bold text-slate-700">
-                {currentQuestion.category}
-              </span>
-              {hasUnreadableCorrectChoice(currentQuestion) ? (
-                <span className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-sm font-bold text-rose-700">
-                  正解の選択肢が判読不能
-                </span>
+        {noMatchingQuestions ? (
+          <section
+            ref={questionRef}
+            className="scroll-mt-3 rounded-lg border border-slate-200 bg-white p-6 text-center shadow-sm"
+          >
+            <p className="text-base font-bold text-slate-900">
+              この条件に当てはまる問題はありません
+            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              {filterSummary} で絞り込んでいます。期間や分野を広げるか、
+              絞り込みを解除してください。
+            </p>
+            <button
+              className="mt-4 min-h-11 rounded-lg bg-sky-700 px-4 text-sm font-bold text-white"
+              onClick={() => {
+                trackMetric("filter_clear_from_empty", {
+                  category_filter: categoryFilter,
+                  exam_filter: examFilter,
+                  status_filter: statusFilter,
+                  topic_filter: topicFilter,
+                });
+                setExamFilter(ALL);
+                setCategoryFilter(ALL);
+                setTopicFilter(ALL);
+                setStatusFilter(ALL);
+              }}
+              type="button"
+            >
+              絞り込みを解除する
+            </button>
+          </section>
+        ) : (
+          <section
+            ref={questionRef}
+            className="scroll-mt-3 rounded-lg border border-slate-200 bg-white shadow-sm"
+          >
+            <div className="border-b border-slate-200 bg-white p-4">
+              {isGuidedMission ? (
+                <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
+                  <p className="font-bold">
+                    今日の{missionTarget}問 · {todayAnswered}/{missionTarget}問
+                  </p>
+                  <p className="mt-0.5 text-xs leading-5">
+                    この問題：{guidedQuestionKind}
+                    {guidedQuestionKind === "復習期限"
+                      ? "。忘れかけた頃の確認です。"
+                      : guidedQuestionKind === "新しい問題"
+                        ? "。初めて取り組む問題です。"
+                        : "。この問題への解答は完了しています。"}
+                  </p>
+                </div>
               ) : null}
-            </div>
-            <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-500">
-              <span>
-                {filteredQuestions.length ? currentIndex + 1 : 0}問目 / 全
-                {filteredQuestions.length}問
-              </span>
-              <a
-                className="min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 font-bold text-sky-700"
-                href={currentQuestion.sourceUrl}
-                onClick={() => {
-                  trackMetric("official_pdf_open", questionMetricParams());
-                }}
-                rel="noreferrer"
-                target="_blank"
-              >
-                公式PDF
-              </a>
-            </div>
-            {storedAnswer && !currentAnswer ? (
-              <p className="mt-2 text-sm text-slate-600">
-                挑戦{storedAnswer.attempts + 1}回目・前回
-                {storedAnswer.correct ? "正解" : "不正解"}
-                {isDueRecord(storedAnswer) ? "・復習のタイミングです" : ""}
-                。答えは見えないので、思い出して解き直しましょう。
-              </p>
-            ) : null}
-          </div>
-
-          <div className="space-y-5 p-4">
-            {!currentAnswer ? (
-              <p className="text-sm font-medium text-slate-500">
-                問題文を読んで、正解だと思う番号をタップしてください。
-              </p>
-            ) : null}
-
-            <ChoiceButtons
-              answer={currentAnswer}
-              onAnswer={answerQuestion}
-              placement="top"
-              question={currentQuestion}
-              revealCorrect={answerRevealed}
-            />
-
-            {!currentAnswer &&
-            !answerRevealed &&
-            !hasUnreadableCorrectChoice(currentQuestion) ? (
-              <button
-                className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700"
-                onClick={revealAnswer}
-                type="button"
-              >
-                回答せずに正解・解説を見る
-              </button>
-            ) : null}
-
-            {hasUnreadableCorrectChoice(currentQuestion) ? (
-              <p className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm leading-6 text-rose-800">
-                この問題は公式PDFがスキャン画像で、正解の選択肢がOCRで読み取れませんでした。原本にない文章は補っていないため、正解を選ぶことができません。
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1 text-sm font-bold text-sky-700">
+                  {currentQuestion.year}
+                </span>
+                <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-sm font-bold text-amber-700">
+                  問{currentQuestion.number}
+                </span>
+                <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-sm font-bold text-slate-700">
+                  {currentQuestion.category}
+                </span>
+                {hasUnreadableCorrectChoice(currentQuestion) ? (
+                  <span className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-sm font-bold text-rose-700">
+                    正解の選択肢が判読不能
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-500">
+                <span>
+                  {filteredQuestions.length ? currentIndex + 1 : 0}問目 / 全
+                  {filteredQuestions.length}問
+                </span>
                 <a
-                  className="font-bold underline"
+                  className="min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 font-bold text-sky-700"
                   href={currentQuestion.sourceUrl}
+                  onClick={() => {
+                    trackMetric("official_pdf_open", questionMetricParams());
+                  }}
                   rel="noreferrer"
                   target="_blank"
                 >
                   公式PDF
                 </a>
-                で原本をご確認ください。
-              </p>
-            ) : null}
-
-            <div className="whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-slate-50 p-4 text-base leading-7 text-slate-950">
-              {formatQuestionText(currentQuestion.questionText)}
+              </div>
+              {storedAnswer && !currentAnswer ? (
+                <p className="mt-2 text-sm text-slate-600">
+                  挑戦{storedAnswer.attempts + 1}回目・前回
+                  {storedAnswer.correct ? "正解" : "不正解"}
+                  {isDueRecord(storedAnswer) ? "・復習のタイミングです" : ""}
+                  。答えは見えないので、思い出して解き直しましょう。
+                </p>
+              ) : null}
             </div>
 
-            <ChoiceButtons
-              answer={currentAnswer}
-              onAnswer={answerQuestion}
-              placement="bottom"
-              question={currentQuestion}
-              revealCorrect={answerRevealed}
-            />
+            <div className="space-y-5 p-4">
+              {!currentAnswer ? (
+                <p className="text-sm font-medium text-slate-500">
+                  問題文を読んで、正解だと思う番号をタップしてください。
+                </p>
+              ) : null}
 
-            {currentAnswer || answerRevealed ? (
-              <section
-                ref={feedbackRef}
-                className={`rounded-lg border p-4 ${
-                  currentAnswer?.correct || answerRevealed
-                    ? "border-emerald-200 bg-emerald-50"
-                    : "border-rose-200 bg-rose-50"
-                }`}
-              >
-                <p className="text-base font-bold">
-                  {answerRevealed
-                    ? "正解・解説を確認中"
-                    : currentAnswer?.correct
-                      ? "正解"
-                      : "不正解"}
+              {/* 4択は勘でも25%当たる。自信がないまま答えた問題は、正解でも
+                  習得済みにせず復習に残す。答える前に押しておく。 */}
+              {!currentAnswer && !answerRevealed ? (
+                <button
+                  aria-pressed={unsureMark}
+                  className={`min-h-11 w-full rounded-lg border px-4 text-sm font-bold ${
+                    unsureMark
+                      ? "border-amber-400 bg-amber-50 text-amber-800"
+                      : "border-slate-300 bg-white text-slate-600"
+                  }`}
+                  onClick={() => {
+                    trackMetric("unsure_toggle", {
+                      value: !unsureMark,
+                      ...questionMetricParams(),
+                    });
+                    setUnsureMark((previous) => !previous);
+                  }}
+                  type="button"
+                >
+                  {unsureMark
+                    ? "自信なしで答える（正解でも復習に残す）"
+                    : "自信がない場合はここを押してから答える"}
+                </button>
+              ) : null}
+
+              <ChoiceButtons
+                answer={currentAnswer}
+                onAnswer={answerQuestion}
+                placement="top"
+                question={currentQuestion}
+                revealCorrect={answerRevealed}
+              />
+
+              {/* 答えた後、自信なしが記録されたことを見せる。押し忘れに気づける。 */}
+              {currentAnswer?.unsure ? (
+                <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
+                  自信なしで記録しました。正解でも「自信がなかった問題」に残ります。
                 </p>
-                <p className="mt-1 text-base leading-7 text-slate-950">
-                  {resultText(currentQuestion)}
-                </p>
-                <p className="mt-1 text-sm leading-6 text-slate-700">
-                  {answerRevealed
-                    ? "回答していないため、学習履歴・正答率には記録されていません。"
-                    : currentAnswer?.correct
-                      ? currentAnswer.streak >= MASTER_STREAK
-                        ? `身につきました。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
-                        : `あと${MASTER_STREAK - currentAnswer.streak}回正解で身につきます。`
-                      : "復習リストに追加しました。"}
-                </p>
-                <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
-                  <p className="text-sm font-bold text-sky-700">公式の答え</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-700">
-                    {currentQuestion.officialExplanation}
-                  </p>
+              ) : null}
+
+              {!currentAnswer &&
+              !answerRevealed &&
+              !hasUnreadableCorrectChoice(currentQuestion) ? (
+                <button
+                  className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700"
+                  onClick={revealAnswer}
+                  type="button"
+                >
+                  回答せずに正解・解説を見る
+                </button>
+              ) : null}
+
+              {hasUnreadableCorrectChoice(currentQuestion) ? (
+                <p className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm leading-6 text-rose-800">
+                  この問題は公式PDFがスキャン画像で、正解の選択肢がOCRで読み取れませんでした。原本にない文章は補っていないため、正解を選ぶことができません。
                   <a
-                    className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-bold text-sky-700"
-                    href={currentQuestion.externalExplanationUrl}
-                    onClick={() => {
-                      trackMetric("explanation_open", questionMetricParams());
-                    }}
+                    className="font-bold underline"
+                    href={currentQuestion.sourceUrl}
                     rel="noreferrer"
                     target="_blank"
                   >
-                    解答解説を見る
+                    公式PDF
                   </a>
-                </div>
-                {guidedMissionComplete ? (
-                  <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
-                    <p className="text-base font-bold text-emerald-800">
-                      今日の自動学習はここまでです
+                  で原本をご確認ください。
+                </p>
+              ) : null}
+
+              <div className="whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-slate-50 p-4 text-base leading-7 text-slate-950">
+                {formatQuestionText(currentQuestion.questionText)}
+              </div>
+
+              <ChoiceButtons
+                answer={currentAnswer}
+                onAnswer={answerQuestion}
+                placement="bottom"
+                question={currentQuestion}
+                revealCorrect={answerRevealed}
+              />
+
+              {currentAnswer || answerRevealed ? (
+                <section
+                  ref={feedbackRef}
+                  className={`rounded-lg border p-4 ${
+                    currentAnswer?.correct || answerRevealed
+                      ? "border-emerald-200 bg-emerald-50"
+                      : "border-rose-200 bg-rose-50"
+                  }`}
+                >
+                  <p className="text-base font-bold">
+                    {answerRevealed
+                      ? "正解・解説を確認中"
+                      : currentAnswer?.correct
+                        ? "正解"
+                        : "不正解"}
+                  </p>
+                  <p className="mt-1 text-base leading-7 text-slate-950">
+                    {resultText(currentQuestion)}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-slate-700">
+                    {answerRevealed
+                      ? "回答していないため、学習履歴・正答率には記録されていません。"
+                      : currentAnswer?.correct
+                        ? currentAnswer.streak >= MASTER_STREAK
+                          ? `身につきました。${reviewIntervalDays(currentAnswer.streak)}日後に復習します。`
+                          : `あと${MASTER_STREAK - currentAnswer.streak}回正解で身につきます。`
+                        : "復習リストに追加しました。"}
+                  </p>
+                  <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
+                    <p className="text-sm font-bold text-sky-700">公式の答え</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                      {currentQuestion.officialExplanation}
                     </p>
-                    <p className="mt-1 text-sm leading-6 text-slate-700">
-                      復習期限と未回答の問題を優先して出題しました。追加で解く場合は、年度・分野を指定して選べます。
-                    </p>
-                    <button
-                      className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
-                      onClick={openQuestionPicker}
-                      type="button"
+                    <a
+                      className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-bold text-sky-700"
+                      href={currentQuestion.externalExplanationUrl}
+                      onClick={() => {
+                        trackMetric("explanation_open", questionMetricParams());
+                      }}
+                      rel="noreferrer"
+                      target="_blank"
                     >
-                      年度・分野を選ぶ
-                    </button>
+                      解答解説を見る
+                    </a>
                   </div>
-                ) : isAtEndOfSelectedSet ? (
-                  <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
-                    <p className="text-base font-bold text-emerald-800">
-                      {currentQuestion.year}・{currentQuestion.category}
-                      はここまでです
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-slate-700">
-                      おつかれさまでした。次は年度・分野を選んで続けましょう。
-                    </p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {guidedMissionComplete ? (
+                    <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
+                      <p className="text-base font-bold text-emerald-800">
+                        今日の自動学習はここまでです
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-700">
+                        復習期限と未回答の問題を優先して出題しました。追加で解く場合は、年度・分野を指定して選べます。
+                      </p>
                       <button
-                        className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
+                        className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
                         onClick={openQuestionPicker}
                         type="button"
                       >
-                        次の問題を選ぶ
-                      </button>
-                      <button
-                        className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-base font-bold text-slate-700"
-                        onClick={() => goNext("feedback")}
-                        type="button"
-                      >
-                        もう一度解く
+                        年度・分野を選ぶ
                       </button>
                     </div>
-                  </div>
-                ) : (
-                  <button
-                    className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
-                    onClick={() => goNext("feedback")}
-                    type="button"
-                  >
-                    次へ
-                  </button>
-                )}
-              </section>
-            ) : null}
-
-            <label className="block">
-              <span className="text-base font-bold text-slate-900">
-                自分メモ
-              </span>
-              <textarea
-                className="mt-2 min-h-28 w-full rounded-lg border border-slate-300 bg-white p-3 text-base leading-7 text-slate-900 outline-none focus:border-sky-500"
-                onChange={(event) => saveNote(event.target.value)}
-                onBlur={trackNoteBlur}
-                placeholder="条文、間違えた理由、覚えることを自分用に書く"
-                value={currentNote}
-              />
-            </label>
-
-            <div className="mt-3">
-              {unexportedDateKey ? (
-                <p className="mb-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
-                  {unexportedDateKey}の学習ログがまだ書き出されていません
-                </p>
+                  ) : isAtEndOfSelectedSet ? (
+                    <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
+                      <p className="text-base font-bold text-emerald-800">
+                        {currentQuestion.year}・{currentQuestion.category}
+                        はここまでです
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-700">
+                        おつかれさまでした。次は年度・分野を選んで続けましょう。
+                      </p>
+                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                        <button
+                          className="min-h-12 rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
+                          onClick={openQuestionPicker}
+                          type="button"
+                        >
+                          次の問題を選ぶ
+                        </button>
+                        <button
+                          className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 text-base font-bold text-slate-700"
+                          onClick={() => goNext("feedback")}
+                          type="button"
+                        >
+                          もう一度解く
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      className="mt-3 min-h-12 w-full rounded-lg bg-sky-700 px-4 text-base font-bold text-white"
+                      onClick={() => goNext("feedback")}
+                      type="button"
+                    >
+                      次へ
+                    </button>
+                  )}
+                </section>
               ) : null}
-              <div className="mb-2 flex items-center gap-2">
-                <label className="flex-1">
-                  <span className="sr-only">書き出す日付</span>
-                  <input
-                    className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-sky-500"
-                    max={todayKey}
-                    onChange={(event) =>
-                      setExportDateKey(event.target.value || null)
-                    }
-                    type="date"
-                    value={activeExportDateKey}
-                  />
-                </label>
+
+              <label className="block">
+                <span className="text-base font-bold text-slate-900">
+                  自分メモ
+                </span>
+                <textarea
+                  className="mt-2 min-h-28 w-full rounded-lg border border-slate-300 bg-white p-3 text-base leading-7 text-slate-900 outline-none focus:border-sky-500"
+                  onChange={(event) => saveNote(event.target.value)}
+                  onBlur={trackNoteBlur}
+                  placeholder="条文、間違えた理由、覚えることを自分用に書く"
+                  value={currentNote}
+                />
+              </label>
+
+              <div className="mt-3">
+                {unexportedDateKey ? (
+                  <p className="mb-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
+                    {unexportedDateKey}の学習ログがまだ書き出されていません
+                  </p>
+                ) : null}
+                <div className="mb-2 flex items-center gap-2">
+                  <label className="flex-1">
+                    <span className="sr-only">書き出す日付</span>
+                    <input
+                      className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-sky-500"
+                      max={todayKey}
+                      onChange={(event) =>
+                        setExportDateKey(event.target.value || null)
+                      }
+                      type="date"
+                      value={activeExportDateKey}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="min-h-11 w-full rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-sky-700"
+                  onClick={() => exportStudyLog(activeExportDateKey)}
+                  type="button"
+                >
+                  学習ログを書き出す
+                </button>
+                {studyLogStatus ? (
+                  <p className="mt-2 text-center text-xs font-bold text-slate-600">
+                    {studyLogStatus}
+                  </p>
+                ) : null}
               </div>
-              <button
-                className="min-h-11 w-full rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-sky-700"
-                onClick={() => exportStudyLog(activeExportDateKey)}
-                type="button"
-              >
-                学習ログを書き出す
-              </button>
-              {studyLogStatus ? (
-                <p className="mt-2 text-center text-xs font-bold text-slate-600">
-                  {studyLogStatus}
-                </p>
-              ) : null}
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="mt-3 rounded-lg border border-slate-200 bg-white shadow-sm">
           <button
