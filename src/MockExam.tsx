@@ -32,8 +32,11 @@ type Props = {
   questions: TakkenQuestion[];
   run: MockRun;
   onChange: (run: MockRun) => void;
-  /** 採点結果を確認し、学習記録へ反映して終了。 */
-  onCommit: (run: MockRun) => void;
+  /**
+   * 採点結果を確認し、学習記録へ反映して終了。
+   * reviewWrongOf を渡すと、その年度の誤答だけを絞った状態でドリルに戻る。
+   */
+  onCommit: (run: MockRun, options?: { reviewWrongOf?: string }) => void;
   /** 記録に反映せず破棄して終了。 */
   onAbort: () => void;
 };
@@ -51,6 +54,8 @@ export function MockExam({
     return firstUnanswered === -1 ? 0 : firstUnanswered;
   });
   const [showResult, setShowResult] = useState(false);
+  // 採点画面で「間違えた問だけ」に絞るか。復習は誤答から入るので既定でオン。
+  const [wrongOnly, setWrongOnly] = useState(true);
   const [now, setNow] = useState(() => Date.now());
   const resumeTrackedRef = useRef(false);
   const timeUpTrackedRef = useRef(false);
@@ -212,6 +217,87 @@ export function MockExam({
             })}
           </div>
 
+          {/* 問ごとの正誤。間違えた問は自分の答えと正解を並べ、
+              そのまま解説へ飛べるようにする。復習の起点になる画面。 */}
+          <div className="mt-6">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-base font-bold text-slate-950">
+                問ごとの結果
+              </h2>
+              <button
+                className="min-h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
+                onClick={() => setWrongOnly((previous) => !previous)}
+                type="button"
+              >
+                {wrongOnly ? "すべて表示" : "間違えた問だけ"}
+              </button>
+            </div>
+
+            <ul className="mt-2 space-y-2">
+              {questions
+                .filter((item) => !wrongOnly || !isCorrect(item))
+                .map((item) => {
+                  const chosen = run.answers[item.id];
+                  const ok = isCorrect(item);
+                  return (
+                    <li
+                      className={`rounded-lg border px-3 py-2 ${
+                        ok
+                          ? "border-slate-200 bg-white"
+                          : "border-rose-200 bg-rose-50"
+                      }`}
+                      key={item.id}
+                    >
+                      <div className="flex items-center justify-between gap-2 text-sm">
+                        <span className="font-bold text-slate-950">
+                          問{item.number}
+                          <span className="ml-2 text-xs font-medium text-slate-500">
+                            {item.category}
+                          </span>
+                        </span>
+                        <span
+                          className={`text-xs font-bold ${
+                            ok ? "text-emerald-700" : "text-rose-700"
+                          }`}
+                        >
+                          {ok ? "正解" : "不正解"}
+                        </span>
+                      </div>
+
+                      {ok ? null : (
+                        <p className="mt-1 text-xs text-slate-700">
+                          あなたの答え{" "}
+                          <span className="font-bold text-rose-700">
+                            {chosen === undefined ? "無回答" : chosen}
+                          </span>
+                          {"　"}正解{" "}
+                          <span className="font-bold text-emerald-700">
+                            {item.correctChoices.join("・")}
+                          </span>
+                        </p>
+                      )}
+
+                      <a
+                        className="mt-1 inline-block text-xs font-bold text-sky-700 underline"
+                        href={item.externalExplanationUrl}
+                        onClick={() => {
+                          trackMetric("mock_result_explanation", {
+                            correct: ok,
+                            exam_id: run.examId,
+                            question_number: item.number,
+                          });
+                        }}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        解答解説を見る（{item.externalExplanationName}）
+                      </a>
+                    </li>
+                  );
+                })}
+            </ul>
+          </div>
+
           <p className="mt-4 text-xs leading-5 text-slate-500">
             「終了」を押すと、回答した{answeredCount}
             問が学習履歴に残ります。
@@ -239,6 +325,25 @@ export function MockExam({
               type="button"
             >
               終わって記録に残す
+            </button>
+          </div>
+
+          {/* 記録に残したうえで、この年度の誤答だけをドリルで解き直す。
+              採点画面から復習に直行できるようにする導線。 */}
+          <div className="mt-3">
+            <button
+              className="min-h-12 w-full rounded-lg border border-sky-300 bg-sky-50 px-4 text-sm font-bold text-sky-800"
+              onClick={() => {
+                trackMetric("mock_review_wrong", {
+                  exam_id: run.examId,
+                  score,
+                  wrong_count: questions.length - score,
+                });
+                onCommit(run, { reviewWrongOf: run.examId });
+              }}
+              type="button"
+            >
+              終わって、この模試の誤答{questions.length - score}問を解き直す
             </button>
           </div>
         </div>

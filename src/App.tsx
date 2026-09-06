@@ -1942,7 +1942,10 @@ function App() {
 
   // 模試の採点結果を学習記録へ反映する。回答した各問を通常ドリルと同じ
   // 間隔反復レコードとして記録し、日次ログにも加算する。
-  const commitMock = (run: MockRun) => {
+  const commitMock = (
+    run: MockRun,
+    options?: { reviewWrongOf?: string },
+  ) => {
     const answeredAt = new Date().toISOString();
     const questionById = new Map(takkenQuestions.map((q) => [q.id, q]));
     const runAnswers = Object.entries(run.answers);
@@ -1990,6 +1993,20 @@ function App() {
     });
     setMockRun(null);
     saveMockRun(null);
+
+    // 採点画面から「誤答を解き直す」で戻ってきた時は、その年度の
+    // 間違えた問題だけを開いた状態にする。復習に直行できるようにする。
+    if (options?.reviewWrongOf) {
+      setStudyMode(false);
+      setExamFilter(options.reviewWrongOf);
+      setCategoryFilter(ALL);
+      setTopicFilter(ALL);
+      setStatusFilter(WRONG);
+      setTimeout(() => {
+        jumpToFirstMatch(options.reviewWrongOf ?? ALL, ALL, WRONG);
+      }, 0);
+    }
+
     window.scrollTo({ top: 0 });
   };
 
