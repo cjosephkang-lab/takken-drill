@@ -25,6 +25,14 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from coach_rules import (  # noqa: E402
+    HOUREI_BREAKDOWN,
+    REPEATED_MISTAKE_LAPSES,
+    next_topic_advice,
+    verdict_for,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS_TS = ROOT / "src" / "data" / "questions.ts"
 OUT_DIR = ROOT / "docs" / "coach"
@@ -153,6 +161,22 @@ def fetch_progress() -> dict:
     }
 
 
+def load_question_topics() -> dict:
+    """topicTags.ts から 問題ID → 論点ID の対応を読む。"""
+    source = (ROOT / "src" / "data" / "topicTags.ts").read_text(encoding="utf-8")
+    body = re.search(
+        r"export const questionTopics: Record<string, string> = \{(.*?)\n\};",
+        source,
+        re.S,
+    )
+    if not body:
+        return {}
+    return {
+        match.group(1): match.group(2)
+        for match in re.finditer(r'"([^"]+)":\s*"([^"]+)"', body.group(1))
+    }
+
+
 def load_question_categories() -> dict:
     """questions.ts から 問題ID → 科目 の対応を読む。"""
     source = QUESTIONS_TS.read_text(encoding="utf-8")
@@ -193,7 +217,10 @@ def summarize(answers: dict, categories: dict) -> dict:
     return stats
 
 
-def format_report(progress: dict, categories: dict, today: date) -> str:
+def format_report(
+    progress: dict, categories: dict, today: date
+) -> tuple[str, dict]:
+    """レポート本文と、アプリのコーチ枠を組むのに要る数値を返す。"""
     stock = stock_by_category(categories)
     stats = summarize(progress["answers"], categories)
     daily_log = progress["dailyLog"]
@@ -354,6 +381,58 @@ def format_report(progress: dict, categories: dict, today: date) -> str:
             f"{TIME_WEIGHT['権利関係']}倍で見積もっている（問数の配分には掛けない）。")
         add("")
 
+    # --- 予備校の方針に照らした判定 ---
+    verdict, verdict_line = verdict_for(predicted_total, days_left)
+    add("## コーチの見立て")
+    add("")
+    add(f"**{verdict_line}**")
+    add("")
+
+    topics_map = load_question_topics()
+    topic_touched: dict[str, int] = defaultdict(int)
+    for question_id in progress["answers"]:
+        topic_id = topics_map.get(question_id)
+        if topic_id:
+            topic_touched[topic_id] += 1
+    topic_stats = {
+        topic_id: {"touched": count} for topic_id, count in topic_touched.items()
+    }
+
+    pending = next_topic_advice(topic_stats)
+    if pending:
+        add("### まだ手をつけていない論点（易しい順）")
+        add("")
+        add("1つの法令を学んだらその分野の過去問を解く、が予備校の標準的な進め方"
+            "（伊藤塾「法令上の制限の攻略法」）。まとめてではなく1論点ずつ潰す。")
+        add("")
+        for label, note in pending:
+            add(f"- **{label}** — {note}")
+        add("")
+        add(f"アプリの論点フィルタで「{pending[0][0]}」を選ぶと、"
+            "全年度ぶんがまとまって出る。")
+        add("")
+
+    # 何度も間違えている問題。直前期はここだけを繰り返す（伊藤塾）。
+    repeated = [
+        question_id
+        for question_id, record in progress["answers"].items()
+        if record.get("lapses", 0) >= REPEATED_MISTAKE_LAPSES
+    ]
+    if repeated:
+        add(f"### 何度も間違えている問題 {len(repeated)}問")
+        add("")
+        add(f"{REPEATED_MISTAKE_LAPSES}回以上間違えた問題。"
+            "直前期はこれだけを繰り返すのが伊藤塾の薦める型。")
+        add("")
+        by_category: dict[str, int] = defaultdict(int)
+        for question_id in repeated:
+            category = categories.get(question_id)
+            if category:
+                by_category[category] += 1
+        for category, count in sorted(by_category.items(), key=lambda x: -x[1]):
+            add(f"- {category} {count}問")
+        add("")
+
     # --- ペース ---
     add("## ペース")
     add("")
@@ -403,7 +482,131 @@ def format_report(progress: dict, categories: dict, today: date) -> str:
         add("dailyLog が空のため、ペースを判定できません。")
 
     add("")
-    return "\n".join(lines)
+    return "\n".join(lines), {
+        "predicted": predicted_total,
+        "days_left": days_left,
+        "priority": priority,
+        "remaining": remaining,
+        "base_pace": base_pace,
+    }
+
+
+def push_coaching(uid: str, coaching: dict) -> None:
+    """アプリの coaching/{uid} を書き換える。アプリはここを読んで表示する。"""
+    url = (
+        f"https://firestore.googleapis.com/v1/projects/{PROJECT_ID}"
+        f"/databases/(default)/documents/coaching/{uid}"
+    )
+
+    def wrap(value):
+        if isinstance(value, str):
+            return {"stringValue": value}
+        if isinstance(value, list):
+            return {"arrayValue": {"values": [wrap(item) for item in value]}}
+        if isinstance(value, dict):
+            return {
+                "mapValue": {
+                    "fields": {key: wrap(item) for key, item in value.items()}
+                }
+            }
+        raise TypeError(f"未対応の型: {type(value)}")
+
+    body = json.dumps(
+        {"fields": {key: wrap(value) for key, value in coaching.items()}}
+    ).encode()
+    request = urllib.request.Request(
+        url,
+        data=body,
+        method="PATCH",
+        headers={
+            "Authorization": f"Bearer {access_token()}",
+            "Content-Type": "application/json",
+        },
+    )
+    urllib.request.urlopen(request, timeout=30).read()
+
+
+def build_coaching(
+    progress: dict,
+    categories: dict,
+    today: date,
+    predicted: float,
+    days_left: int,
+    priority: list,
+    remaining: dict,
+    base_pace: float,
+) -> dict:
+    """アプリの「今日の学習アドバイス」枠に出す内容を組む。
+
+    予備校の無料コラムに書かれた方針を判定条件にしたもので、
+    コラム本文は使わない（scripts/coach_rules.py に出典を明記）。
+    """
+    verdict, verdict_line = verdict_for(predicted, days_left)
+
+    topics_map = load_question_topics()
+    topic_touched: dict[str, int] = defaultdict(int)
+    for question_id in progress["answers"]:
+        topic_id = topics_map.get(question_id)
+        if topic_id:
+            topic_touched[topic_id] += 1
+    pending = next_topic_advice(
+        {topic_id: {"touched": n} for topic_id, n in topic_touched.items()}
+    )
+
+    repeated = [
+        question_id
+        for question_id, record in progress["answers"].items()
+        if record.get("lapses", 0) >= REPEATED_MISTAKE_LAPSES
+    ]
+
+    tasks = []
+    if pending:
+        label, note = pending[0]
+        tasks.append({
+            "label": f"{label}を全年度ぶん解く",
+            "detail": f"{note}。論点フィルタで選ぶとまとまって出る。"
+                      "1つの法令を学んだらその分野の過去問を解くのが定石。",
+        })
+    weakest = priority[0] if priority else None
+    if weakest:
+        # 最優先の科目には今日のペースの半分を充てる。
+        # 残量の比で割ると1問前後になり、0%の科目がいつまでも開かないため。
+        today_count = max(round(base_pace / 2), 2)
+        tasks.append({
+            "label": f"{weakest}の新規を{today_count}問",
+            "detail": f"未着手{remaining[weakest]}問。目標との差が最も大きい科目。",
+        })
+    if repeated:
+        tasks.append({
+            "label": f"何度も間違えた{len(repeated)}問を回す",
+            "detail": f"{REPEATED_MISTAKE_LAPSES}回以上落とした問題。"
+                      "直前期はここだけを繰り返す。",
+        })
+
+    if pending:
+        headline = f"{pending[0][0]}から開ける"
+        advice = (
+            f"未着手の論点が{len(pending)}つ残っている。易しくて配点のある論点から"
+            "1つずつ潰す。まとめて広く触るより、1論点を全年度ぶん続けて解く方が"
+            "「毎年こう聞かれる」というパターンが見える。\n\n"
+            "新しい教材は買わない。手元の過去問を繰り返すのが直前期の型。"
+        )
+    else:
+        headline = "弱点を潰す時期"
+        advice = (
+            "未着手の論点はもうない。ここからは間違えた問題だけを繰り返す。"
+            "点数そのものより、なぜ間違えたかを言えるようにする。"
+        )
+
+    return {
+        "generatedAt": datetime.now().astimezone().isoformat(),
+        "examDate": EXAM_DATE.isoformat(),
+        "verdict": verdict,
+        "verdictLine": verdict_line,
+        "headline": headline,
+        "advice": advice,
+        "todayMustDo": tasks[:3],
+    }
 
 
 def main() -> None:
@@ -417,15 +620,37 @@ def main() -> None:
         "--date",
         help="基準日 (YYYY-MM-DD)。省略時は今日",
     )
+    parser.add_argument(
+        "--push",
+        action="store_true",
+        help="アプリの「今日の学習アドバイス」枠を更新する",
+    )
     args = parser.parse_args()
 
     today = date.fromisoformat(args.date) if args.date else date.today()
 
     progress = fetch_progress()
     categories = load_question_categories()
-    report = format_report(progress, categories, today)
+    report, metrics = format_report(progress, categories, today)
 
     print(report)
+
+    coaching = build_coaching(
+        progress,
+        categories,
+        today,
+        metrics["predicted"],
+        metrics["days_left"],
+        metrics["priority"],
+        metrics["remaining"],
+        metrics["base_pace"],
+    )
+    if args.push:
+        push_coaching(progress["uid"], coaching)
+        print("\n→ アプリの「今日の学習アドバイス」を更新しました。", file=sys.stderr)
+    else:
+        print("\n--- アプリに出す内容（--push で反映）---", file=sys.stderr)
+        print(json.dumps(coaching, ensure_ascii=False, indent=2), file=sys.stderr)
 
     if not args.stdout:
         OUT_DIR.mkdir(parents=True, exist_ok=True)
