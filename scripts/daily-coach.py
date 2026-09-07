@@ -22,7 +22,7 @@ import subprocess
 import sys
 import urllib.request
 from collections import defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -171,6 +171,24 @@ def fetch_progress() -> dict:
     }
 
 
+JST = timezone(timedelta(hours=9))
+
+
+def to_jst(iso_text: str) -> str:
+    """FirestoreのISO時刻（UTC）を日本時間の読みやすい形にする。
+
+    Firestoreは常にUTCで返すので、そのまま出すと9時間ずれる。
+    「03:13」を見て午前3時と誤解しないよう、JSTに直して出す。
+    """
+    if not iso_text:
+        return "不明"
+    try:
+        parsed = datetime.fromisoformat(iso_text.replace("Z", "+00:00"))
+    except ValueError:
+        return iso_text
+    return parsed.astimezone(JST).strftime("%Y-%m-%d %H:%M JST")
+
+
 def load_question_topics() -> dict:
     """topicTags.ts から 問題ID → 論点ID の対応を読む。"""
     source = (ROOT / "src" / "data" / "topicTags.ts").read_text(encoding="utf-8")
@@ -267,7 +285,7 @@ def format_report(
                 f"（通常日の{ratio * 100:.0f}%）")
     add("")
     add(f"データ取得元: Firestore `progress/{progress['uid']}`"
-        f"（最終同期 {progress['updatedAt']}）")
+        f"（最終同期 {to_jst(progress['updatedAt'])}）")
     add("")
 
     # --- 全体 ---
@@ -729,7 +747,7 @@ def build_coaching(
         )
 
     return {
-        "generatedAt": datetime.now().astimezone().isoformat(),
+        "generatedAt": datetime.now(JST).isoformat(),
         "examDate": EXAM_DATE.isoformat(),
         "verdict": verdict,
         "verdictLine": verdict_line,
