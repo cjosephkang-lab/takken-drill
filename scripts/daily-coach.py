@@ -29,6 +29,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from coach_rules import (  # noqa: E402
     HOUREI_BREAKDOWN,
     REPEATED_MISTAKE_LAPSES,
+    TANADA_TARGET_ATTEMPTS,
+    TARGET_ACCURACY,
+    accuracy_gap,
+    exam_day_plan,
     next_topic_advice,
     verdict_for,
 )
@@ -309,8 +313,8 @@ def format_report(
     # --- 科目別 ---
     add("## 科目別")
     add("")
-    add("| 科目 | 着手/在庫 | 消化率 | 正答率 | 習得 | 予想点 | 目標 | 差 |")
-    add("|---|---:|---:|---:|---:|---:|---:|---:|")
+    add("| 科目 | 着手/在庫 | 正答率 | 目標% | 差 | 予想点 | 目標 |")
+    add("|---|---:|---:|---:|---:|---:|---:|")
 
     predicted_total = 0.0
     target_total = 0
@@ -328,18 +332,22 @@ def format_report(
         gaps[category] = target - predicted
 
         accuracy_text = f"{accuracy * 100:.1f}%" if entry["touched"] else "—"
+        goal = TARGET_ACCURACY.get(category, 0.7)
+        gap_pt = -accuracy_gap(category, accuracy) * 100
+        gap_text = f"{gap_pt:+.1f}pt" if entry["touched"] else "—"
         add(
             f"| {category} | {entry['touched']}/{held}"
-            f" | {entry['touched'] / held * 100:.1f}%"
-            f" | {accuracy_text} | {entry['mastered']}"
-            f" | {predicted:.1f} | {target} | {predicted - target:+.1f} |"
+            f" | {accuracy_text} | {goal * 100:.0f}% | {gap_text}"
+            f" | {predicted:.1f} | {target} |"
         )
     add(
         f"| **合計** | {touched_total}/{stock_total}"
-        f" | {touched_total / stock_total * 100:.1f}% | | {mastered_total}"
-        f" | **{predicted_total:.1f}** | {target_total}"
-        f" | {predicted_total - target_total:+.1f} |"
+        f" | | | | **{predicted_total:.1f}** | {target_total} |"
     )
+    add("")
+    add("目標正答率は講師の推奨値。宅建業法は9割（20問中18問）、"
+        "権利関係は他科目で30点取れる前提の8点＝57%。"
+        "出典は scripts/coach_rules.py に記載。")
     add("")
     add("予想点 = 科目の本番配点 × いまの正答率。着手0の科目は0点として扱う"
         "（未着手は本番で取れないため）。")
@@ -461,6 +469,43 @@ def format_report(
                 by_category[category] += 1
         for category, count in sorted(by_category.items(), key=lambda x: -x[1]):
             add(f"- {category} {count}問")
+        add("")
+
+    # --- 棚田式の4回基準 ---
+    attempt_dist = defaultdict(int)
+    for record in progress["answers"].values():
+        attempt_dist[min(record.get("attempts", 0), TANADA_TARGET_ATTEMPTS)] += 1
+    reached = attempt_dist[TANADA_TARGET_ATTEMPTS]
+    add(f"### 通算{TANADA_TARGET_ATTEMPTS}回に届いた問題")
+    add("")
+    add(f"棚田式の問題集はチェックボックスが4つで、同じ問題を"
+        f"{TANADA_TARGET_ATTEMPTS}回解く前提。今の到達状況:")
+    add("")
+    for times in range(1, TANADA_TARGET_ATTEMPTS + 1):
+        label = (
+            f"{times}回以上" if times == TANADA_TARGET_ATTEMPTS else f"{times}回"
+        )
+        add(f"- {label}解いた: {attempt_dist[times]}問")
+    add("")
+    add(f"→ {TANADA_TARGET_ATTEMPTS}回に届いたのは "
+        f"**{reached}問 / {touched_total}問**"
+        f"（{reached / touched_total * 100:.0f}%）"
+        if touched_total
+        else "")
+    add("")
+
+    # --- 本試験当日の段取り ---
+    if days_left <= 14:
+        add("### 本試験当日の時間配分")
+        add("")
+        add("業法から始める。権利関係を先にやるとペースが崩れる。")
+        add("")
+        for line in exam_day_plan():
+            add(f"- {line}")
+        add("")
+        add("マークは全50問を解き終えてから一括で塗る。1問ずつ塗ると"
+            "目線の往復が増えてミスしやすい。分からない問題は飛ばさず"
+            "直感で選んで印をつけ、見直しの20分で判断する。")
         add("")
 
     # --- ペース ---
