@@ -164,11 +164,24 @@ const elapsedSeconds = (startedAt: string) =>
 
 // 間隔反復の復習間隔。間違えたら翌日、正解を重ねるほど間隔を広げて、
 // 忘れかけた頃に再出題する。
+/**
+ * 次の復習までの日数。連続正解が増えるほど間隔を空ける。
+ *
+ * 棚田行政書士（YouTube「不動産大学」・TAC出版『棚田式』）の大量記憶法は
+ * 0日→半日→1日→2日→3日→4日→5日→6日→7日と最初の1週間を毎日詰め、
+ * 7日到達後に週1回へ移す。エビングハウスの忘却曲線が根拠。
+ * https://takken11.com/memory/
+ *
+ * ただし1週間毎日は残り日数に対して重すぎる（23問解いた日の復習だけで
+ * 7日間×23問が固定され、未着手に手が回らない）。3回目を7日から4日に
+ * 前倒しし、忘却が進む前に1回挟む形に圧縮した。
+ */
 const reviewIntervalDays = (streak: number) => {
   if (streak <= 0) return 1;
   if (streak === 1) return 2;
-  if (streak === 2) return 7;
-  if (streak === 3) return 14;
+  if (streak === 2) return 4;
+  if (streak === 3) return 7;
+  if (streak === 4) return 14;
   return 30;
 };
 
@@ -627,11 +640,12 @@ function App() {
     null,
   );
   // いま画面に出している問題を絞り込みから守るための一時ピン。
-  // 「間違えた問題」で絞って解いている時、正解した瞬間に条件から外れて
-  // 問題と解説が消えてしまうため、次の問題へ移るまでは一覧に残す。
   // 「自信なし」を押してから選択肢を選ぶと、正解でも習得済みにせず復習に残す。
   // 4択は勘でも25%当たるため、まぐれ当たりを実力に数えないための印。
   const [unsureMark, setUnsureMark] = useState(false);
+  // いま画面に出している問題を絞り込みから守る一時ピン。
+  // 「間違えた問題」で絞って解いている時、正解した瞬間に条件から外れて
+  // 問題と解説が消えるのを防ぐ。絞り込み条件そのものが変わったら捨てる。
   const [pinnedQuestionId, setPinnedQuestionId] = useState<string | null>(null);
   // 「前へ」で直前に見ていた問題へ確実に戻すための閲覧履歴。
   // studyMode の「次へ」は復習/未回答へジャンプするため、表示順＝配列順ではない。
@@ -849,6 +863,15 @@ function App() {
         : topics.filter((topic) => topic.category === categoryFilter),
     [categoryFilter],
   );
+
+  // 絞り込み条件そのものが変わったら、ピンは捨てる。
+  // ピンは「いまの絞り込みの中で解いている問題」を守るためのもので、条件が
+  // 変わればその役目は終わる。残すと「該当0件なのに前の問題が居座る」ことになる。
+  // 論点セレクトのように jumpToFirstMatch を通らない変更もあるため、
+  // 個々のハンドラではなく条件の変化そのものを見て捨てる。
+  useEffect(() => {
+    setPinnedQuestionId(null);
+  }, [categoryFilter, examFilter, statusFilter, studyMode, topicFilter]);
 
   // 画面を開いたまま日付をまたぐと「今日・昨日」等の絞り込みが前日基準のまま残る。
   // 日付キーをstateで持ち、次のローカル0時とタブ復帰時に更新して再計算のきっかけにする。
@@ -1441,8 +1464,10 @@ function App() {
     historyMode: "push" | "none" = "push",
   ) => {
     updateProgress((previous) => ({ ...previous, currentId: questionId }));
-    // 別の問題へ移るので、前の問題を絞り込みから守るピンは解除する。
-    setPinnedQuestionId(null);
+    // ピンは移動先へ張り替える。null にすると、「前へ」で戻った先が絞り込みの
+    // 条件から外れている場合（正解済みの問題へ戻る等）にその問題が消えてしまう。
+    // 移動先が元から条件を満たしていれば、ピンがあっても表示は変わらない。
+    setPinnedQuestionId(questionId);
     // 自信なしの印は問題ごと。持ち越すと次の問題まで復習送りになる。
     setUnsureMark(false);
 
