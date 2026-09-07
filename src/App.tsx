@@ -1462,12 +1462,14 @@ function App() {
     // "push": 新しい遷移（次へ・フィルタジャンプ・ミッション開始）。現在位置以降を切って末尾に積む。
     // "none": 履歴内の移動（前へ／履歴上の次へ）。履歴は goPrev/goNext 側で更新済みなので触らない。
     historyMode: "push" | "none" = "push",
+    // 移動先を絞り込みから守るか。
+    // "release": 前進（次へ・フィルタジャンプ）。ピンを捨てる。捨てないと、絞り込みの
+    //   最後の1問を正解した時に自分自身へ循環し、その問題から抜けられなくなる。
+    // "pin": 移動先が条件を満たさなくても見せたい場合（履歴の前へ／正誤一覧からの直接ジャンプ）。
+    pinMode: "release" | "pin" = "release",
   ) => {
     updateProgress((previous) => ({ ...previous, currentId: questionId }));
-    // ピンは移動先へ張り替える。null にすると、「前へ」で戻った先が絞り込みの
-    // 条件から外れている場合（正解済みの問題へ戻る等）にその問題が消えてしまう。
-    // 移動先が元から条件を満たしていれば、ピンがあっても表示は変わらない。
-    setPinnedQuestionId(questionId);
+    setPinnedQuestionId(pinMode === "pin" ? questionId : null);
     // 自信なしの印は問題ごと。持ち越すと次の問題まで復習送りになる。
     setUnsureMark(false);
 
@@ -1774,7 +1776,8 @@ function App() {
         target_reason: "history",
         ...questionMetricParams(),
       });
-      goToQuestion(nextId, "question", "none");
+      // 履歴で戻った先は、いまの絞り込みの条件を満たさないことがある（正解済みの問題など）。
+      goToQuestion(nextId, "question", "none", "pin");
       return;
     }
 
@@ -1866,7 +1869,8 @@ function App() {
       target_reason: "history",
       ...questionMetricParams(),
     });
-    goToQuestion(prevId, "question", "none");
+    // 「前へ」で戻る先は絞り込みの条件を満たさないことがある（正解済みの問題など）。
+    goToQuestion(prevId, "question", "none", "pin");
   };
 
   const toggleBoard = () => {
@@ -2649,7 +2653,8 @@ function App() {
                               exam_id: examFilter,
                               question_number: row.question.number,
                             });
-                            goToQuestion(row.question.id, "question");
+                            // 正解済みの問題にも飛べるよう、絞り込みから守る。
+                            goToQuestion(row.question.id, "question", "push", "pin");
                           }}
                           type="button"
                         >
