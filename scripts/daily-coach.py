@@ -26,6 +26,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from note_facts import check_note  # noqa: E402
 from coach_rules import (  # noqa: E402
     HOUREI_BREAKDOWN,
     REPEATED_MISTAKE_LAPSES,
@@ -171,6 +172,7 @@ def fetch_progress() -> dict:
         "uid": documents[0]["name"].rsplit("/", 1)[-1],
         "answers": unwrap(fields.get("answers", {"mapValue": {}})) or {},
         "dailyLog": unwrap(fields.get("dailyLog", {"mapValue": {}})) or {},
+        "notes": unwrap(fields.get("notes", {"mapValue": {}})) or {},
         "updatedAt": unwrap(fields.get("updatedAt", {"stringValue": ""})),
     }
 
@@ -220,6 +222,22 @@ def load_question_categories() -> dict:
     return categories
 
 
+def load_question_labels() -> dict:
+    """問題ID → {year, number} の対応。メモの指摘に年度と問番号を出すため。"""
+    source = QUESTIONS_TS.read_text(encoding="utf-8")
+    labels = {}
+    for match in re.finditer(
+        r'"id":\s*"([^"]+)".*?"year":\s*"([^"]+)".*?"number":\s*(\d+)',
+        source,
+        re.S,
+    ):
+        labels.setdefault(
+            match.group(1),
+            {"year": match.group(2), "number": int(match.group(3))},
+        )
+    return labels
+
+
 def stock_by_category(categories: dict) -> dict:
     """科目ごとの、ドリルで扱う問題数。模試用に温存した年度は数えない。"""
     stock = defaultdict(int)
@@ -256,6 +274,8 @@ def format_report(
     stock = stock_by_category(categories)
     stats = summarize(progress["answers"], categories)
     daily_log = progress["dailyLog"]
+    # メモの指摘に「令和6年度 問41」と出すための対応表。
+    question_lookup = load_question_labels()
 
     days_left = (EXAM_DATE - today).days
     # 新規に使える最終日。これ以降は模試と総復習に充てる。
@@ -469,6 +489,41 @@ def format_report(
                 by_category[category] += 1
         for category, count in sorted(by_category.items(), key=lambda x: -x[1]):
             add(f"- {category} {count}問")
+        add("")
+
+    # --- メモの数字チェック ---
+    # メモに書いた数字が、その論点の正しい数字とずれていないかを機械的に見る。
+    # 2026-09-07に「営業保証金の取戻しは5年」という誤記を手作業で見つけた。
+    # 同じ種類の取り違えを次から自動で拾う。解釈の正誤までは判定しない。
+    note_findings = []
+    for question_id, note in progress.get("notes", {}).items():
+        text = note.get("text", "") if isinstance(note, dict) else str(note)
+        if not text.strip():
+            continue
+        for finding in check_note(text):
+            question = question_lookup.get(question_id)
+            label = (
+                f"{question['year']} 問{question['number']}"
+                if question
+                else question_id
+            )
+            note_findings.append((label, finding))
+
+    if note_findings:
+        add("### メモの数字で気になるところ")
+        add("")
+        for label, finding in note_findings:
+            add(f"**{label} — {finding['topic']}**")
+            add("")
+            add(f"{finding['message']}")
+            add("")
+            add(f"{finding['note']}")
+            if finding["source"]:
+                add("")
+                add(f"出典: {finding['source']}")
+            add("")
+        add("数字の照合だけなので、解釈が正しいかは別。"
+            "別の論点の話を同じメモに書いている場合は気にしなくてよい。")
         add("")
 
     # --- 棚田式の4回基準 ---
@@ -748,7 +803,25 @@ def build_coaching(
                       "4択は勘でも25%当たるので、ここが隠れた弱点。",
         })
 
-    # 5. 常習の誤答。直前期はここだけを繰り返す。
+    # 5. メモの数字が怪しいもの。放置すると誤った記憶が固定される。
+    note_warnings = []
+    for question_id, note in progress.get("notes", {}).items():
+        text = note.get("text", "") if isinstance(note, dict) else str(note)
+        if not text.strip():
+            continue
+        for finding in check_note(text):
+            if finding["level"] == "warn":
+                note_warnings.append(finding["topic"])
+    if note_warnings:
+        topics = "・".join(dict.fromkeys(note_warnings))
+        tasks.append({
+            "label": f"メモの数字を直す（{topics}）",
+            "detail": "書いた数字がその論点の正しい数字とずれている。"
+                      "誤ったまま覚えると本番で落とす。"
+                      "詳細は docs/coach/ の今日のレポート。",
+        })
+
+    # 6. 常習の誤答。直前期はここだけを繰り返す。
     if repeated:
         tasks.append({
             "label": f"何度も間違えた{len(repeated)}問を回す",
