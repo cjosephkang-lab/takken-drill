@@ -73,6 +73,10 @@ MOCK_RESERVED_EXAMS = {"r5"}
 # 通常の学習日で30問を超えることはまずない（実測の最高は13問）。
 MOCK_DAY_THRESHOLD = 30
 
+# 復習がこの数を超えたら、新規より復習を優先する。
+# 溜めたまま新規を積むと翌日さらに増え、間隔反復が回らなくなる。
+REVIEW_BACKLOG_THRESHOLD = 30
+
 # 合格ライン。src/data/studyGuide.ts の passLine が正。
 PASS_MIN, PASS_AVERAGE, PASS_SAFE = 33, 35.5, 38
 
@@ -614,42 +618,113 @@ def build_coaching(
         if record.get("lapses", 0) >= REPEATED_MISTAKE_LAPSES
     ]
 
+    # 復習の期限が来ている数。復習は新規より優先する（期限があるため）。
+    due_count = 0
+    overdue_count = 0
+    for record in progress["answers"].values():
+        next_review = record.get("nextReviewAt", "")
+        if not next_review:
+            continue
+        review_day = next_review[:10]
+        if review_day < today.isoformat():
+            overdue_count += 1
+        elif review_day == today.isoformat():
+            due_count += 1
+    review_total = due_count + overdue_count
+
+    # 自信なしで答えた問題。正解でもまぐれの可能性があるので拾い直す。
+    unsure_count = sum(
+        1 for record in progress["answers"].values() if record.get("unsure")
+    )
+
     tasks = []
-    if pending:
+
+    # 1. 復習が溜まっているなら、それが今日の最優先。
+    if review_total >= REVIEW_BACKLOG_THRESHOLD:
+        tasks.append({
+            "label": f"復習 {review_total}問を消化する（新規より先）",
+            "detail": f"期限切れ{overdue_count}問・今日期限{due_count}問。"
+                      "アプリの絞り込みで 状態→「復習する問題」。"
+                      "溜めたまま新規を積むと明日さらに増える。",
+        })
+    elif review_total > 0:
+        tasks.append({
+            "label": f"復習 {review_total}問",
+            "detail": "状態→「復習する問題」を選ぶ。"
+                      "分からなければ答える前に「自信がない」を押す。",
+        })
+
+    # 2. 未着手の論点。論点フィルタの選び方まで書く。
+    if pending and review_total < REVIEW_BACKLOG_THRESHOLD:
         label, note = pending[0]
         tasks.append({
             "label": f"{label}を全年度ぶん解く",
-            "detail": f"{note}。論点フィルタで選ぶとまとまって出る。"
-                      "1つの法令を学んだらその分野の過去問を解くのが定石。",
+            "detail": f"{note}。分野→その科目を選び、次の論点欄で"
+                      f"「{label}」を選ぶと全年度ぶんが並ぶ。"
+                      "1論点を続けて解くと出題のパターンが見える。",
         })
+
+    # 3. 最優先の科目の新規。
     weakest = priority[0] if priority else None
-    if weakest:
+    if weakest and review_total < REVIEW_BACKLOG_THRESHOLD:
         # 最優先の科目には今日のペースの半分を充てる。
         # 残量の比で割ると1問前後になり、0%の科目がいつまでも開かないため。
         today_count = max(round(base_pace / 2), 2)
         tasks.append({
             "label": f"{weakest}の新規を{today_count}問",
-            "detail": f"未着手{remaining[weakest]}問。目標との差が最も大きい科目。",
+            "detail": f"未着手{remaining[weakest]}問。分野→「{weakest}」、"
+                      "状態→「まだ解いていない」で出る。",
         })
+
+    # 4. まぐれ当たりの拾い直し。
+    if unsure_count:
+        tasks.append({
+            "label": f"自信がなかった{unsure_count}問を解き直す",
+            "detail": "正解でも自信なしで答えた問題。"
+                      "状態→「自信がなかった問題」。"
+                      "4択は勘でも25%当たるので、ここが隠れた弱点。",
+        })
+
+    # 5. 常習の誤答。直前期はここだけを繰り返す。
     if repeated:
         tasks.append({
             "label": f"何度も間違えた{len(repeated)}問を回す",
             "detail": f"{REPEATED_MISTAKE_LAPSES}回以上落とした問題。"
-                      "直前期はここだけを繰り返す。",
+                      "状態→「間違えた問題（すべて）」。"
+                      "直前期はここだけを繰り返すのが予備校の型。",
         })
 
-    if pending:
+    # 見出しと本文は、今日いちばん効くことを1つだけ言う。
+    if review_total >= REVIEW_BACKLOG_THRESHOLD:
+        headline = f"今日は復習{review_total}問。新規は積まない"
+        advice = (
+            f"復習の期限が{review_total}問たまっている"
+            f"（期限切れ{overdue_count}問・今日{due_count}問）。"
+            "この状態で新規を足すと、明日はさらに増える。\n\n"
+            "アプリの上部にある絞り込みを開いて、"
+            "いちばん右の「状態」を「復習する問題」にする。"
+            "科目を絞りたいときは、その左の「分野」で選ぶ。\n\n"
+            "答える前に、分からなければ「自信がない場合はここを押してから答える」"
+            "を押しておく。押しておくと、正解でも復習に残る。"
+            "4択は勘でも25%当たるので、まぐれを実力に数えないための印。"
+        )
+    elif pending:
         headline = f"{pending[0][0]}から開ける"
         advice = (
-            f"未着手の論点が{len(pending)}つ残っている。易しくて配点のある論点から"
-            "1つずつ潰す。まとめて広く触るより、1論点を全年度ぶん続けて解く方が"
-            "「毎年こう聞かれる」というパターンが見える。\n\n"
+            f"まだ手をつけていない論点が{len(pending)}つある。"
+            "易しくて配点のある論点から1つずつ潰す。\n\n"
+            "絞り込みで「分野」を選ぶと、その下に「論点」が出る。"
+            f"そこで「{pending[0][0]}」を選ぶと、収録している全年度ぶんが並ぶ。"
+            "1つの論点を続けて解くと「毎年こう聞かれる」というパターンが見える。"
+            "科目単位でばらばらに解くのとはここが違う。\n\n"
             "新しい教材は買わない。手元の過去問を繰り返すのが直前期の型。"
         )
     else:
         headline = "弱点を潰す時期"
         advice = (
-            "未着手の論点はもうない。ここからは間違えた問題だけを繰り返す。"
+            "未着手の論点はもうない。ここからは間違えた問題だけを繰り返す。\n\n"
+            "状態を「間違えた問題（すべて）」または「自信がなかった問題」にする。"
+            "直近だけを見たいときは「間違えた問題（今日・昨日）」も使える。\n\n"
             "点数そのものより、なぜ間違えたかを言えるようにする。"
         )
 
