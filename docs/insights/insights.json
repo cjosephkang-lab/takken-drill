@@ -1,0 +1,1045 @@
+{
+  "confusionPairs": [
+    {
+      "createdAt": "2026-09-09T20:12:50.086979+09:00",
+      "id": "jyuyo-jiko-35__keiyaku-shomen-37",
+      "labelA": "重要事項説明（35条書面）",
+      "labelB": "契約書面（37条書面）",
+      "questionIds": [
+        "r7-30",
+        "r7-33",
+        "r7-27",
+        "r7-29",
+        "r6-41",
+        "r6-35",
+        "r7-37",
+        "r4-32"
+      ],
+      "reason": "誤答の診断で「重要事項説明（35条書面）」と「契約書面（37条書面）」の混同が1回指摘された。",
+      "retest": {
+        "answered": 0,
+        "correct": 0
+      },
+      "topicA": "jyuyo-jiko-35",
+      "topicB": "keiyaku-shomen-37"
+    },
+    {
+      "createdAt": "2026-09-09T20:12:50.086979+09:00",
+      "id": "hoshugaku__keiyaku-shomen-37",
+      "labelA": "報酬額の制限",
+      "labelB": "契約書面（37条書面）",
+      "questionIds": [
+        "r7-26",
+        "r7-33",
+        "r6-28",
+        "r7-29",
+        "r6-35",
+        "r4-32"
+      ],
+      "reason": "同じ科目「宅建業法」で、どちらの論点にも間違えた問題がある（報酬額の制限 2問・契約書面（37条書面） 4問）。",
+      "retest": {
+        "answered": 0,
+        "correct": 0
+      },
+      "topicA": "hoshugaku",
+      "topicB": "keiyaku-shomen-37"
+    },
+    {
+      "createdAt": "2026-09-09T20:12:50.086979+09:00",
+      "id": "keiyaku-shomen-37__takkengyo-menkyo",
+      "labelA": "契約書面（37条書面）",
+      "labelB": "宅建業の意味・免許",
+      "questionIds": [
+        "r7-33",
+        "r7-34",
+        "r7-29",
+        "r7-41",
+        "r6-35",
+        "r4-26",
+        "r4-32",
+        "r6-38"
+      ],
+      "reason": "同じ科目「宅建業法」で、どちらの論点にも間違えた問題がある（契約書面（37条書面） 4問・宅建業の意味・免許 4問）。",
+      "retest": {
+        "answered": 0,
+        "correct": 0
+      },
+      "topicA": "keiyaku-shomen-37",
+      "topicB": "takkengyo-menkyo"
+    },
+    {
+      "createdAt": "2026-09-09T20:12:50.086979+09:00",
+      "id": "hoshugaku__jyuyo-jiko-35",
+      "labelA": "報酬額の制限",
+      "labelB": "重要事項説明（35条書面）",
+      "questionIds": [
+        "r7-26",
+        "r7-30",
+        "r6-28",
+        "r7-27",
+        "r6-41",
+        "r7-37"
+      ],
+      "reason": "同じ科目「宅建業法」で、どちらの論点にも間違えた問題がある（報酬額の制限 2問・重要事項説明（35条書面） 10問）。",
+      "retest": {
+        "answered": 0,
+        "correct": 0
+      },
+      "topicA": "hoshugaku",
+      "topicB": "jyuyo-jiko-35"
+    },
+    {
+      "createdAt": "2026-09-09T20:12:50.086979+09:00",
+      "id": "jyuyo-jiko-35__takkengyo-menkyo",
+      "labelA": "重要事項説明（35条書面）",
+      "labelB": "宅建業の意味・免許",
+      "questionIds": [
+        "r7-30",
+        "r7-34",
+        "r7-27",
+        "r7-41",
+        "r6-41",
+        "r4-26",
+        "r7-37",
+        "r6-38"
+      ],
+      "reason": "同じ科目「宅建業法」で、どちらの論点にも間違えた問題がある（重要事項説明（35条書面） 10問・宅建業の意味・免許 4問）。",
+      "retest": {
+        "answered": 0,
+        "correct": 0
+      },
+      "topicA": "jyuyo-jiko-35",
+      "topicB": "takkengyo-menkyo"
+    }
+  ],
+  "diagnoses": {
+    "r3_12-45": {
+      "confidence": "mid",
+      "eventAt": "2026-08-17T01:18:26.345Z",
+      "label": "数字混同",
+      "reason": "学習メモでは基準日後の届出未了による契約制限期間を「50日」としているが、選んだ肢2の期間は「1月」であり、正しい数字を誤った期間感覚と結び付けて判断した可能性がある。",
+      "type": "number"
+    },
+    "r3_12-50": {
+      "confidence": "mid",
+      "eventAt": "2026-07-27T15:42:49.079Z",
+      "label": "読み違い",
+      "reason": "学習メモは肢1の内容（組積式構造は耐震性が劣る）自体を正しい知識として確認しており、「最も不適当なもの」を選ぶ設問で正しい記述の肢を選んでしまった可能性がある。",
+      "type": "misread"
+    },
+    "r4-01": {
+      "confidence": "low",
+      "eventAt": "2026-09-08T05:36:42.840Z",
+      "label": "読み違い",
+      "reason": "判決文は転得者（丁）が背信的悪意者でない限り対抗できるという趣旨だが、選んだ肢1は二重譲受人（丙に相当するC）自身が背信的悪意者でも対抗できるとしており、判決文中の登場人物の対応関係を取り違えた可能性がある。",
+      "type": "misread"
+    },
+    "r4-12": {
+      "confidence": "mid",
+      "eventAt": "2026-09-08T08:42:06.145Z",
+      "label": "知識欠落",
+      "reason": "学習メモは敷金返還が明渡し後である点（肢4）は正しく理解しているが、定期建物賃貸借の要件として契約書とは別個の書面で事前説明が必要という要式性を知らず、肢1を正しいと誤認したと考えられる。",
+      "type": "knowledge"
+    },
+    "r4-22": {
+      "confidence": "low",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "学習メモには個々の面積基準は正確に書かれているが、隣接する複数の土地をまとめて取得した場合に合算して届出要否を判定する「一団の土地」の考え方への言及がなく、この論点を知らなかった可能性がある。",
+      "type": "knowledge"
+    },
+    "r4-25": {
+      "confidence": "low",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "肢2の「建物が存するものとして」という定義の誤りを見抜けず、内容が正しい肢1の方を誤りと判断した。",
+      "type": "knowledge"
+    },
+    "r4-26": {
+      "confidence": "mid",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "宅建業を営まない支店・本店は事務所に該当しないという正解肢2の知識が不足しており、主たる事務所の掲示義務等を定めた肢3を正しいと誤認したと考えられる。",
+      "type": "knowledge"
+    },
+    "r4-28": {
+      "confidence": "mid",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "売主が個人・買主が宅建業者の場合は35条書面交付義務がないという正解肢1の論点を知らず、契約前交付の一般論を述べた肢3を正しいと判断したと考えられる。",
+      "type": "knowledge"
+    },
+    "r4-30": {
+      "confidence": "mid",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "数字混同",
+      "reason": "割賦販売の要件を「6か月以上」と誤って記憶しており、本来1年以上であるため誤りの肢アを正しいと判断し、他の肢も含めて「なし」と誤答したと考えられる。",
+      "type": "number"
+    },
+    "r4-32": {
+      "confidence": "mid",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "37条書面は取引に関与する宅建業者ごとに宅地建物取引士の記名押印が必要という肢1の誤りに気づかず、契約不適合責任の特約記載義務を定めた正しい肢4を誤りと判断したと考えられる。",
+      "type": "knowledge"
+    },
+    "r4-36": {
+      "confidence": "mid",
+      "confusedWithTopic": "keiyaku-shomen-37",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "論点混同",
+      "reason": "代金の支払時期・方法は37条書面の記載事項であり、35条の重要事項説明事項ではない。37条の記載事項を35条の説明事項と取り違えた可能性が高い。",
+      "type": "confusion"
+    },
+    "r4-37": {
+      "confidence": "low",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "個数問題でアの正誤判断は学習メモから正しく理解できているが、イまたはウの誤り(問い合わせがなくても誇大広告は違反になる等)を見落として正しい肢の数を少なく数えた。",
+      "type": "knowledge"
+    },
+    "r4-39": {
+      "confidence": "mid",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "肢2の「供託所」の扱いを正しいと誤認した一方、正解の肢4にある「社員になる前の取引も弁済対象になる」という論点を知らなかった可能性が高い。",
+      "type": "knowledge"
+    },
+    "r4-40": {
+      "confidence": "low",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "個数問題で、電話のみでの重説（ア）が違反になる点を見落とし、全て適法と判断してしまった。",
+      "type": "knowledge"
+    },
+    "r4-41": {
+      "confidence": "low",
+      "eventAt": "2026-09-06T04:40:50.323Z",
+      "label": "知識欠落",
+      "reason": "個数問題で「誤っているもの」の数を一つ少なく数えており、ア〜エのいずれか一肢の正誤判定を取り違えた。",
+      "type": "knowledge"
+    },
+    "r5-27": {
+      "confidence": "low",
+      "eventAt": "2026-09-07T06:00:15.377Z",
+      "label": "知識欠落",
+      "reason": "建物状況調査を実施できる者の資格要件（建築士に限られるか等）の細部を正しく判断できず、実際に誤っている肢4（賃貸借でも37条書面に記載が必要とした点）を見抜けなかった。",
+      "type": "knowledge"
+    },
+    "r5-30": {
+      "confidence": "mid",
+      "eventAt": "2026-09-07T06:04:18.613Z",
+      "label": "数字混同",
+      "reason": "学習メモに複数の届出・供託期限（2週間・30日・3か月・6か月）が並記されており、ウの届出期限の数字を正しい規定と取り違えて正しい肢と判断した可能性が高い。",
+      "type": "number"
+    },
+    "r6-04": {
+      "confidence": "low",
+      "eventAt": "2026-09-08T04:18:30.152Z",
+      "label": "知識欠落",
+      "reason": "履行拒絶時は催告不要で解除できる点は学習メモで正しく理解しているにもかかわらず選択肢1を選んでおり、詐欺による取消しを相続人に対して主張できるという正解肢4の論点の知識が欠けていた。",
+      "type": "knowledge"
+    },
+    "r6-06": {
+      "confidence": "mid",
+      "eventAt": "2026-09-08T04:23:26.671Z",
+      "label": "知識欠落",
+      "reason": "抵当権者保護のため地上権が消滅しない例外は理解しているが、売買・代物弁済・贈与のいずれの原因による所有権取得でも地上権が消滅しないという適用範囲まで理解が及んでいなかった。",
+      "type": "knowledge"
+    },
+    "r6-07": {
+      "confidence": "mid",
+      "eventAt": "2026-09-08T04:26:36.772Z",
+      "label": "知識欠落",
+      "reason": "賃貸借契約は当事者の死亡によって当然には終了せず相続されるという基本知識が欠けており、肢4を正しいと判断した。",
+      "type": "knowledge"
+    },
+    "r6-11": {
+      "confidence": "mid",
+      "eventAt": "2026-09-08T04:44:52.282Z",
+      "label": "知識欠落",
+      "reason": "選んだ肢1は事業用借地権の要式性（公正証書のみか、公正証書等の書面でもよいか）を取り違えており、正解の肢3（存続期間の定めがない場合の期間）より先に肢1の誤りに気づけなかった。",
+      "type": "knowledge"
+    },
+    "r6-30": {
+      "confidence": "mid",
+      "eventAt": "2026-09-07T03:12:33.972Z",
+      "label": "知識欠落",
+      "reason": "選んだ肢1（宅建士の記名不要）を誤りと判断したが、実際に誤っているのは肢4（銀行での申込み場所の扱い）であり、その論点の知識が抜けていた。",
+      "type": "knowledge"
+    },
+    "r6-32": {
+      "confidence": "mid",
+      "eventAt": "2026-09-07T04:58:32.883Z",
+      "label": "知識欠落",
+      "reason": "選んだ肢4（建物状況調査のあっせんに関する記載義務）を誤りと判断したが、実際は肢3（業務処理状況の報告義務）の知識が抜けていた。",
+      "type": "knowledge"
+    },
+    "r6-35": {
+      "confidence": "mid",
+      "eventAt": "2026-09-07T05:22:29.295Z",
+      "label": "知識欠落",
+      "reason": "選んだ肢1は電磁的方法による提供の説明義務者を「宅建士」としており、実際は宅建業者自身が説明すべきという主体の取り違えがあった。",
+      "type": "knowledge"
+    },
+    "r6-39": {
+      "confidence": "mid",
+      "eventAt": "2026-09-07T05:37:17.850Z",
+      "label": "知識欠落",
+      "reason": "選んだ肢3（売主業者自身の届出義務）を誤りと判断したが、実際は肢4（展示会の届出先に免許権者も含まれること）の知識が抜けていた。",
+      "type": "knowledge"
+    },
+    "r6-41": {
+      "confidence": "mid",
+      "eventAt": "2026-09-07T05:44:59.033Z",
+      "label": "知識欠落",
+      "reason": "4つの記述のうち正しいのはイの1つだが「なし」を選んでおり、イ（借地契約終了時の建物取壊しに関する事項の説明義務）を誤りと判断してしまった。",
+      "type": "knowledge"
+    },
+    "r7-03": {
+      "confidence": "low",
+      "eventAt": "2026-09-09T11:30:44.160Z",
+      "label": "知識欠落",
+      "reason": "学習メモでは通謀虚偽表示(イ)と錯誤(ウ)の効果は正しく理解できているが、心裡留保(ア)の「相手方に過失があれば無効」という要件を正しく踏まえられず、誤りの肢を1つとして少なく数えた可能性がある。",
+      "type": "knowledge"
+    },
+    "r7-10": {
+      "confidence": "mid",
+      "eventAt": "2026-09-01T06:50:39.372Z",
+      "label": "数字混同",
+      "reason": "選んだ肢2と正解の肢3は「売主が善意か悪意で告げていなかったか」という前提が異なり、それに紐づく通知期間・特約の年数の対応関係を取り違えた。",
+      "type": "number"
+    },
+    "r7-11": {
+      "confidence": "mid",
+      "eventAt": "2026-09-02T09:51:06.722Z",
+      "label": "知識欠落",
+      "reason": "選んだ肢1は、配偶者名義で登記された建物があれば借地権の対抗力が認められるという誤った理解に基づいている。",
+      "type": "knowledge"
+    },
+    "r7-40": {
+      "confidence": "mid",
+      "eventAt": "2026-09-07T02:56:06.771Z",
+      "label": "知識欠落",
+      "reason": "4つの記述のうち正しいのは3つだが1つと数えており、クーリングオフの適用条件（申込み場所・告知の有無）の判断を複数箇所で誤った。",
+      "type": "knowledge"
+    }
+  },
+  "explanationGrades": {
+    "r7-03": {
+      "checkedAt": "2026-09-09T20:36:45.646853+09:00",
+      "explanationUpdatedAt": "2026-09-09T11:33:41.583Z",
+      "message": "本問は「誤っている記述の数」を問う個数問題ですが、根拠は「正しいものを回答した」という取り違えの説明のみで、ア〜エの各肢がなぜ誤りか（心裡留保・虚偽表示・錯誤の効果）の理由になっていません。",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-3/",
+      "verdict": "reason_off"
+    }
+  },
+  "generatedAt": "2026-09-09T20:40:02.096454+09:00",
+  "noteReviews": {
+    "r3_12-45": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "10年間の担保責任・50日ルール・保険金額2,000万円以上、いずれも解説と一致。",
+      "noteUpdatedAt": "2026-08-17T01:19:07.894Z",
+      "sourceUrl": "https://takken-success.info/2021-12kakomon/r032-45/",
+      "verdict": "ok"
+    },
+    "r3_12-50": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "組積式構造は耐震性が劣るという点は解説と一致。",
+      "noteUpdatedAt": "2026-07-27T15:47:01.115Z",
+      "sourceUrl": "https://takken-success.info/2021-12kakomon/r032-50/",
+      "verdict": "ok"
+    },
+    "r4-02": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "相続放棄は生前不可、兄弟姉妹に遺留分なしという点は解説と一致。",
+      "noteUpdatedAt": "2026-09-06T07:26:40.013Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-2/",
+      "verdict": "ok"
+    },
+    "r4-03": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "保佐人は家庭裁判所の審判で代理権が付与されるという点は解説と一致。",
+      "noteUpdatedAt": "2026-09-08T06:55:06.925Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-3/",
+      "verdict": "ok"
+    },
+    "r4-04": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "代価弁済・明渡猶予（建物のみ）・一括競売は任意・抵当権消滅請求の対象外という各点が解説と一致。",
+      "noteUpdatedAt": "2026-09-06T07:36:15.614Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-4/",
+      "verdict": "ok"
+    },
+    "r4-05": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "初日不算入の原則（午前0時は例外）と1か月≠30日という点は解説と一致。",
+      "noteUpdatedAt": "2026-09-06T07:38:42.248Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-5/",
+      "verdict": "ok"
+    },
+    "r4-06": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "契約の本旨に反する使用による損害賠償請求は1年以内という数字は解説と一致。",
+      "noteUpdatedAt": "2026-09-08T07:50:58.189Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-6/",
+      "verdict": "ok"
+    },
+    "r4-07": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "BとCの双方が善意の場合のみ対抗できるという結論は解説と一致。",
+      "noteUpdatedAt": "2026-09-06T07:42:49.702Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-7/",
+      "verdict": "ok"
+    },
+    "r4-08": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "賃貸人の修繕義務・地上権の無断譲渡可・地上権が物権である点はいずれも解説と一致。",
+      "noteUpdatedAt": "2026-09-08T08:12:12.313Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-8/",
+      "verdict": "ok"
+    },
+    "r4-09": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "委任はいつでも解除可、親権放棄・後見人辞任・遺言執行者辞任はいずれも家庭裁判所の許可が必要という点が解説と一致。",
+      "noteUpdatedAt": "2026-09-07T02:16:56.867Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-9/",
+      "verdict": "ok"
+    },
+    "r4-10": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。代理占有でも占有継続と扱われ時効取得可能という点は選択肢1の解説と合致する。",
+      "noteUpdatedAt": "2026-09-08T08:30:15.851Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-10/",
+      "verdict": "ok"
+    },
+    "r4-11": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。存続期間の再算定、転借地権への同ルール適用、敷地利用料の返還義務いずれも解説の内容と合致する。",
+      "noteUpdatedAt": "2026-09-06T08:03:55.499Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-11/",
+      "verdict": "ok"
+    },
+    "r4-12": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "結論（明け渡しが先、その後敷金返還）は解説と一致。理由づけ自体は解説に記載がない推測。",
+      "noteUpdatedAt": "2026-09-08T08:56:04.225Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-12/",
+      "verdict": "ok"
+    },
+    "r4-13": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "招集定数・管理者選任の決議要件・法人化の要件は解説と一致。議事録署名人の記述はこの解説の範囲外。",
+      "noteUpdatedAt": "2026-09-06T08:15:10.635Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-13/",
+      "verdict": "ok"
+    },
+    "r4-16": {
+      "checkedAt": "2026-09-09T20:40:02.096454+09:00",
+      "message": "市街地再開発事業は都道府県知事の「認可」であり「許可」ではない。また市街化調整区域の開発許可には「市街化促進のおそれがない」に加え「区域内での実施が困難」も必要。",
+      "noteUpdatedAt": "2026-09-06T08:26:07.707Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-16/",
+      "verdict": "conflict"
+    },
+    "r4-18": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "メモは選択肢2を「建築可能○」と正しい扱いにしているが、解説では選択肢2は誤りとされ、正解は選択肢3（幅員1.8m未満の道は建築審査会の同意＋特定行政庁の指定で道路とみなす）。",
+      "noteUpdatedAt": "2026-09-07T02:21:16.591Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-18/",
+      "verdict": "conflict"
+    },
+    "r4-20": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。許可主体の区分（国土交通大臣／都道府県知事）と清算金の権利義務発生時期の記述はいずれも合致する。",
+      "noteUpdatedAt": "2026-09-06T08:44:35.659Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-20/",
+      "verdict": "ok"
+    },
+    "r4-22": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。面積要件（5,000㎡・10,000㎡）、国等の例外、勧告不服時の公表はいずれも合致する。",
+      "noteUpdatedAt": "2026-09-07T02:30:11.969Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-22/",
+      "verdict": "ok"
+    },
+    "r4-26": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。支店は宅建業を営む場合のみ事務所該当、本店は支店が営めば該当という点は合致する。標識の材質はこの解説の範囲外。",
+      "noteUpdatedAt": "2026-09-06T11:49:03.240Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-26/",
+      "verdict": "ok"
+    },
+    "r4-28": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。売主個人・買主宅建業者の場合の35条書面作成義務なし、交付先は買主・借主という点は合致する。",
+      "noteUpdatedAt": "2026-09-06T11:45:23.165Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-28/",
+      "verdict": "ok"
+    },
+    "r4-30": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。割賦販売の正しい定義（引渡し後1年以上・2回以上分割）どおり。",
+      "noteUpdatedAt": "2026-09-06T11:52:52.548Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-30/",
+      "verdict": "ok"
+    },
+    "r4-32": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。手付金保全措置は37条書面不要、契約不適合責任の特約は記載必要という点とも合致。",
+      "noteUpdatedAt": "2026-09-06T12:20:09.016Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-32/",
+      "verdict": "ok"
+    },
+    "r4-36": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。検査済証の保存状況の説明義務、および代金額・支払時期・引渡時期が35条書面に不要という結論は正しい。",
+      "noteUpdatedAt": "2026-09-07T01:13:24.965Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-36/",
+      "verdict": "ok"
+    },
+    "r4-37": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。建築確認後の広告可、変更確認申請中は当初確認内容も併記すれば広告可という点が合っている。",
+      "noteUpdatedAt": "2026-09-07T01:25:56.714Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-37/",
+      "verdict": "ok"
+    },
+    "r4-39": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。供託先、分担金は現金のみ、社員となる前の取引債権も保証対象という点はすべて正しい。",
+      "noteUpdatedAt": "2026-09-07T01:35:51.427Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-39/",
+      "verdict": "ok"
+    },
+    "r4-40": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。電話のみの重説は違反、自ら貸主は取引に該当せず重説義務なしで媒介業者が担う点は正しい。",
+      "noteUpdatedAt": "2026-09-07T01:43:31.278Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-40/",
+      "verdict": "ok"
+    },
+    "r4-41": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "免許取消後の取戻し可否、不足時2週間以内供託の点は解説と一致。ただし「10年経てば公告不要」は本問の解説では触れられておらず判断できない。",
+      "noteUpdatedAt": "2026-09-07T06:14:27.726Z",
+      "sourceUrl": "https://takken-success.info/2022kakomon/r04-41/",
+      "verdict": "unclear"
+    },
+    "r5-26": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。相手方が出力して書面化できること、宅建士の明示、改変確認の措置いずれも正しい。",
+      "noteUpdatedAt": "2026-08-24T03:01:15.655Z",
+      "sourceUrl": "https://takken-success.info/2023kakomon/r05-26/",
+      "verdict": "ok"
+    },
+    "r5-27": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "あっせんが媒介業務の一環である点、構造耐力上主要な部分等の記載は売買時のみ必要で賃貸借は不要という点は解説と一致。",
+      "noteUpdatedAt": "2026-08-24T03:11:58.896Z",
+      "sourceUrl": "https://takken-success.info/2023kakomon/r05-27/",
+      "verdict": "ok"
+    },
+    "r5-28": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。37条書面は宅建士の記名のみで足り、押印は不要という点が正しい。",
+      "noteUpdatedAt": "2026-08-24T03:14:50.830Z",
+      "sourceUrl": "https://takken-success.info/2023kakomon/r05-28/",
+      "verdict": "ok"
+    },
+    "r5-30": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "「3ヶ月以内に供託した旨を届出る」は解説と食い違う。届出自体に期限の定めはなく、免許日から3か月以内に届出がないと催告される、という別の規定（肢ア）と混同している可能性がある。「6ヶ月を下らない公告」「不足2週間以内供託」は解説と一致。",
+      "noteUpdatedAt": "2026-08-24T06:15:10.026Z",
+      "sourceUrl": "https://takken-success.info/2023kakomon/r05-30/",
+      "verdict": "conflict"
+    },
+    "r5-31": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（建築確認処分前は広告不可、建物状況調査は35条書面の記載事項で広告での明示は不要）。",
+      "noteUpdatedAt": "2026-09-07T06:06:57.756Z",
+      "sourceUrl": "https://takken-success.info/2023kakomon/r05-31/",
+      "verdict": "ok"
+    },
+    "r5-32": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（案内所等の届出は業務開始日の10日前まで）。",
+      "noteUpdatedAt": "2026-08-24T06:38:04.837Z",
+      "sourceUrl": "https://takken-success.info/2023kakomon/r05-32/",
+      "verdict": "ok"
+    },
+    "r6-01": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（他人物売買は追認なしでも有効、詐欺の取消しは遡及的に無効）。「商社も〜」は解説にない独自の補足だが結論と矛盾しない。",
+      "noteUpdatedAt": "2026-09-08T02:56:33.456Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-1/",
+      "verdict": "ok"
+    },
+    "r6-02": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（復受任者選任には委任者の許諾等が必要という文脈での理解）。",
+      "noteUpdatedAt": "2026-09-03T09:19:03.937Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-2/",
+      "verdict": "ok"
+    },
+    "r6-03": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（著しい変更は全員同意、抹消登記は保存行為で単独可、賃借権設定は山林10年・その他5年以下なら過半数、時効は知ってから5年/行使可能から10年）。",
+      "noteUpdatedAt": "2026-09-08T02:59:51.873Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-3/",
+      "verdict": "ok"
+    },
+    "r6-04": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（履行拒絶の明確表示で催告不要の解除、詐欺による契約は取消し主張可）。",
+      "noteUpdatedAt": "2026-09-08T04:20:43.150Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-4/",
+      "verdict": "ok"
+    },
+    "r6-05": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（不確定期限は期限到来を知った時か履行請求を受けた時の早い方から遅滞責任）。",
+      "noteUpdatedAt": "2026-09-04T15:43:05.422Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-5/",
+      "verdict": "ok"
+    },
+    "r6-06": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（地上権者が所有権を取得しても、抵当権実行後の第三者に対抗できるよう地上権は存続する趣旨）。",
+      "noteUpdatedAt": "2026-09-08T04:24:25.404Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-6/",
+      "verdict": "ok"
+    },
+    "r6-07": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（占有回収の訴えは第三者による強奪が要件、相続は死亡と同時に占有承継）。",
+      "noteUpdatedAt": "2026-09-08T04:27:48.656Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-7/",
+      "verdict": "ok"
+    },
+    "r6-08": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（民法は到達主義、発信主義ではない）。",
+      "noteUpdatedAt": "2026-09-05T04:50:48.191Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-8/",
+      "verdict": "ok"
+    },
+    "r6-09": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（併存的債務引受は債権者の承諾時に効力発生）。",
+      "noteUpdatedAt": "2026-09-05T05:14:00.141Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-9/",
+      "verdict": "ok"
+    },
+    "r6-10": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（損害賠償のみ帰責事由が必要、追完請求は帰責事由不要）。",
+      "noteUpdatedAt": "2026-09-08T04:38:47.050Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-10/",
+      "verdict": "ok"
+    },
+    "r6-11": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（事業用借地権は公正証書限定、普通借地権は期間の定めなしで30年）。",
+      "noteUpdatedAt": "2026-09-08T04:47:35.659Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-11/",
+      "verdict": "ok"
+    },
+    "r6-12": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "「書面は関係ない」が契約①・契約②どちらを指すか判別できない。契約①（定期建物賃貸借）は書面又は電磁的記録が必要な点に注意。",
+      "noteUpdatedAt": "2026-09-08T04:50:59.459Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-12/",
+      "verdict": "unclear"
+    },
+    "r6-13": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（共用部分の持分は専有部分の床面積割合による）。",
+      "noteUpdatedAt": "2026-09-05T08:56:46.807Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-13/",
+      "verdict": "ok"
+    },
+    "r6-14": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（収用は起業者単独申請、相続人以外への遺贈は共同申請）。",
+      "noteUpdatedAt": "2026-09-05T09:03:46.538Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-14/",
+      "verdict": "ok"
+    },
+    "r6-26": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（重要事項説明・35条/37条書面の記名は専任でなくてよい）。",
+      "noteUpdatedAt": "2026-07-27T15:51:23.578Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-26/",
+      "verdict": "ok"
+    },
+    "r6-27": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（国債100%・地方債等90%・その他80%、金銭のみなら保管替え）。",
+      "noteUpdatedAt": "2026-09-07T03:08:58.900Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-27/",
+      "verdict": "ok"
+    },
+    "r6-28": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致（賃貸代理の上限は1か月分+消費税、権利金を売買代金とみなす計算、免税事業者は4%）。",
+      "noteUpdatedAt": "2026-08-17T01:09:16.548Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-28/",
+      "verdict": "ok"
+    },
+    "r6-29": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。登録実務講習と法定講習の違い、専任宅建士不在時の2週間対応の理解も正しい。",
+      "noteUpdatedAt": "2026-08-19T06:12:01.132Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-29/",
+      "verdict": "ok"
+    },
+    "r6-30": {
+      "checkedAt": "2026-09-09T20:40:02.096454+09:00",
+      "message": "解説と一致。",
+      "noteUpdatedAt": "2026-09-07T03:13:08.838Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-30/",
+      "verdict": "ok"
+    },
+    "r6-31": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。30日ルールと公告義務の理解は正しい。",
+      "noteUpdatedAt": "2026-08-22T01:09:42.440Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-31/",
+      "verdict": "ok"
+    },
+    "r6-33": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "メモに対応する問題文・解説が渡されていないため判断できない。",
+      "noteUpdatedAt": "2026-08-22T02:42:40.491Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-33/",
+      "verdict": "unclear"
+    },
+    "r6-34": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。35条書面への記載義務と保全措置未講時の支払拒否権の理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T05:20:39.656Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-34/",
+      "verdict": "ok"
+    },
+    "r6-35": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。告知主体が宅建業者である点、記名代替の取引士明示の理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T05:24:44.959Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-35/",
+      "verdict": "ok"
+    },
+    "r6-36": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。公告期間6か月、営業保証金・分担金の金額の理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T05:29:52.290Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-36/",
+      "verdict": "ok"
+    },
+    "r6-37": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。貸借でもハザードマップ説明が必要、私道負担は貸借で不要という理解は正しい。",
+      "noteUpdatedAt": "2026-08-22T03:22:35.746Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-37/",
+      "verdict": "ok"
+    },
+    "r6-38": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。更新申請中の失効しない扱い、2都道府県以上での免許換えの理解は正しい。",
+      "noteUpdatedAt": "2026-08-22T05:54:24.672Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-38/",
+      "verdict": "ok"
+    },
+    "r6-39": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。売主自身の届出義務、免許権者と開催地知事の両方への届出の理解は正しい。",
+      "noteUpdatedAt": "2026-08-23T01:50:52.396Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-39/",
+      "verdict": "ok"
+    },
+    "r6-40": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。ア・エは売買のみ、イ・ウは貸借でも記載事項という理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T05:42:23.206Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-40/",
+      "verdict": "ok"
+    },
+    "r6-41": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。住宅性能評価は売買のみ、取壊し事項は貸借でも説明義務ありという理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T05:47:15.849Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-41/",
+      "verdict": "ok"
+    },
+    "r6-42": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。特殊清掃発生時の告知義務、3年超でも事件性等があれば告知が必要という理解は正しい。",
+      "noteUpdatedAt": "2026-08-23T09:29:33.501Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-42/",
+      "verdict": "ok"
+    },
+    "r6-43": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。旧姓併記可、住所変更時は遅滞なく変更登録が必要という理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T05:52:04.489Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-43/",
+      "verdict": "ok"
+    },
+    "r6-45": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。基準日翌日から50日、床面積55㎡以下で2戸を1戸と数える点は正しい。",
+      "noteUpdatedAt": "2026-08-23T10:13:09.351Z",
+      "sourceUrl": "https://takken-success.info/2024kakomon/r06-45/",
+      "verdict": "ok"
+    },
+    "r7-01": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。取消前は強迫と詐欺で扱いが分かれ、取消後はいずれも登記の先後で決まるという整理は正しい。",
+      "noteUpdatedAt": "",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-1/",
+      "verdict": "ok"
+    },
+    "r7-02": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。極度額・催告の抗弁権・履行状況開示請求の整理は正しい。",
+      "noteUpdatedAt": "2026-08-27T11:56:18.869Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-2/",
+      "verdict": "ok"
+    },
+    "r7-03": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。通謀虚偽表示の第三者は善意のみで足り、錯誤は無効でなく取消しという理解は正しい。",
+      "noteUpdatedAt": "2026-09-08T09:14:51.726Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-3/",
+      "verdict": "ok"
+    },
+    "r7-04": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。質権・留置権の牽連性・先取特権・相殺の被害者/加害者区分の理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T07:20:52.950Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-4/",
+      "verdict": "ok"
+    },
+    "r7-05": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。相続放棄は代襲相続なし、欠格は代襲相続ありという理解は正しい。",
+      "noteUpdatedAt": "2026-09-07T07:23:46.389Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-5/",
+      "verdict": "ok"
+    },
+    "r7-06": {
+      "checkedAt": "2026-09-09T20:40:02.096454+09:00",
+      "message": "解説は「過去に遡って」所有権が移るのではなく、Bが所有権を取得した瞬間にCへ移ると強調しており、メモの「遡って」という表現は誤解を招く。",
+      "noteUpdatedAt": "2026-09-07T07:33:09.362Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-6/",
+      "verdict": "conflict"
+    },
+    "r7-07": {
+      "checkedAt": "2026-09-09T20:40:02.096454+09:00",
+      "message": "解説では先取特権は債務者Bの所有物にしか行使できず、所有者Aには行使できないとしている。メモの「所有者に対しては行使可能」は逆。",
+      "noteUpdatedAt": "2026-09-09T11:36:49.110Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-7/",
+      "verdict": "conflict"
+    },
+    "r7-08": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。無権利者への単独抹消請求、遺産分割前でも共有物分割請求は可能、当然には明渡し請求できない点、いずれも解説通り。",
+      "noteUpdatedAt": "2026-08-31T07:37:50.537Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-8/",
+      "verdict": "ok"
+    },
+    "r7-09": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。混同・相殺の援用・更改についての理解が解説の趣旨と合っている。",
+      "noteUpdatedAt": "2026-09-07T08:04:27.413Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-9/",
+      "verdict": "ok"
+    },
+    "r7-10": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。特約の有効性が売主の悪意・重過失や業者か個人かで変わる点、通知期間・消滅時効の数字も解説通り。",
+      "noteUpdatedAt": "2026-09-08T02:10:21.736Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-10/",
+      "verdict": "ok"
+    },
+    "r7-11": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。配偶者名義の建物では対抗できない点、各借地権類型の期間・要件も解説の内容と合っている。",
+      "noteUpdatedAt": "2026-09-08T02:30:36.759Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-11/",
+      "verdict": "ok"
+    },
+    "r7-12": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。貸主6か月・借主3か月の解約期間、法定更新後は期間の定めなしとなる点は解説通り。",
+      "noteUpdatedAt": "2026-09-08T02:43:12.040Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-12/",
+      "verdict": "ok"
+    },
+    "r7-13": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。管理所有の制度、議事録署名が議長＋区分所有者2名の合計3名である点も解説通り。",
+      "noteUpdatedAt": "2026-09-02T14:53:28.527Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-13/",
+      "verdict": "ok"
+    },
+    "r7-14": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説と一致。登記官が職権で登記できる点、共同申請の例外4類型も解説の内容と合っている。",
+      "noteUpdatedAt": "2026-07-27T15:20:07.929Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-14/",
+      "verdict": "ok"
+    },
+    "r7-26": {
+      "checkedAt": "2026-09-09T20:40:02.096454+09:00",
+      "message": "空き家特例の上限は「貸主・借主合わせて2.2倍」であり、メモの「貸主から特別に2.2倍もらってよい」は解説と異なる。",
+      "noteUpdatedAt": "2026-08-17T06:01:39.041Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-26/",
+      "verdict": "conflict"
+    },
+    "r7-27": {
+      "checkedAt": "2026-09-09T20:40:02.096454+09:00",
+      "message": "35条の必要的説明事項は違約金（損害賠償額の予定）のみで、天災による損害負担は35条の説明事項ではなく37条の任意的記載事項。",
+      "noteUpdatedAt": "",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-27/",
+      "verdict": "conflict"
+    },
+    "r7-28": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "宅建業者同士(プロ間)の売買では手付金等の保全措置は8種制限の適用除外で『不要』ですが、メモでは『手付金の保全措置等は必要』と逆に書かれています。",
+      "noteUpdatedAt": "",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-28/",
+      "verdict": "conflict"
+    },
+    "r7-29": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "35条は調査結果の概要、37条は当事者双方が確認した事項という暗記法は解説と一致しています。",
+      "noteUpdatedAt": "",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-29/",
+      "verdict": "ok"
+    },
+    "r7-30": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "共同売主全員の記名義務や手付金保全措置のライン(5%かつ1000万円以下)の理解は解説と一致しています。",
+      "noteUpdatedAt": "",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-30/",
+      "verdict": "ok"
+    },
+    "r7-32": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "未完成・完成物件の保全措置ラインや損害賠償予定額の上限(代金の20%)の理解は解説と一致しています。",
+      "noteUpdatedAt": "",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-32/",
+      "verdict": "ok"
+    },
+    "r7-33": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "契約解除に関する事項は35条で定めなくても必要的記載、37条は定めがあるときのみという整理は解説と一致しています。",
+      "noteUpdatedAt": "2026-08-17T00:40:16.478Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-33/",
+      "verdict": "ok"
+    },
+    "r7-34": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "政令使用人の欠格事由や役員への60日連座規定の理解は解説と一致しています。",
+      "noteUpdatedAt": "2026-07-25T04:33:45.631Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-34/",
+      "verdict": "ok"
+    },
+    "r7-35": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "金銭・有価証券併用供託や還付限度額(供託全額)、公告の要否の理解は解説と一致しています。",
+      "noteUpdatedAt": "2026-09-07T02:50:46.213Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-35/",
+      "verdict": "ok"
+    },
+    "r7-37": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "建物状況調査の有効期間(RC造は2年)や借賃以外の金銭の記載範囲の理解は解説と一致しています。",
+      "noteUpdatedAt": "2026-08-13T01:31:09.281Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-37/",
+      "verdict": "ok"
+    },
+    "r7-38": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "取引態様の別を広告の都度・注文時にも明示する義務や広告料実費原則の理解は解説と一致しています。",
+      "noteUpdatedAt": "",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-38/",
+      "verdict": "ok"
+    },
+    "r7-39": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "34条書面の記名、専任・専属専任の自動更新無効、一般媒介の自動更新有効いずれも解説と一致。",
+      "noteUpdatedAt": "2026-07-27T14:01:47.990Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-39/",
+      "verdict": "ok"
+    },
+    "r7-40": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "発信主義、告知なければ解除いつでも可、告知書面は売主情報のみという点で解説と一致。",
+      "noteUpdatedAt": "2026-08-05T12:09:33.239Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-40/",
+      "verdict": "ok"
+    },
+    "r7-41": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "解説では2以上の都道府県にまたがる場合は国土交通大臣免許のみが必要で知事免許は選べないが、メモの「知事または国交省大臣」はこの点で食い違う。免許取消・清算人届出・免許換えの部分は解説と一致。",
+      "noteUpdatedAt": "2026-08-17T00:48:47.729Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-41/",
+      "verdict": "conflict"
+    },
+    "r7-42": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "登録先の自由選択、取引士証に勤務先欄なし、登録簿の遅滞ない変更、提出と返納の違いいずれも解説と一致。",
+      "noteUpdatedAt": "2026-07-27T14:23:22.218Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-42/",
+      "verdict": "ok"
+    },
+    "r7-43": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "重説省略の3パターン（特定投資家・1年以内リピート・目論見書交付）は解説と一致。",
+      "noteUpdatedAt": "2026-07-27T14:26:58.747Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-43/",
+      "verdict": "ok"
+    },
+    "r7-44": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "確認記録・取引記録7年、帳簿5年（新築10年）、従業者名簿10年の保存期間は解説の一覧と一致。",
+      "noteUpdatedAt": "2026-07-27T14:32:01.511Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-44/",
+      "verdict": "ok"
+    },
+    "r7-45": {
+      "checkedAt": "2026-09-09T20:12:50.086979+09:00",
+      "message": "基準日と3週間の届出期間、業者間取引は適用外、保険対象が構造耐力上主要部分と雨水浸入防止部分である点は解説と一致。弁護士会が指定機関という記述は解説の範囲では確認できない。",
+      "noteUpdatedAt": "2026-07-27T14:55:53.132Z",
+      "sourceUrl": "https://takken-success.info/2025kakomon/r07-45/",
+      "verdict": "ok"
+    }
+  },
+  "patterns": [
+    {
+      "advice": "その論点の過去問を全年度ぶん続けて解く（論点フィルタ）。新しい教材は買わず、手元の過去問と解説で埋める。出典: アガルート「直前対策」 https://www.agaroot.jp/takken/column/chokuzen/",
+      "count": 23,
+      "label": "知識欠落",
+      "type": "knowledge"
+    },
+    {
+      "advice": "数字は論点ごとに表にして、似た数字（5年・6か月・10年など）を並べて覚える。メモの数字は照合結果（メモ欄の下）で確認する。出典: 伊藤塾「勉強スケジュールの組み方」 https://column.itojuku.co.jp/takken/method/benkyou-sukejuuru/",
+      "count": 4,
+      "label": "数字混同",
+      "type": "number"
+    },
+    {
+      "advice": "設問文の「正しいもの」「誤っているもの」「違反しないもの」に印を付けてから肢を読む。1問2分以内でも、設問型の確認は飛ばさない。出典: アガルート「時間配分・解く順番」 https://www.agaroot.jp/takken/column/time-allocation/",
+      "count": 2,
+      "label": "読み違い",
+      "type": "misread"
+    },
+    {
+      "advice": "混同した2つの論点を続けて解き、何が違うかを一言で言えるようにする。「ほかの学習」の比較モードにペアが出る。出典: 資格の大原「過去問を使う学習が効率的」 https://www.o-hara.jp/course/takken/tak_column_3",
+      "count": 1,
+      "label": "論点混同",
+      "type": "confusion"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+[
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "2023-04-01",
+    "number": 2,
+    "questionId": "r3_12-02",
+    "reason": "相隣関係（境界標・障壁・排水）は令和3年民法等改正（所有者不明土地関連）で見直された分野であり、出題時点(2021年12月)は改正法未施行だったため、現行条文と内容がずれている可能性がある。解説自体には改正注記はない。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和3年度12月"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "2023-05-26",
+    "number": 19,
+    "questionId": "r3_12-19",
+    "reason": "宅地造成等規制法は熱海市盛土災害を受け令和5年法律で「宅地造成及び特定盛土等規制法」に改正・施行(2023年5月26日)されており、規制区域の名称・対象行為（盛土等）や罰則が変更されている可能性がある。解説文自体に改正注記はなく知識ベースの推測。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和3年度12月"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "2022-05-18",
+    "number": 26,
+    "questionId": "r3_12-26",
+    "reason": "選択肢4は「宅地建物取引士をして記名押印の上」としているが、宅建業法改正により37条書面（35条書面も同様）への宅建士の押印義務は廃止され、現在は記名のみが要件とされている可能性がある。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和3年度12月"
+  },
+  {
+    "confidence": "high",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 37,
+    "questionId": "r3_12-37",
+    "reason": "解説の選択肢2に「（改）」の注記があり、原文の問題文（宅建業者名簿に専任宅建士の氏名が登載され公開される）と解説の記述（登載されておらず）が矛盾している。宅建業者名簿の記載事項に関する制度変更の可能性がある。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和3年度12月"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "2022-04-01",
+    "number": 41,
+    "questionId": "r3_12-41",
+    "reason": "選択肢4の未成年宅建士の年齢要件は、成年年齢引下げ（民法改正）で「20歳未満」から「18歳未満」に変わった可能性があり、解説の転載問題文でも表記が「18歳未満」になっている。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和3年度12月"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "2023-05-26",
+    "number": 19,
+    "questionId": "r4-19",
+    "reason": "宅地造成等規制法は令和5年施行の盛土規制法（宅地造成及び特定盛土等規制法）へ全面改正されており、規制区域区分や造成宅地防災区域の指定基準が変更された可能性がある。解説文自体には改正注記なし。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和4年度"
+  },
+  {
+    "confidence": "mid",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 32,
+    "questionId": "r4-32",
+    "reason": "選択肢1の文言が出題時「記名押印」から解説では「記名」に変更されており、押印義務の制度変更を示唆する。",
+    "status": "confirmed",
+    "suggestedSourceUrl": "",
+    "year": "令和4年度",
+    "confirmedAt": "2026-09-09",
+    "confirmedIn": "src/data/lawChanges.ts"
+  },
+  {
+    "confidence": "mid",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 40,
+    "questionId": "r4-40",
+    "reason": "選択肢イ・ウの文言が出題時「記名押印」から解説では「記名」に変更されており、押印義務の制度変更を示唆する。",
+    "status": "confirmed",
+    "suggestedSourceUrl": "",
+    "year": "令和4年度",
+    "confirmedAt": "2026-09-09",
+    "confirmedIn": "src/data/lawChanges.ts"
+  },
+  {
+    "confidence": "high",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "2024-05-26",
+    "number": 19,
+    "questionId": "r5-19",
+    "reason": "解説文が問題文の「宅地造成等規制法」を「盛土規制法」と読み替え、「宅地造成工事規制区域」も「宅地造成等工事規制区域」に置き換えて説明しており、法改正に伴う名称・区域定義の変更が示唆される。",
+    "status": "confirmed",
+    "suggestedSourceUrl": "",
+    "year": "令和5年度",
+    "confirmedAt": "2026-09-09",
+    "confirmedIn": "src/data/lawChanges.ts"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 47,
+    "questionId": "r5-47",
+    "reason": "不動産の表示に関する公正競争規約は改正が比較的頻繁で、出題時点の規約内容（新発売の定義・道路名表示ルール等）と現行規約が一致するか解説文からは確認できない。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和5年度"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 23,
+    "questionId": "r6-23",
+    "reason": "住宅ローン控除は期間・控除率等が毎年の税制改正で見直される制度であり、令和6年時点の要件がその後の改正で変わっている可能性がある。解説文自体に改正注記はない。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和6年度"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 24,
+    "questionId": "r6-24",
+    "reason": "住宅・土地に係る不動産取得税の3%軽減税率は地方税法附則の時限特例であり、適用期限の延長・失効により本則4%に戻る可能性がある。解説文自体に改正注記はない。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和6年度"
+  },
+  {
+    "confidence": "low",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 23,
+    "questionId": "r7-23",
+    "reason": "土地売買による登録免許税の軽減税率（本則2.0%→1.5%）は租税特別措置法に基づく時限措置であり、適用期限の延長や失効により将来変更されうる。解説文自体には期限に関する注記はない。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和7年度"
+  },
+  {
+    "confidence": "mid",
+    "detectedAt": "2026-09-09",
+    "effectiveDateGuess": "不明",
+    "number": 39,
+    "questionId": "r7-39",
+    "reason": "解説文中に「現在はその登録事項として...『宅地又は建物の取引の申込みの受付に関する状況』も含まれます」との記述があり、以前と異なる現行ルールを指す表現になっている。指定流通機構（レインズ）登録事項への申込み状況追加は近年の運用改正であり、出題年度時点との整合を要確認。",
+    "status": "candidate",
+    "suggestedSourceUrl": "",
+    "year": "令和7年度"
+  }
+]
