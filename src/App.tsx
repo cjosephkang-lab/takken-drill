@@ -26,8 +26,23 @@ import {
 } from "./lib/unreadableChoices";
 import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
+import { ChoiceQuiz } from "./ChoiceQuiz";
+import type { ChoiceStatement } from "./lib/choiceStatements";
+import {
+  appendEvent,
+  isConfidentWrong,
+  mergeChoiceRecords,
+  mergeEvents,
+  normalizeChoiceRecords,
+  normalizeEvents,
+  updateChoiceRecord,
+  type AnswerEvent,
+  type ChoiceRecord,
+} from "./lib/progressExtras";
+import { confirmedLawChange } from "./data/lawChanges";
 import {
   fetchCoaching,
+  fetchInsights,
   fetchSyncedProgress,
   isSyncConfigured,
   observeWebVitals,
@@ -39,6 +54,8 @@ import {
   watchAuthUser,
   type MetricParams,
   type Coaching,
+  type ConfusionPair,
+  type Insights,
 } from "./firebase";
 
 type AnswerRecord = {
@@ -73,6 +90,12 @@ type ProgressState = {
   dailyLog: Record<string, DayLog>;
   /** 学習ログを書き出した日付キー→最後に書き出したISO時刻。 */
   studyLogExports: Record<string, string>;
+  /** 回答イベント。夜間バッチが誤答の原因を推定する材料（直近2000件）。 */
+  events: AnswerEvent[];
+  /** 肢別○×の記録。キーは "問題ID#肢番号"。 */
+  choiceRecords: Record<string, ChoiceRecord>;
+  /** 根拠の一言（説明できるかチェック）。メモと同じ形。 */
+  explanations: Record<string, NoteEntry>;
 };
 
 type UiSettings = {
@@ -100,6 +123,8 @@ const DUE = "due";
 /** 「間違えた問題」を直近◯日に絞る選択肢。days は今日を含む暦日数。 */
 /** 自信なしで答えた問題（正解も含む）。まぐれ当たりを拾い直すための絞り込み。 */
 const UNSURE = "unsure";
+/** 自信あり（自信なし印なし）で間違えた問題。誤った記憶で確信して外した問題なので最優先で復習する。 */
+const CONFIDENT_WRONG = "confident-wrong";
 const RECENT_WRONG_OPTIONS = [
   { value: "wrong-1d", days: 2, label: "間違えた問題（今日・昨日）" },
   { value: "wrong-3d", days: 3, label: "間違えた問題（直近3日）" },
@@ -113,6 +138,7 @@ const STATUS_LABELS: Record<string, string> = {
   [UNANSWERED]: "まだ解いていない",
   [WRONG]: "間違えた問題（すべて）",
   [UNSURE]: "自信がなかった問題",
+  [CONFIDENT_WRONG]: "自信があったのに間違えた問題",
   [DUE]: "復習する問題",
 };
 
@@ -223,6 +249,7 @@ const matchesStatusFilter = (
   if (statusValue === WRONG) return Boolean(record) && !record!.correct;
   if (statusValue === DUE) return isDueRecord(record);
   if (statusValue === UNSURE) return Boolean(record?.unsure);
+  if (statusValue === CONFIDENT_WRONG) return isConfidentWrong(record);
 
   const days = recentWrongDays(statusValue);
   if (days !== null) {
@@ -299,6 +326,9 @@ const loadProgress = (): ProgressState => {
     currentId: takkenQuestions[0]?.id ?? "",
     dailyLog: {},
     studyLogExports: {},
+    events: [],
+    choiceRecords: {},
+    explanations: {},
   };
 
   try {
@@ -338,6 +368,9 @@ const loadProgress = (): ProgressState => {
         parsed.studyLogExports && typeof parsed.studyLogExports === "object"
           ? parsed.studyLogExports
           : {},
+      events: normalizeEvents(parsed.events),
+      choiceRecords: normalizeChoiceRecords(parsed.choiceRecords),
+      explanations: normalizeNotes(parsed.explanations),
     };
   } catch (error) {
     console.error("Failed to load progress.", error);
@@ -370,6 +403,9 @@ const mergeProgress = (
     notes: Record<string, NoteEntry | string>;
     dailyLog: Record<string, DayLog>;
     studyLogExports?: Record<string, string>;
+    events?: unknown;
+    choiceRecords?: unknown;
+    explanations?: Record<string, NoteEntry | string>;
   },
 ): ProgressState => {
   const answers: Record<string, AnswerRecord> = { ...remote.answers };
@@ -410,7 +446,16 @@ const mergeProgress = (
     }
   }
 
-  return { ...local, answers, notes, dailyLog, studyLogExports };
+  return {
+    ...local,
+    answers,
+    notes,
+    dailyLog,
+    studyLogExports,
+    events: mergeEvents(local.events, remote.events),
+    choiceRecords: mergeChoiceRecords(local.choiceRecords, remote.choiceRecords),
+    explanations: mergeNotes(local.explanations, remote.explanations),
+  };
 };
 
 const allCategories = Array.from(
@@ -622,6 +667,13 @@ function App() {
     Record<number, boolean>
   >({});
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
+  // 肢別○×モードの画面。
+  const [choiceQuizOpen, setChoiceQuizOpen] = useState(false);
+  // 夜間バッチの推定（誤答の原因・混同ペア・メモ照合・根拠の採点）。ログイン時に読む。
+  const [insights, setInsights] = useState<Insights | null>(null);
+  // 混同ペアの比較モード。ペアの問題を A,B,A,B の順に出す。null なら通常。
+  const [activePair, setActivePair] = useState<ConfusionPair | null>(null);
+  const [pairPickerOpen, setPairPickerOpen] = useState(false);
   const [questionPickerOpen, setQuestionPickerOpen] = useState(
     initialSettings.questionPickerOpen,
   );
@@ -737,6 +789,7 @@ function App() {
       setCoaching(null);
       setCoachingChecked(false);
       setCheckedCoachingTasks({});
+      setInsights(null);
 
       if (!user) {
         trackMetric("auth_state", {
@@ -757,6 +810,11 @@ function App() {
         .catch((error) => {
           console.error("Failed to fetch coaching.", error);
           setCoachingChecked(true);
+        });
+      fetchInsights(user.uid)
+        .then((remote) => setInsights(remote))
+        .catch((error) => {
+          console.error("Failed to fetch insights.", error);
         });
       setSyncState("syncing");
       fetchSyncedProgress(user.uid)
@@ -779,6 +837,9 @@ function App() {
               notes: remote.notes ?? {},
               dailyLog: remote.dailyLog ?? {},
               studyLogExports: remote.studyLogExports ?? {},
+              events: remote.events,
+              choiceRecords: remote.choiceRecords,
+              explanations: remote.explanations ?? {},
             });
             saveProgress(merged);
             return merged;
@@ -814,6 +875,9 @@ function App() {
         notes: progress.notes,
         dailyLog: progress.dailyLog,
         studyLogExports: progress.studyLogExports,
+        events: progress.events,
+        choiceRecords: progress.choiceRecords,
+        explanations: progress.explanations,
         updatedAt: new Date().toISOString(),
       },
       writeMode,
@@ -849,6 +913,9 @@ function App() {
     progress.answers,
     progress.notes,
     progress.dailyLog,
+    progress.events,
+    progress.choiceRecords,
+    progress.explanations,
     syncReady,
   ]);
 
@@ -912,6 +979,14 @@ function App() {
   }, []);
 
   const filteredQuestions = useMemo(() => {
+    // 比較モード中はペアの問題だけを A,B,A,B の順で出す。他の絞り込みは無視する。
+    if (activePair) {
+      const byId = new Map(takkenQuestions.map((q) => [q.id, q]));
+      return activePair.questionIds
+        .map((id) => byId.get(id))
+        .filter((q): q is TakkenQuestion => Boolean(q));
+    }
+
     const filtered = takkenQuestions.filter((question) => {
       const record = progress.answers[question.id];
 
@@ -957,6 +1032,7 @@ function App() {
       return a.number - b.number;
     });
   }, [
+    activePair,
     categoryFilter,
     examFilter,
     pinnedQuestionId,
@@ -1010,6 +1086,39 @@ function App() {
   const currentAnswer = sessionAnswers[currentQuestion.id];
   const answerRevealed = revealedQuestionId === currentQuestion.id;
   const currentNote = progress.notes[currentQuestion.id]?.text ?? "";
+  const currentNoteEntry = progress.notes[currentQuestion.id];
+  // 夜間バッチの照合結果は、照合した版のメモと updatedAt が一致する時だけ出す。
+  // メモを直したら古い判定は出さず「未照合」に戻す。
+  const noteReviewRaw = insights?.noteReviews?.[currentQuestion.id];
+  const currentNoteReview =
+    noteReviewRaw &&
+    currentNoteEntry?.text &&
+    noteReviewRaw.noteUpdatedAt === currentNoteEntry.updatedAt
+      ? noteReviewRaw
+      : null;
+  const currentDiagnosis = insights?.diagnoses?.[currentQuestion.id] ?? null;
+  const currentLawChange = confirmedLawChange(currentQuestion.id);
+  const currentExplanationEntry = progress.explanations[currentQuestion.id];
+  const currentExplanation = currentExplanationEntry?.text ?? "";
+  const explanationGradeRaw =
+    insights?.explanationGrades?.[currentQuestion.id];
+  const currentExplanationGrade =
+    explanationGradeRaw &&
+    currentExplanationEntry?.text &&
+    explanationGradeRaw.explanationUpdatedAt === currentExplanationEntry.updatedAt
+      ? explanationGradeRaw
+      : null;
+  // 根拠の入力欄は、2回以上間違えた問題を解いた直後だけ出す（任意・入力負荷を増やさない）。
+  // 一度書いた問題は、採点結果を見せるため以後も出す。
+  const showExplanationInput =
+    Boolean(currentAnswer) &&
+    ((currentAnswer?.lapses ?? 0) >= 2 || Boolean(currentExplanation));
+  // 比較モードの最後の問題を解き終えたか。
+  const isAtEndOfPair =
+    Boolean(activePair) &&
+    filteredQuestions.length > 0 &&
+    currentIndex === filteredQuestions.length - 1 &&
+    Boolean(sessionAnswers[currentQuestion.id]);
   const totalAnswered = Object.keys(progress.answers).length;
   const totalCorrect = Object.values(progress.answers).filter(
     (answer) => answer.correct,
@@ -1038,11 +1147,12 @@ function App() {
         return isDueRecord(answer);
       })
       .sort((a, b) => {
-        const aDue = isDueRecord(progress.answers[a.id]) ? 1 : 0;
-        const bDue = isDueRecord(progress.answers[b.id]) ? 1 : 0;
-
-        if (aDue !== bDue) {
-          return bDue - aDue;
+        // 「自信があったのに間違えた」問題を先頭に。誤った記憶で確信している問題が
+        // 本番で最も失点しやすい（第二意見 codex 2026-09-09 の指摘で追加）。
+        const aConfident = isConfidentWrong(progress.answers[a.id]) ? 1 : 0;
+        const bConfident = isConfidentWrong(progress.answers[b.id]) ? 1 : 0;
+        if (aConfident !== bConfident) {
+          return bConfident - aConfident;
         }
 
         return (
@@ -1628,6 +1738,15 @@ function App() {
     setSessionAnswers((prev) => ({ ...prev, [currentQuestion.id]: record }));
     // 正解して絞り込み条件から外れても、次へ進むまでは解説を読めるようにする。
     setPinnedQuestionId(currentQuestion.id);
+    const event: AnswerEvent = {
+      q: currentQuestion.id,
+      c: choice,
+      ok: correct,
+      u: unsureMark,
+      ms: Date.now() - questionEnteredAtRef.current,
+      at: record.answeredAt,
+      src: activePair ? "pair" : "drill",
+    };
     updateProgress((prev) => ({
       ...prev,
       answers: {
@@ -1635,6 +1754,7 @@ function App() {
         [currentQuestion.id]: record,
       },
       dailyLog: addToDailyLog(prev.dailyLog, 1, correct ? 1 : 0),
+      events: appendEvent(prev.events, event),
       currentId: currentQuestion.id,
     }));
 
@@ -1679,6 +1799,88 @@ function App() {
         [currentQuestion.id]: entry,
       },
     }));
+  };
+
+  // 根拠の一言（説明できるかチェック）。メモと同じく updatedAt で端末間マージする。
+  // 夜間バッチが解説ページと照合して採点する（アプリ内では判定しない）。
+  const saveExplanation = (value: string) => {
+    const entry: NoteEntry = {
+      text: value,
+      updatedAt: value ? new Date().toISOString() : "",
+    };
+    updateProgress((previous) => ({
+      ...previous,
+      explanations: {
+        ...previous.explanations,
+        [currentQuestion.id]: entry,
+      },
+    }));
+  };
+
+  // 肢別○×の1肢ぶんの記録。問題単位の回答記録（間隔反復）には混ぜない。
+  const recordChoiceAnswer = (statement: ChoiceStatement, ok: boolean) => {
+    trackMetric("choice_quiz_answer", {
+      correct: ok,
+      question_id: statement.questionId,
+      choice: statement.choice,
+    });
+    updateProgress((previous) => ({
+      ...previous,
+      choiceRecords: {
+        ...previous.choiceRecords,
+        [statement.key]: updateChoiceRecord(
+          previous.choiceRecords[statement.key],
+          ok,
+          new Date().toISOString(),
+        ),
+      },
+    }));
+  };
+
+  // 混同ペアの比較モードを始める。ペアの問題を A,B,A,B の順に出す。
+  const startPair = (pair: ConfusionPair) => {
+    trackMetric("pair_start", {
+      pair_id: pair.id,
+      question_count: pair.questionIds.length,
+    });
+    setPairPickerOpen(false);
+    setStudyMode(false);
+    // この起動中に解いた問題も、比較では改めて解く（sessionAnswers があると再回答できない）。
+    setSessionAnswers((previous) => {
+      const next = { ...previous };
+      for (const id of pair.questionIds) delete next[id];
+      return next;
+    });
+    setActivePair(pair);
+    if (pair.questionIds[0]) {
+      goToQuestion(pair.questionIds[0], "question");
+    }
+  };
+
+  // 比較モードを終える。対象の問題の次回復習を翌日に寄せ、通常の復習で
+  // 他の論点に混ぜて再出題する（並べて比べた直後は見かけ上できるようになるだけ）。
+  const finishPair = (reason: "complete" | "abort") => {
+    if (!activePair) return;
+    trackMetric("pair_finish", { pair_id: activePair.id, reason });
+    // 途中でやめた時は復習日を動かさない（数問しか解いていないのにスケジュールが変わる）。
+    if (reason === "complete") {
+      const tomorrow = addDays(new Date().toISOString(), 1);
+      const ids = new Set(activePair.questionIds);
+      updateProgress((previous) => {
+        const answers = { ...previous.answers };
+        for (const id of ids) {
+          const record = answers[id];
+          if (record && record.nextReviewAt > tomorrow) {
+            answers[id] = { ...record, nextReviewAt: tomorrow };
+          }
+        }
+        return { ...previous, answers };
+      });
+    }
+    setActivePair(null);
+    setPinnedQuestionId(null);
+    setStudyMode(true);
+    setStatusFilter(ALL);
   };
 
   // 「学習ログを書き出す」: 指定日のメモと実績を Markdown にして、クリップボードとファイルの両方で渡す。
@@ -1792,10 +1994,14 @@ function App() {
     if (studyMode) {
       // 学習効率優先: 復習期限が来ている問題 → 未回答の問題の順で出題する。
       // filteredQuestions は既におすすめ科目順に並んでいる。
-      const due = filteredQuestions.find(
+      // 復習期限の中でも「自信があったのに間違えた」問題を先に出す。
+      const dueList = filteredQuestions.filter(
         (q) =>
           q.id !== currentQuestion.id && isDueRecord(progress.answers[q.id]),
       );
+      const due =
+        dueList.find((q) => isConfidentWrong(progress.answers[q.id])) ??
+        dueList[0];
       if (due) {
         trackMetric("question_navigate", {
           direction: "next",
@@ -1924,6 +2130,9 @@ function App() {
       currentId: takkenQuestions[0]?.id ?? "",
       dailyLog: {},
       studyLogExports: {},
+      events: [],
+      choiceRecords: {},
+      explanations: {},
     };
     forceCloudReplaceRef.current = true;
     setProgress(next);
@@ -2001,6 +2210,7 @@ function App() {
 
     updateProgress((prev) => {
       const answers = { ...prev.answers };
+      let events = prev.events;
       let count = 0;
       let correctCount = 0;
 
@@ -2016,6 +2226,17 @@ function App() {
           correct,
           answeredAt,
         );
+        // 模試は問ごとの回答時間を取っていないので ms は 0。
+        // at は同期のキーなので問ごとにずらして一意にする。
+        events = appendEvent(events, {
+          q: qid,
+          c: choice,
+          ok: correct,
+          u: false,
+          ms: 0,
+          at: `${answeredAt.slice(0, -1)}${String(count).padStart(3, "0")}Z`,
+          src: "mock",
+        });
         count += 1;
         if (correct) correctCount += 1;
       }
@@ -2023,6 +2244,7 @@ function App() {
       return {
         ...prev,
         answers,
+        events,
         dailyLog: addToDailyLog(prev.dailyLog, count, correctCount),
       };
     });
@@ -2327,7 +2549,7 @@ function App() {
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
             <button
               className="min-h-20 rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
               onClick={startReview}
@@ -2389,6 +2611,46 @@ function App() {
               </span>
               <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
                 優先して学ぶ論点を見る
+              </span>
+            </button>
+
+            <button
+              className="min-h-20 rounded-lg border border-violet-200 bg-violet-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
+              onClick={() => {
+                trackMetric("choice_quiz_open", {});
+                setChoiceQuizOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-violet-800">
+                肢別○×
+              </span>
+              <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
+                1肢ずつ
+              </span>
+              <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
+                1問を4回の想起練習にする
+              </span>
+            </button>
+
+            <button
+              className="min-h-20 rounded-lg border border-rose-200 bg-rose-50 p-2 text-center sm:min-h-24 sm:p-3 sm:text-left"
+              onClick={() => {
+                trackMetric("pair_picker_open", {
+                  pair_count: insights?.confusionPairs?.length ?? 0,
+                });
+                setPairPickerOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-rose-800">比較</span>
+              <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
+                {insights?.confusionPairs?.length
+                  ? `${insights.confusionPairs.length}組`
+                  : "なし"}
+              </span>
+              <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
+                混同している論点を並べて解く
               </span>
             </button>
           </div>
@@ -2472,6 +2734,35 @@ function App() {
                       ))}
                     </ul>
                   </div>
+
+                  {insights?.patterns?.length ? (
+                    <div className="mt-4 border-t border-slate-200 pt-3">
+                      <p className="text-sm font-bold text-slate-950">
+                        誤答パターン（推定）
+                      </p>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">
+                        間違えた問題ごとに、選んだ肢と正解肢から原因を推定して集計したもの。単発の誤答では断定できないため「推定」です。
+                      </p>
+                      <ul className="mt-2 space-y-2">
+                        {insights.patterns.map((pattern) => (
+                          <li
+                            key={pattern.type}
+                            className="rounded-lg bg-slate-50 p-3"
+                          >
+                            <p className="text-sm font-bold text-slate-900">
+                              {pattern.label}
+                              <span className="ml-2 text-xs font-normal text-slate-500">
+                                {pattern.count}問
+                              </span>
+                            </p>
+                            <p className="mt-0.5 text-xs leading-5 text-slate-600">
+                              {pattern.advice}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 <p className="rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-600">
@@ -2610,6 +2901,9 @@ function App() {
                     </option>
                   ))}
                   <option value={UNSURE}>自信がなかった問題</option>
+                  <option value={CONFIDENT_WRONG}>
+                    自信があったのに間違えた問題
+                  </option>
                   <option value={DUE}>復習する問題</option>
                 </select>
               </div>
@@ -2711,7 +3005,27 @@ function App() {
             className="scroll-mt-3 rounded-lg border border-slate-200 bg-white shadow-sm"
           >
             <div className="border-b border-slate-200 bg-white p-4">
-              {isGuidedMission ? (
+              {activePair ? (
+                <div className="mb-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-900">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold">
+                        比較：{activePair.labelA} と {activePair.labelB}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-5">
+                        {activePair.reason}
+                      </p>
+                    </div>
+                    <button
+                      className="shrink-0 rounded-lg border border-rose-300 bg-white px-2 py-1 text-xs font-bold text-rose-700"
+                      onClick={() => finishPair("abort")}
+                      type="button"
+                    >
+                      やめる
+                    </button>
+                  </div>
+                </div>
+              ) : isGuidedMission ? (
                 <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
                   <p className="font-bold">
                     今日の{missionTarget}問 · {todayAnswered}/{missionTarget}問
@@ -2900,7 +3214,114 @@ function App() {
                       解答解説を見る
                     </a>
                   </div>
-                  {guidedMissionComplete ? (
+                  {currentDiagnosis ? (
+                    <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
+                      <p className="text-sm font-bold text-amber-800">
+                        前回の誤答の原因（推定）：{currentDiagnosis.label}
+                      </p>
+                      <p className="mt-1 text-xs leading-5 text-slate-700">
+                        {currentDiagnosis.reason}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        確度：
+                        {currentDiagnosis.confidence === "high"
+                          ? "高"
+                          : currentDiagnosis.confidence === "mid"
+                            ? "中"
+                            : "低"}
+                        ・選んだ肢と正解肢から夜間に推定。断定ではありません。
+                      </p>
+                    </div>
+                  ) : null}
+                  {currentLawChange ? (
+                    <div className="mt-3 rounded-lg border border-slate-300 bg-slate-50 p-3">
+                      <p className="text-sm font-bold text-slate-800">
+                        法改正の注記（{currentLawChange.effectiveDate}施行）
+                      </p>
+                      <p className="mt-1 text-xs leading-5 text-slate-700">
+                        {currentLawChange.summary}
+                      </p>
+                      <a
+                        className="mt-1 inline-block text-xs font-bold text-sky-700 underline"
+                        href={currentLawChange.sourceUrl}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        一次情報を開く
+                      </a>
+                    </div>
+                  ) : null}
+                  {showExplanationInput ? (
+                    <div className="mt-3 rounded-lg border border-violet-200 bg-violet-50 p-3">
+                      <label className="block">
+                        <span className="text-sm font-bold text-violet-900">
+                          根拠を一言（説明できるかチェック）
+                        </span>
+                        <span className="mt-0.5 block text-xs leading-5 text-slate-600">
+                          何度も間違えている問題です。なぜその肢が正解かを一言で。夜間に解説ページと照合して結果を出します。
+                        </span>
+                        <textarea
+                          className="mt-2 min-h-16 w-full rounded-lg border border-violet-300 bg-white p-2 text-sm leading-6 text-slate-900 outline-none focus:border-violet-500"
+                          onChange={(event) =>
+                            saveExplanation(event.target.value)
+                          }
+                          placeholder="例：営業保証金の取戻しは6か月の公告、10年経てば公告不要"
+                          value={currentExplanation}
+                        />
+                      </label>
+                      {currentExplanationGrade ? (
+                        <p
+                          className={`mt-2 rounded-lg px-3 py-2 text-xs leading-5 ${
+                            currentExplanationGrade.verdict === "match"
+                              ? "bg-emerald-100 text-emerald-900"
+                              : currentExplanationGrade.verdict === "unclear"
+                                ? "bg-slate-100 text-slate-700"
+                                : "bg-rose-100 text-rose-900"
+                          }`}
+                        >
+                          <span className="font-bold">
+                            {currentExplanationGrade.verdict === "match"
+                              ? "解説と一致"
+                              : currentExplanationGrade.verdict === "reason_off"
+                                ? "根拠がずれている"
+                                : currentExplanationGrade.verdict === "number_off"
+                                  ? "数字がずれている"
+                                  : "判定できず"}
+                          </span>
+                          ：{currentExplanationGrade.message}{" "}
+                          <a
+                            className="underline"
+                            href={currentExplanationGrade.sourceUrl}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            出典
+                          </a>
+                        </p>
+                      ) : currentExplanation ? (
+                        <p className="mt-2 text-xs text-slate-500">
+                          未照合（次の朝に解説ページと照合します）
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {isAtEndOfPair ? (
+                    <div className="mt-3 rounded-lg border border-rose-200 bg-white p-3">
+                      <p className="text-base font-bold text-rose-800">
+                        比較はここまでです
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-700">
+                        並べて解いた直後は区別できて見えます。明日以降、他の論点に混ぜてもう一度出します。
+                      </p>
+                      <button
+                        className="mt-3 min-h-12 w-full rounded-lg bg-rose-700 px-4 text-base font-bold text-white"
+                        onClick={() => finishPair("complete")}
+                        type="button"
+                      >
+                        比較を終える
+                      </button>
+                    </div>
+                  ) : guidedMissionComplete ? (
                     <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
                       <p className="text-base font-bold text-emerald-800">
                         今日の自動学習はここまでです
@@ -2966,6 +3387,38 @@ function App() {
                   value={currentNote}
                 />
               </label>
+              {currentNoteReview ? (
+                <p
+                  className={`mt-2 rounded-lg px-3 py-2 text-xs leading-5 ${
+                    currentNoteReview.verdict === "conflict"
+                      ? "bg-rose-50 text-rose-900"
+                      : currentNoteReview.verdict === "ok"
+                        ? "bg-emerald-50 text-emerald-900"
+                        : "bg-slate-50 text-slate-700"
+                  }`}
+                >
+                  <span className="font-bold">
+                    {currentNoteReview.verdict === "conflict"
+                      ? "メモが解説と食い違う可能性"
+                      : currentNoteReview.verdict === "ok"
+                        ? "メモは解説と一致"
+                        : "メモを判定できず"}
+                  </span>
+                  ：{currentNoteReview.message}{" "}
+                  <a
+                    className="underline"
+                    href={currentNoteReview.sourceUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    出典
+                  </a>
+                </p>
+              ) : currentNote && authUser ? (
+                <p className="mt-2 text-xs text-slate-500">
+                  未照合（次の朝に解説ページと照合します）
+                </p>
+              ) : null}
 
               <div className="mt-3">
                 {unexportedDateKey ? (
@@ -3382,6 +3835,73 @@ function App() {
           onClose={() => setCheatSheetOpen(false)}
         />
       )}
+
+      {choiceQuizOpen && (
+        <ChoiceQuiz
+          answers={progress.answers}
+          choiceRecords={progress.choiceRecords}
+          onAnswer={recordChoiceAnswer}
+          onClose={() => setChoiceQuizOpen(false)}
+        />
+      )}
+
+      {pairPickerOpen ? (
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/60 px-6"
+          onClick={() => setPairPickerOpen(false)}
+        >
+          <div
+            className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-lg border border-slate-200 bg-white p-4 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 className="text-base font-bold text-slate-950">
+              混同している論点を比較
+            </h2>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              誤答の履歴から、取り違えている論点の組を夜間に推定したものです。2つの論点の問題を交互に解いて、違いを確かめます。
+            </p>
+            {insights?.confusionPairs?.length ? (
+              <ul className="mt-3 space-y-2">
+                {insights.confusionPairs.map((pair) => (
+                  <li key={pair.id}>
+                    <button
+                      className="w-full rounded-lg border border-rose-200 bg-rose-50 p-3 text-left"
+                      onClick={() => startPair(pair)}
+                      type="button"
+                    >
+                      <span className="block text-sm font-bold text-rose-900">
+                        {pair.labelA} ⇄ {pair.labelB}
+                      </span>
+                      <span className="mt-0.5 block text-xs leading-5 text-slate-600">
+                        {pair.reason}
+                      </span>
+                      <span className="mt-1 block text-xs text-slate-500">
+                        {pair.questionIds.length}問
+                        {pair.retest && pair.retest.answered > 0
+                          ? ` ・ 混ぜて再出題した結果 ${pair.retest.correct}/${pair.retest.answered}`
+                          : ""}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                {authUser
+                  ? "まだ推定された組がありません。間違えた問題が増えると、翌朝に出ます。"
+                  : "Googleで保存すると、夜間の推定結果が表示されます。"}
+              </p>
+            )}
+            <button
+              className="mt-3 min-h-11 w-full rounded-lg border border-slate-300 bg-white text-sm font-bold text-slate-700"
+              onClick={() => setPairPickerOpen(false)}
+              type="button"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {mockPicker ? (
         <div

@@ -19,6 +19,11 @@ mkdir -p "$LOG_DIR"
   cd "$REPO" || exit 1
   python3 scripts/daily-coach.py
   echo "exit=$?"
+  # 夜間AIバッチ: 誤答の原因推定・混同ペア・メモ照合・根拠の採点を Firestore insights/{uid} に書く。
+  # 法改正候補（--only lawchanges）は250問ぶんの呼び出しになるので毎朝は走らせない。
+  echo "=== AI insights $(date '+%H:%M:%S') ==="
+  python3 scripts/ai-insights.py --push
+  echo "insights exit=$?"
 } >>"$LOG_FILE" 2>&1
 
 # 生成できたらデスクトップ通知で今日の1行を出す。

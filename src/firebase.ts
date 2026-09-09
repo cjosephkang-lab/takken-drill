@@ -22,6 +22,12 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { mergeNotes, type NoteEntry } from "./lib/notes";
+import {
+  mergeChoiceRecords,
+  mergeEvents,
+  type AnswerEvent,
+  type ChoiceRecord,
+} from "./lib/progressExtras";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -248,7 +254,70 @@ export type SyncedProgress = {
   notes?: Record<string, NoteEntry | string>;
   dailyLog?: Record<string, { answered: number; correct: number }>;
   studyLogExports?: Record<string, string>;
+  /** 回答イベント（夜間バッチの診断材料）。at で和集合を取る。 */
+  events?: AnswerEvent[];
+  /** 肢別○×の記録。answeredAt が新しい方を採る。 */
+  choiceRecords?: Record<string, ChoiceRecord>;
+  /** 根拠の一言（説明できるかチェック）。メモと同じ形で updatedAt 優先。 */
+  explanations?: Record<string, NoteEntry | string>;
   updatedAt: string;
+};
+
+/**
+ * 夜間バッチ scripts/ai-insights.py が書く insights/{uid}。アプリは読むだけ。
+ * 形の正: docs/superpowers/specs/2026-09-09-ai-learning-features-design.md
+ */
+export type DiagnosisType =
+  | "knowledge"
+  | "number"
+  | "misread"
+  | "confusion"
+  | "guess";
+
+export type Diagnosis = {
+  type: DiagnosisType;
+  label: string;
+  reason: string;
+  confidence: "low" | "mid" | "high";
+  confusedWithTopic?: string;
+  eventAt: string;
+};
+
+export type ConfusionPair = {
+  id: string;
+  topicA: string;
+  topicB: string;
+  labelA: string;
+  labelB: string;
+  questionIds: string[];
+  reason: string;
+  createdAt: string;
+  retest?: { answered: number; correct: number };
+};
+
+export type NoteReview = {
+  verdict: "ok" | "conflict" | "unclear";
+  message: string;
+  sourceUrl: string;
+  noteUpdatedAt: string;
+  checkedAt: string;
+};
+
+export type ExplanationGrade = {
+  verdict: "match" | "reason_off" | "number_off" | "unclear";
+  message: string;
+  sourceUrl: string;
+  explanationUpdatedAt: string;
+  checkedAt: string;
+};
+
+export type Insights = {
+  generatedAt: string;
+  diagnoses: Record<string, Diagnosis>;
+  patterns: { type: string; label: string; count: number; advice: string }[];
+  confusionPairs: ConfusionPair[];
+  noteReviews: Record<string, NoteReview>;
+  explanationGrades: Record<string, ExplanationGrade>;
 };
 
 export type Coaching = {
@@ -314,6 +383,9 @@ const mergeSyncedProgress = (
     notes,
     dailyLog,
     studyLogExports,
+    events: mergeEvents(local.events, remote.events),
+    choiceRecords: mergeChoiceRecords(local.choiceRecords, remote.choiceRecords),
+    explanations: mergeNotes(local.explanations, remote.explanations),
     updatedAt: local.updatedAt,
   };
 };
@@ -324,6 +396,12 @@ export const fetchSyncedProgress = async (
   if (!db) return null;
   const snapshot = await getDoc(doc(db, "progress", uid));
   return snapshot.exists() ? (snapshot.data() as SyncedProgress) : null;
+};
+
+export const fetchInsights = async (uid: string): Promise<Insights | null> => {
+  if (!db) return null;
+  const snapshot = await getDoc(doc(db, "insights", uid));
+  return snapshot.exists() ? (snapshot.data() as Insights) : null;
 };
 
 export const fetchCoaching = async (uid: string): Promise<Coaching | null> => {

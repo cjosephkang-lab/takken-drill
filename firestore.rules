@@ -11,5 +11,10 @@ service cloud.firestore {
     match /coaching/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
     }
+
+    // 夜間バッチ（scripts/ai-insights.py）の推定結果。本人だけが読める。書き込みは管理権限だけ。
+    match /insights/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+    }
   }
 }
