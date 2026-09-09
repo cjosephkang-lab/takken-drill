@@ -211,9 +211,23 @@ def load_question_topics() -> dict:
     }
 
 
+def questions_source() -> str:
+    """questions.ts のうち、問題本体（takkenQuestions）の部分だけを返す。
+
+    ファイル冒頭には試験メタデータの配列があり、そこにも "id"（"r7" など）が
+    ある。re.S で改行をまたぐ正規表現をファイル全体にかけると、この "r7" が
+    直後の r7-01 の "category" と結びつき、本物の r7-01 が丸ごと落ちる
+    （2026-09-09発見。科目別の集計が1問ずれていた）。
+    """
+    source = QUESTIONS_TS.read_text(encoding="utf-8")
+    marker = "export const takkenQuestions"
+    start = source.find(marker)
+    return source[start:] if start >= 0 else source
+
+
 def load_question_categories() -> dict:
     """questions.ts から 問題ID → 科目 の対応を読む。"""
-    source = QUESTIONS_TS.read_text(encoding="utf-8")
+    source = questions_source()
     categories = {}
     for match in re.finditer(
         r'"id":\s*"([^"]+)".*?"category":\s*"([^"]+)"', source, re.S
@@ -224,7 +238,7 @@ def load_question_categories() -> dict:
 
 def load_question_labels() -> dict:
     """問題ID → {year, number} の対応。メモの指摘に年度と問番号を出すため。"""
-    source = QUESTIONS_TS.read_text(encoding="utf-8")
+    source = questions_source()
     labels = {}
     for match in re.finditer(
         r'"id":\s*"([^"]+)".*?"year":\s*"([^"]+)".*?"number":\s*(\d+)',
