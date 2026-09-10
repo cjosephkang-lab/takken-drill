@@ -919,6 +919,10 @@ function App() {
     progress.events,
     progress.choiceRecords,
     progress.explanations,
+    // 書き出し済みの記録も送っているので依存に入れる。抜けていると、
+    // 書き出しだけをした時に同期が走らず、別の端末で「まだ書き出されて
+    // いません」の警告が消えなかった（2026-09-10 codex指摘）。
+    progress.studyLogExports,
     syncReady,
   ]);
 
