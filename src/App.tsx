@@ -453,7 +453,10 @@ const mergeProgress = (
     dailyLog,
     studyLogExports,
     events: mergeEvents(local.events, remote.events),
-    choiceRecords: mergeChoiceRecords(local.choiceRecords, remote.choiceRecords),
+    choiceRecords: mergeChoiceRecords(
+      local.choiceRecords,
+      remote.choiceRecords,
+    ),
     explanations: mergeNotes(local.explanations, remote.explanations),
   };
 };
@@ -1100,12 +1103,12 @@ function App() {
   const currentLawChange = confirmedLawChange(currentQuestion.id);
   const currentExplanationEntry = progress.explanations[currentQuestion.id];
   const currentExplanation = currentExplanationEntry?.text ?? "";
-  const explanationGradeRaw =
-    insights?.explanationGrades?.[currentQuestion.id];
+  const explanationGradeRaw = insights?.explanationGrades?.[currentQuestion.id];
   const currentExplanationGrade =
     explanationGradeRaw &&
     currentExplanationEntry?.text &&
-    explanationGradeRaw.explanationUpdatedAt === currentExplanationEntry.updatedAt
+    explanationGradeRaw.explanationUpdatedAt ===
+      currentExplanationEntry.updatedAt
       ? explanationGradeRaw
       : null;
   // 根拠の入力欄は、2回以上間違えた問題を解いた直後だけ出す（任意・入力負荷を増やさない）。
@@ -2193,10 +2196,7 @@ function App() {
 
   // 模試の採点結果を学習記録へ反映する。回答した各問を通常ドリルと同じ
   // 間隔反復レコードとして記録し、日次ログにも加算する。
-  const commitMock = (
-    run: MockRun,
-    options?: { reviewWrongOf?: string },
-  ) => {
+  const commitMock = (run: MockRun, options?: { reviewWrongOf?: string }) => {
     const answeredAt = new Date().toISOString();
     const questionById = new Map(takkenQuestions.map((q) => [q.id, q]));
     const runAnswers = Object.entries(run.answers);
@@ -2622,9 +2622,7 @@ function App() {
               }}
               type="button"
             >
-              <span className="text-sm font-bold text-violet-800">
-                肢別○×
-              </span>
+              <span className="text-sm font-bold text-violet-800">肢別○×</span>
               <span className="mt-1 block text-lg font-bold text-slate-950 sm:text-xl">
                 1肢ずつ
               </span>
@@ -2948,7 +2946,12 @@ function App() {
                               question_number: row.question.number,
                             });
                             // 正解済みの問題にも飛べるよう、絞り込みから守る。
-                            goToQuestion(row.question.id, "question", "push", "pin");
+                            goToQuestion(
+                              row.question.id,
+                              "question",
+                              "push",
+                              "pin",
+                            );
                           }}
                           type="button"
                         >
@@ -3284,7 +3287,8 @@ function App() {
                               ? "解説と一致"
                               : currentExplanationGrade.verdict === "reason_off"
                                 ? "根拠がずれている"
-                                : currentExplanationGrade.verdict === "number_off"
+                                : currentExplanationGrade.verdict ===
+                                    "number_off"
                                   ? "数字がずれている"
                                   : "判定できず"}
                           </span>
@@ -3464,7 +3468,9 @@ function App() {
             onClick={toggleBoard}
             type="button"
           >
-            <span className="text-base font-bold text-slate-950">
+            {/* 見出しは縮めない。iPhone幅では右の学習状況に押されて
+                「成績を見/る」と2行に割れていた（2026-09-10修正）。 */}
+            <span className="shrink-0 text-base font-bold text-slate-950">
               成績を見る
             </span>
             <span className="text-right text-sm text-slate-500">
