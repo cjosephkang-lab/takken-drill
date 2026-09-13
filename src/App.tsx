@@ -2528,7 +2528,7 @@ function App() {
           <div className="mt-3 flex flex-col gap-2 border-t border-slate-200 pt-3 text-xs text-slate-700 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-bold text-slate-950">{historySaveTitle}</p>
-              <p className="mt-0.5 leading-5 text-slate-500">
+              <p className="mt-0.5 min-h-10 leading-5 text-slate-500">
                 {historySaveDetail}
               </p>
             </div>
