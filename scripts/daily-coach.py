@@ -195,6 +195,22 @@ def to_jst(iso_text: str) -> str:
     return parsed.astimezone(JST).strftime("%Y-%m-%d %H:%M JST")
 
 
+def review_date_jst(iso_text: str) -> str | None:
+    """復習期限のISO時刻から、日本時間での復習日（YYYY-MM-DD）を取る。
+
+    アプリは期限をJSTの朝4時に丸めて保存する（src/lib/reviewSchedule.ts）。
+    JST 9/17 4:00 は UTC では 9/16 19:00 なので、ISO文字列の先頭10文字を
+    そのまま日付として使うと1日早く数える。必ずJSTに直してから切り出す。
+    """
+    if not iso_text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(iso_text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed.astimezone(JST).date().isoformat()
+
+
 def load_question_topics() -> dict:
     """topicTags.ts から 問題ID → 論点ID の対応を読む。"""
     source = (ROOT / "src" / "data" / "topicTags.ts").read_text(encoding="utf-8")
@@ -757,7 +773,11 @@ def build_coaching(
         next_review = record.get("nextReviewAt", "")
         if not next_review:
             continue
-        review_day = next_review[:10]
+        # 期限はJSTの朝4時（= UTCでは前日19:00）。UTCの日付をそのまま
+        # 切り出すと1日早く数えてしまうので、JSTに直してから日付を取る。
+        review_day = review_date_jst(next_review)
+        if review_day is None:
+            continue
         if review_day < today.isoformat():
             overdue_count += 1
         elif review_day == today.isoformat():
@@ -907,7 +927,11 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    today = date.fromisoformat(args.date) if args.date else date.today()
+    # 「今日」は必ずJSTで取る。復習期限をJSTに直して比べているので、
+    # ここがUTC実行環境のローカル日付だと、朝9時までズレた日で集計する。
+    today = (
+        date.fromisoformat(args.date) if args.date else datetime.now(JST).date()
+    )
 
     progress = fetch_progress()
     categories = load_question_categories()

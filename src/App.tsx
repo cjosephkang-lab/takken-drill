@@ -39,6 +39,13 @@ import {
   type AnswerEvent,
   type ChoiceRecord,
 } from "./lib/progressExtras";
+import {
+  isDue,
+  nextReviewAt,
+  nextReviewAtForStreak,
+  reviewIntervalDays,
+  startOfStudyDay,
+} from "./lib/reviewSchedule";
 import { confirmedLawChange } from "./data/lawChanges";
 import {
   fetchCoaching,
@@ -188,39 +195,20 @@ const noteLengthBucket = (length: number) => {
 const elapsedSeconds = (startedAt: string) =>
   Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 1000));
 
-// 間隔反復の復習間隔。間違えたら翌日、正解を重ねるほど間隔を広げて、
-// 忘れかけた頃に再出題する。
-/**
- * 次の復習までの日数。連続正解が増えるほど間隔を空ける。
- *
- * 棚田行政書士（YouTube「不動産大学」・TAC出版『棚田式』）の大量記憶法は
- * 0日→半日→1日→2日→3日→4日→5日→6日→7日と最初の1週間を毎日詰め、
- * 7日到達後に週1回へ移す。エビングハウスの忘却曲線が根拠。
- * https://takken11.com/memory/
- *
- * ただし1週間毎日は残り日数に対して重すぎる（23問解いた日の復習だけで
- * 7日間×23問が固定され、未着手に手が回らない）。3回目を7日から4日に
- * 前倒しし、忘却が進む前に1回挟む形に圧縮した。
- */
-const reviewIntervalDays = (streak: number) => {
-  if (streak <= 0) return 1;
-  if (streak === 1) return 2;
-  if (streak === 2) return 4;
-  if (streak === 3) return 7;
-  if (streak === 4) return 14;
-  return 30;
-};
-
-const addDays = (iso: string, days: number) => {
-  const date = new Date(iso);
-  date.setDate(date.getDate() + days);
-  return date.toISOString();
-};
+// 間隔反復の復習間隔とその日の期限は src/lib/reviewSchedule.ts が正。
+// 期限は「解いた時刻＋N日」ではなく、その日の朝4時（JST）に丸めている。
 
 // 旧形式（間隔反復フィールドなし）の回答レコードを読み込み時に補完する。
+// 併せて、時刻のまま保存された古い期限を朝4時へ寄せ直す。丸めないと
+// 夜に解いたぶんが翌朝ではなく夜に降ってきて、キューが日中に増える。
 const normalizeAnswer = (record: AnswerRecord): AnswerRecord => {
   if (typeof record.streak === "number" && record.nextReviewAt) {
-    return record;
+    // 丸められない値（壊れた日時）はそのまま残す。ここで例外を投げると
+    // loadProgress が空の進捗に落ち、学習履歴が消えたように見える。
+    const rounded = startOfStudyDay(record.nextReviewAt);
+    return rounded === null || rounded === record.nextReviewAt
+      ? record
+      : { ...record, nextReviewAt: rounded };
   }
 
   const streak = record.correct ? 1 : 0;
@@ -230,12 +218,11 @@ const normalizeAnswer = (record: AnswerRecord): AnswerRecord => {
     streak,
     attempts: 1,
     lapses: record.correct ? 0 : 1,
-    nextReviewAt: addDays(record.answeredAt, reviewIntervalDays(streak)),
+    nextReviewAt: nextReviewAtForStreak(record.answeredAt, streak),
   };
 };
 
-const isDueRecord = (record?: AnswerRecord) =>
-  Boolean(record && record.nextReviewAt <= new Date().toISOString());
+const isDueRecord = (record?: AnswerRecord) => isDue(record?.nextReviewAt);
 
 /**
  * ステータス絞り込みに一致するか。一覧・ジャンプ先探索の両方で使う。
@@ -279,7 +266,7 @@ const buildAnswerRecord = (
     streak,
     attempts: (previous?.attempts ?? 0) + 1,
     lapses: (previous?.lapses ?? 0) + (correct ? 0 : 1),
-    nextReviewAt: addDays(answeredAt, reviewIntervalDays(streak)),
+    nextReviewAt: nextReviewAtForStreak(answeredAt, streak),
     unsure,
   };
 };
@@ -408,12 +395,17 @@ const mergeProgress = (
     explanations?: Record<string, NoteEntry | string>;
   },
 ): ProgressState => {
-  const answers: Record<string, AnswerRecord> = { ...remote.answers };
+  // 同期で来たぶんも normalizeAnswer に通す。旧ビルドの端末が書いた
+  // 時刻のままの復習期限が、丸めを素通りして戻ってくるのを防ぐ。
+  const answers: Record<string, AnswerRecord> = {};
+  for (const [id, record] of Object.entries(remote.answers)) {
+    answers[id] = normalizeAnswer(record);
+  }
 
   for (const [id, record] of Object.entries(local.answers)) {
     const remoteRecord = answers[id];
     if (!remoteRecord || record.answeredAt >= remoteRecord.answeredAt) {
-      answers[id] = record;
+      answers[id] = normalizeAnswer(record);
     }
   }
 
@@ -1871,7 +1863,7 @@ function App() {
     trackMetric("pair_finish", { pair_id: activePair.id, reason });
     // 途中でやめた時は復習日を動かさない（数問しか解いていないのにスケジュールが変わる）。
     if (reason === "complete") {
-      const tomorrow = addDays(new Date().toISOString(), 1);
+      const tomorrow = nextReviewAt(new Date().toISOString(), 1);
       const ids = new Set(activePair.questionIds);
       updateProgress((previous) => {
         const answers = { ...previous.answers };

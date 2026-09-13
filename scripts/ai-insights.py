@@ -1117,7 +1117,11 @@ def main() -> None:
     parser.add_argument("--out-root", help="docs/ の出力先ルート（検証用。既定はリポジトリ）")
     args = parser.parse_args()
 
-    today = date.fromisoformat(args.date) if args.date else date.today()
+    # 次行の now_iso と同じくJSTで揃える。UTC実行環境だと朝9時まで前日扱いになり、
+    # レポートの日付とファイル名が1日ずれる。
+    today = (
+        date.fromisoformat(args.date) if args.date else datetime.now(JST).date()
+    )
     now_iso = datetime.now(JST).isoformat()
 
     # 同時に2つ走ると state.json・insights.json・当日レポートを互いに上書きする
