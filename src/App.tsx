@@ -2398,10 +2398,12 @@ function App() {
           </div>
 
           {isSyncConfigured ? (
-            <div className="flex shrink-0 flex-col items-end gap-1 text-right text-xs text-slate-500">
+            // w-40: 「Googleに保存中（エラー）」の幅(約148px)より広く固定し、
+            // 状態変化で見出し側の折り返しが動いてヘッダーが上下に揺れるのを防ぐ。
+            <div className="flex w-40 shrink-0 flex-col items-end gap-1 text-right text-xs text-slate-500">
               {authUser ? (
                 <>
-                  <span>
+                  <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
                     Googleに保存中
                     {syncState === "syncing" ? "…" : ""}
                     {syncState === "error" ? "（エラー）" : ""}
