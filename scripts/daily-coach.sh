@@ -7,6 +7,10 @@
 
 set -uo pipefail
 
+# launchd の PATH では /usr/bin/python3（3.9）が先に当たり、`str | None` の型注釈で
+# 起動時に落ちる（2026-09-14〜26 に毎朝失敗した）。Homebrew の python3 を先に置く。
+export PATH="/opt/homebrew/bin:${PATH}"
+
 REPO="/Users/changju1109/AICompany/takken-drill"
 TODAY="$(date '+%Y-%m-%d')"
 YESTERDAY="$(date -v-1d '+%Y-%m-%d')"
@@ -18,7 +22,8 @@ mkdir -p "$LOG_DIR"
 {
   echo "=== 宅建コーチ ${TODAY} $(date '+%H:%M:%S') ==="
   cd "$REPO" || exit 1
-  python3 scripts/daily-coach.py
+  # --push でアプリの「今日の学習アドバイス」も更新する（付けないとファイルに書くだけ）。
+  python3 scripts/daily-coach.py --push
   echo "exit=$?"
   # 夜間AIバッチ: 誤答の原因推定・混同ペア・メモ照合・根拠の採点を Firestore insights/{uid} に書く。
   # 法改正候補（--only lawchanges）は250問ぶんの呼び出しになるので毎朝は走らせない。
