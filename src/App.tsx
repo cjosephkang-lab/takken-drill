@@ -3235,9 +3235,9 @@ function App() {
                     </div>
                   ) : null}
                   {currentLawChange ? (
-                    <div className="mt-3 rounded-lg border border-slate-300 bg-slate-50 p-3">
-                      <p className="text-sm font-bold text-slate-800">
-                        法改正の注記（{currentLawChange.effectiveDate}施行）
+                    <div className="mt-3 rounded-lg border border-amber-400 bg-amber-50 p-3">
+                      <p className="text-sm font-bold text-amber-900">
+                        ⚠ 法改正の注記（{currentLawChange.effectiveDate}施行）
                       </p>
                       <p className="mt-1 text-xs leading-5 text-slate-700">
                         {currentLawChange.summary}
