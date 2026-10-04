@@ -268,11 +268,19 @@ def load_question_labels() -> dict:
     return labels
 
 
-def stock_by_category(categories: dict) -> dict:
-    """科目ごとの、ドリルで扱う問題数。模試用に温存した年度は数えない。"""
+def stock_by_category(categories: dict, answers: dict | None = None) -> dict:
+    """科目ごとの、ドリルで扱う問題数。模試用に温存した年度は数えない。
+
+    ただし温存年度でも、すでに解いた問題は数える。数えないと「着手 22 / 在庫 20」と
+    着手が在庫を超えて、未着手が実際より少なく出る（2026-10-04）。
+    """
+    answers = answers or {}
     stock = defaultdict(int)
     for question_id, category in categories.items():
-        if question_id.split("-")[0] in MOCK_RESERVED_EXAMS:
+        if (
+            question_id.split("-")[0] in MOCK_RESERVED_EXAMS
+            and question_id not in answers
+        ):
             continue
         stock[category] += 1
     return dict(stock)
@@ -301,7 +309,7 @@ def format_report(
     progress: dict, categories: dict, today: date
 ) -> tuple[str, dict]:
     """レポート本文と、アプリのコーチ枠を組むのに要る数値を返す。"""
-    stock = stock_by_category(categories)
+    stock = stock_by_category(categories, progress["answers"])
     stats = summarize(progress["answers"], categories)
     daily_log = progress["dailyLog"]
     # メモの指摘に「令和6年度 問41」と出すための対応表。
