@@ -2272,6 +2272,33 @@ function App() {
     window.scrollTo({ top: 0 });
   };
 
+  // フックは下の早期returnより前に置く。後ろに置くと模試を開始した瞬間に
+  // フック数が減り、画面が真っ白になる（React #300・2026-09-06から潜在、10-04発覚）。
+  const examReview = useMemo(() => {
+    if (examFilter === ALL) return null;
+
+    const rows = takkenQuestions
+      .filter((question) => question.examId === examFilter)
+      .sort((a, b) => a.number - b.number)
+      .map((question) => {
+        const record = progress.answers[question.id];
+        return {
+          question,
+          record,
+          correct: record?.correct ?? null,
+          unsure: record?.unsure ?? false,
+        };
+      });
+
+    const answered = rows.filter((row) => row.record);
+    return {
+      rows,
+      answered: answered.length,
+      correct: answered.filter((row) => row.correct).length,
+      unsure: answered.filter((row) => row.unsure).length,
+    };
+  }, [examFilter, progress.answers]);
+
   // 模試モード中は模試画面だけを表示する（リロードしても再開される）。
   const mockExam = mockRun
     ? takkenExams.find((exam) => exam.id === mockRun.examId)
@@ -2307,30 +2334,6 @@ function App() {
     "すべての問題";
   // 年度を絞っている時、その年度の正誤を一覧で見せる。
   // 模試の採点画面は終了すると消えるので、後から振り返る手段が要る。
-  const examReview = useMemo(() => {
-    if (examFilter === ALL) return null;
-
-    const rows = takkenQuestions
-      .filter((question) => question.examId === examFilter)
-      .sort((a, b) => a.number - b.number)
-      .map((question) => {
-        const record = progress.answers[question.id];
-        return {
-          question,
-          record,
-          correct: record?.correct ?? null,
-          unsure: record?.unsure ?? false,
-        };
-      });
-
-    const answered = rows.filter((row) => row.record);
-    return {
-      rows,
-      answered: answered.length,
-      correct: answered.filter((row) => row.correct).length,
-      unsure: answered.filter((row) => row.unsure).length,
-    };
-  }, [examFilter, progress.answers]);
 
   const topicFilterLabel =
     topicFilter === ALL
