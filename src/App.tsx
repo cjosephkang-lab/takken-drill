@@ -132,6 +132,8 @@ const DUE = "due";
 const UNSURE = "unsure";
 /** 自信あり（自信なし印なし）で間違えた問題。誤った記憶で確信して外した問題なので最優先で復習する。 */
 const CONFIDENT_WRONG = "confident-wrong";
+/** 通算で2回以上間違えた問題。直前期はこれを繰り返す。正解しても回数は減らないので一覧から消えない。 */
+const REPEATED_WRONG = "repeated-wrong";
 const RECENT_WRONG_OPTIONS = [
   { value: "wrong-1d", days: 2, label: "間違えた問題（今日・昨日）" },
   { value: "wrong-3d", days: 3, label: "間違えた問題（直近3日）" },
@@ -146,6 +148,7 @@ const STATUS_LABELS: Record<string, string> = {
   [WRONG]: "間違えた問題（すべて）",
   [UNSURE]: "自信がなかった問題",
   [CONFIDENT_WRONG]: "自信があったのに間違えた問題",
+  [REPEATED_WRONG]: "何度も間違えた問題（2回以上）",
   [DUE]: "復習する問題",
 };
 
@@ -237,6 +240,7 @@ const matchesStatusFilter = (
   if (statusValue === DUE) return isDueRecord(record);
   if (statusValue === UNSURE) return Boolean(record?.unsure);
   if (statusValue === CONFIDENT_WRONG) return isConfidentWrong(record);
+  if (statusValue === REPEATED_WRONG) return (record?.lapses ?? 0) >= 2;
 
   const days = recentWrongDays(statusValue);
   if (days !== null) {
@@ -504,6 +508,7 @@ const loadSettings = (): UiSettings => {
           parsed.statusFilter === WRONG ||
           parsed.statusFilter === DUE ||
           parsed.statusFilter === UNSURE ||
+          parsed.statusFilter === REPEATED_WRONG ||
           recentWrongDays(parsed.statusFilter) !== null)
           ? parsed.statusFilter
           : ALL,
@@ -2894,6 +2899,9 @@ function App() {
                   <option value={ALL}>すべての問題</option>
                   <option value={UNANSWERED}>まだ解いていない</option>
                   <option value={WRONG}>間違えた問題（すべて）</option>
+                  <option value={REPEATED_WRONG}>
+                    何度も間違えた問題（2回以上）
+                  </option>
                   {RECENT_WRONG_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
