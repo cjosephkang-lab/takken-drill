@@ -141,25 +141,18 @@ export const statistics: StatItem[] = [
   {
     id: "gyosha",
     title: "宅建業者数",
-    headline: "令和6年度末で132,291業者。11年連続の増加",
+    headline: "令和7年度末で133,727業者。12年連続の増加",
     figures: [
-      {
-        label: "令和6年度末（2025年3月末）",
-        value: "132,291業者（11年連続増）",
-      },
-      { label: "内訳", value: "大臣免許 3,158 ／ 知事免許 129,133" },
-      {
-        label: "参考: 令和7年度末（2026年10月2日公表）",
-        value: "133,727業者（12年連続増）",
-      },
+      { label: "令和7年度末（2026年3月末）", value: "133,727業者（12年連続増）" },
+      { label: "参考: 令和6年度末（2025年3月末）", value: "132,291業者（11年連続増）" },
     ],
     traps: [
-      "本試験の問題は10月の新しい発表より前に作られるため、出るなら「約13.2万・11年連続増」の可能性が高い。どちらでも「増加」は変わらない",
+      "前年の数字（約13.2万・11年連続増）で出題される可能性もある。どちらでも答えは「増加」",
     ],
     source: {
-      name: "国土交通省「宅地建物取引業法の施行状況調査（令和6年度）」",
-      published: "2025年10月3日",
-      url: "https://www.mlit.go.jp/report/press/tochi_fudousan_kensetsugyo16_hh_000001_00105.html",
+      name: "不動産適正取引推進機構「令和7年度 宅建業者の統計概要」／国土交通省「宅地建物取引業法の施行状況調査」",
+      published: "2026年6月1日（機構）・2026年10月2日（国交省）",
+      url: "https://www.retio.or.jp/toukei/toukei/",
     },
   },
   {
@@ -176,7 +169,7 @@ export const statistics: StatItem[] = [
     source: {
       name: "総務省統計局「令和5年住宅・土地統計調査」",
       published: "2024年9月25日（確報）",
-      url: "https://www.stat.go.jp/info/guide/asu/pdf/2025asu_3-2.pdf",
+      url: "https://www.stat.go.jp/data/jyutaku/2023/pdf/kihon_gaiyou.pdf",
     },
   },
 ];
