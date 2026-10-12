@@ -86,6 +86,16 @@ export const lawChanges: LawChange[] = [
     effectiveDate: "2026-04-01",
     sourceUrl: "https://www.moj.go.jp/MINJI/minji07_00375.html",
   },
+  // 不動産取得税の免税点の引上げ（令和8年法律第2号・地方税法73条の15の2）。令和8年4月1日以後の取得に適用。
+  // 一次情報: e-Gov法令API で地方税法の 2026-03-31 版と 2026-04-01 版の条文を比較。2026-10-12 確認。
+  {
+    questionId: "r6-24",
+    status: "confirmed",
+    summary:
+      "正解の選択肢2（免税点 土地10万円・家屋の建築23万円・その他12万円）は出題当時の金額。令和8年4月1日以後の取得から、土地16万円・家屋の建築66万円・その他34万円に引き上げられた。今年の試験では新しい金額で判断する。",
+    effectiveDate: "2026-04-01",
+    sourceUrl: "https://laws.e-gov.go.jp/law/325AC0000000226",
+  },
 ];
 
 export const confirmedLawChange = (questionId: string): LawChange | undefined =>

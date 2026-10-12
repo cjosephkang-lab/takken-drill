@@ -27,6 +27,7 @@ import {
 import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
 import { StatsSheet } from "./StatsSheet";
+import { NumbersSheet } from "./NumbersSheet";
 import { ChoiceQuiz } from "./ChoiceQuiz";
 import type { ChoiceStatement } from "./lib/choiceStatements";
 import {
@@ -669,6 +670,7 @@ function App() {
   >({});
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const [statsSheetOpen, setStatsSheetOpen] = useState(false);
+  const [numbersSheetOpen, setNumbersSheetOpen] = useState(false);
   // 肢別○×モードの画面。
   const [choiceQuizOpen, setChoiceQuizOpen] = useState(false);
   // 夜間バッチの推定（誤答の原因・混同ペア・メモ照合・根拠の採点）。ログイン時に読む。
@@ -2662,6 +2664,21 @@ function App() {
             <button
               className="col-span-2 min-h-12 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left sm:col-span-3"
               onClick={() => {
+                trackMetric("numbers_sheet_open", {});
+                setNumbersSheetOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-amber-800">
+                数字（問11〜24）
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                毎年出る枠の数字を1問ずつ
+              </span>
+            </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left sm:col-span-3"
+              onClick={() => {
                 trackMetric("stats_sheet_open", {});
                 setStatsSheetOpen(true);
               }}
@@ -3860,6 +3877,10 @@ function App() {
           </div>
         </div>
       ) : null}
+
+      {numbersSheetOpen && (
+        <NumbersSheet onClose={() => setNumbersSheetOpen(false)} />
+      )}
 
       {statsSheetOpen && (
         <StatsSheet onClose={() => setStatsSheetOpen(false)} />
