@@ -26,6 +26,7 @@ import {
 } from "./lib/unreadableChoices";
 import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
+import { StatsSheet } from "./StatsSheet";
 import { ChoiceQuiz } from "./ChoiceQuiz";
 import type { ChoiceStatement } from "./lib/choiceStatements";
 import {
@@ -667,6 +668,7 @@ function App() {
     Record<number, boolean>
   >({});
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
+  const [statsSheetOpen, setStatsSheetOpen] = useState(false);
   // 肢別○×モードの画面。
   const [choiceQuizOpen, setChoiceQuizOpen] = useState(false);
   // 夜間バッチの推定（誤答の原因・混同ペア・メモ照合・根拠の採点）。ログイン時に読む。
@@ -2657,6 +2659,21 @@ function App() {
                 混同している論点を並べて解く
               </span>
             </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left sm:col-span-3"
+              onClick={() => {
+                trackMetric("stats_sheet_open", {});
+                setStatsSheetOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-amber-800">
+                統計（問48）
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                解かずに覚える最新の数字
+              </span>
+            </button>
           </div>
         </section>
 
@@ -3843,6 +3860,10 @@ function App() {
           </div>
         </div>
       ) : null}
+
+      {statsSheetOpen && (
+        <StatsSheet onClose={() => setStatsSheetOpen(false)} />
+      )}
 
       {cheatSheetOpen && (
         <CheatSheet
