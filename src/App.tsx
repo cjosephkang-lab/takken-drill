@@ -30,6 +30,10 @@ import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
 import { KozarieQuiz } from "./KozarieQuiz";
 import { isUnsettledRepeatedWrong } from "./lib/repeatedWrong";
+import {
+  shuffledChoiceOrder,
+  shuffledQuestionText,
+} from "./lib/choiceShuffle";
 import { ChoiceQuiz } from "./ChoiceQuiz";
 import type { ChoiceStatement } from "./lib/choiceStatements";
 import {
@@ -597,7 +601,11 @@ const saveMockRun = (run: MockRun | null) => {
 
 const formatChoices = (choices: number[]) => choices.join(" / ");
 
-const resultText = (question: TakkenQuestion) => {
+const resultText = (question: TakkenQuestion, order?: number[] | null) => {
+  if (order) {
+    const original = question.correctChoices[0];
+    return `正解: ${order.indexOf(original) + 1}（元の問題では肢${original}）`;
+  }
   if (question.isAllCorrect) {
     return "全員正解扱い";
   }
@@ -615,6 +623,8 @@ type ChoiceButtonsProps = {
   placement: "top" | "bottom";
   revealCorrect?: boolean;
   onAnswer: (choice: number, placement: "top" | "bottom") => void;
+  /** 肢を並べ替えて出す時の、表示位置→元の肢番号。null なら元の並び。 */
+  order?: number[] | null;
 };
 
 function ChoiceButtons({
@@ -623,10 +633,13 @@ function ChoiceButtons({
   placement,
   revealCorrect = false,
   onAnswer,
+  order = null,
 }: ChoiceButtonsProps) {
   return (
     <div className="grid grid-cols-4 gap-2">
-      {[1, 2, 3, 4].map((choice) => {
+      {[1, 2, 3, 4].map((shown) => {
+        // 記録・正誤判定は元の肢番号で行い、ボタンには表示上の番号を出す。
+        const choice = order ? order[shown - 1] : shown;
         const selected = answer?.selected === choice;
         const correct = question.correctChoices.includes(choice);
         const answered = Boolean(answer) || revealCorrect;
@@ -640,12 +653,12 @@ function ChoiceButtons({
                   ? "border-rose-500 bg-rose-50 text-rose-700"
                   : "border-slate-300 bg-white text-slate-900 shadow-sm"
             }`}
-            key={choice}
+            key={shown}
             onClick={() => onAnswer(choice, placement)}
             disabled={revealCorrect}
             type="button"
           >
-            {choice}
+            {shown}
           </button>
         );
       })}
@@ -1135,6 +1148,15 @@ function App() {
   const showExplanationInput =
     Boolean(currentAnswer) &&
     ((currentAnswer?.lapses ?? 0) >= 2 || Boolean(currentExplanation));
+  // 「何度も間違えた問題」を解く時は肢の並びを日替わりで入れ替える。番号で答えを覚えてしまうのを防ぐ。
+  // 絞り込みで決める（問題の状態で決めると、正解して定着した瞬間に並びが元に戻って画面が揺れる）。
+  const choiceOrder = useMemo(
+    () =>
+      statusFilter === REPEATED_WRONG
+        ? shuffledChoiceOrder(currentQuestion, todayKey)
+        : null,
+    [currentQuestion, statusFilter, todayKey],
+  );
   // 比較モードの最後の問題を解き終えたか。
   const isAtEndOfPair =
     Boolean(activePair) &&
@@ -3199,6 +3221,7 @@ function App() {
                 answer={currentAnswer}
                 onAnswer={answerQuestion}
                 placement="top"
+                order={choiceOrder}
                 question={currentQuestion}
                 revealCorrect={answerRevealed}
               />
@@ -3238,13 +3261,18 @@ function App() {
               ) : null}
 
               <div className="whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-slate-50 p-4 text-base leading-7 text-slate-950">
-                {formatQuestionText(currentQuestion.questionText)}
+                {formatQuestionText(
+                  choiceOrder
+                    ? shuffledQuestionText(currentQuestion, choiceOrder)
+                    : currentQuestion.questionText,
+                )}
               </div>
 
               <ChoiceButtons
                 answer={currentAnswer}
                 onAnswer={answerQuestion}
                 placement="bottom"
+                order={choiceOrder}
                 question={currentQuestion}
                 revealCorrect={answerRevealed}
               />
@@ -3266,7 +3294,7 @@ function App() {
                         : "不正解"}
                   </p>
                   <p className="mt-1 text-base leading-7 text-slate-950">
-                    {resultText(currentQuestion)}
+                    {resultText(currentQuestion, choiceOrder)}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-slate-700">
                     {answerRevealed
@@ -3282,6 +3310,13 @@ function App() {
                     <p className="mt-2 text-sm leading-6 text-slate-700">
                       {currentQuestion.officialExplanation}
                     </p>
+                    {choiceOrder ? (
+                      <p className="mt-2 rounded bg-amber-50 p-2 text-xs leading-5 text-amber-900">
+                        この画面では肢の並びを入れ替えています。表示の1・2・3・4は、元の問題の肢
+                        {choiceOrder.join("・")}
+                        です。解説は元の番号で書かれています。
+                      </p>
+                    ) : null}
                     <a
                       className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-bold text-sky-700"
                       href={currentQuestion.externalExplanationUrl}
