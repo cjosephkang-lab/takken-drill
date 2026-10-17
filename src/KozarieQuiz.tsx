@@ -5,6 +5,7 @@ import {
   type KozarieQuestion,
 } from "./data/kozarieQuiz";
 import { weakSpotGroups, weakSpotQuestions } from "./data/weakSpotQuiz";
+import { cramGroups, cramQuestions } from "./data/cramQuiz";
 import type { ChoiceRecord } from "./lib/progressExtras";
 import { oxRecordKey } from "./lib/studyRecords";
 
@@ -103,6 +104,32 @@ export function WeakSpotQuiz(props: Props) {
         ) : null
       }
       title="弱点の仮説 ○×"
+    />
+  );
+}
+
+// 直前の詰め込み用（盛土・区分所有・借地借家の数字）。「一覧で見る」がチートシートになる。
+export function CramQuiz(props: Props) {
+  return (
+    <OxQuiz
+      {...props}
+      description="盛土規制法の高さ・区分所有法の決議・借地借家法の期間を○×で詰め込む。数字は2026年4月1日時点の条文で確認済み。「一覧で見る」でチートシートとして読める。"
+      groupNoun="分野"
+      groups={cramGroups}
+      questions={cramQuestions}
+      source={(item) =>
+        item.sourceUrl ? (
+          <a
+            className="underline"
+            href={item.sourceUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            条文
+          </a>
+        ) : null
+      }
+      title="直前詰め込み ○×"
     />
   );
 }

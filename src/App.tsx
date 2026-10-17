@@ -28,7 +28,7 @@ import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
 import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
-import { KozarieQuiz, WeakSpotQuiz } from "./KozarieQuiz";
+import { CramQuiz, KozarieQuiz, WeakSpotQuiz } from "./KozarieQuiz";
 import {
   LEGACY_LEARNED_STORES,
   legacyLearnedRecords,
@@ -708,6 +708,7 @@ function App() {
   const [numbersSheetOpen, setNumbersSheetOpen] = useState(false);
   const [kozarieOpen, setKozarieOpen] = useState(false);
   const [weakSpotOpen, setWeakSpotOpen] = useState(false);
+  const [cramOpen, setCramOpen] = useState(false);
   // 肢別○×モードの画面。
   const [choiceQuizOpen, setChoiceQuizOpen] = useState(false);
   // 夜間バッチの推定（誤答の原因・混同ペア・メモ照合・根拠の採点）。ログイン時に読む。
@@ -2817,6 +2818,21 @@ function App() {
             <button
               className="col-span-2 min-h-12 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-left sm:col-span-3"
               onClick={() => {
+                trackMetric("cram_quiz_open", {});
+                setCramOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-sky-800">
+                直前詰め込み ○×
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                盛土の高さ・区分所有の決議・借地借家の期間
+              </span>
+            </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-left sm:col-span-3"
+              onClick={() => {
                 trackMetric("weak_spot_quiz_open", {});
                 setWeakSpotOpen(true);
               }}
@@ -4131,6 +4147,13 @@ function App() {
       {kozarieOpen && (
         <KozarieQuiz
           onClose={() => setKozarieOpen(false)}
+          onRecord={recordStudyAnswer}
+          records={progress.choiceRecords}
+        />
+      )}
+      {cramOpen && (
+        <CramQuiz
+          onClose={() => setCramOpen(false)}
           onRecord={recordStudyAnswer}
           records={progress.choiceRecords}
         />
