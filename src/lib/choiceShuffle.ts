@@ -41,14 +41,24 @@ export const shuffledChoiceOrder = (
   }
 };
 
-/** 並び替えた順で肢に1〜4を振り直した問題文。 */
+/**
+ * 並び替えた順で肢に1〜4を振り直した問題文。
+ * 肢の見出し（「\n\n1 」など、前の空行を含む）は元の位置のまま残し、本文だけを入れ替える。
+ * こうすると空行や見出しの書式が元の問題文と同じになる。
+ */
 export const shuffledQuestionText = (
   question: TakkenQuestion,
   order: number[],
 ): string => {
   const split = splitChoices(question.questionText)!;
-  const choices = order.map(
-    (original, index) => `${index + 1} ${split.choices[original - 1]}`,
+  // 見出しごと区切る: [設問, 見出し1, 肢1, 見出し2, 肢2, ...]
+  const parts = ("\n" + question.questionText).split(/(\n\s*[1-4][ 　])/);
+  const heads = parts.filter((_, index) => index % 2 === 1);
+  const stem = parts[0].slice(1);
+  return (
+    stem +
+    heads
+      .map((head, index) => head + split.choices[order[index] - 1])
+      .join("")
   );
-  return [split.stem, ...choices].join("\n");
 };

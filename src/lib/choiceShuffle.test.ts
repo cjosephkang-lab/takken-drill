@@ -42,4 +42,10 @@ describe("4択の肢の並び替え", () => {
       });
     }
   });
+
+  it("並べ替えなければ元の問題文と同じ書式（肢の間の空行も残る）", () => {
+    for (const q of shufflable) {
+      expect(shuffledQuestionText(q, [1, 2, 3, 4])).toBe(q.questionText.trimEnd());
+    }
+  });
 });
