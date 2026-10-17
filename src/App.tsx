@@ -28,6 +28,7 @@ import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
 import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
+import { KozarieQuiz } from "./KozarieQuiz";
 import { ChoiceQuiz } from "./ChoiceQuiz";
 import type { ChoiceStatement } from "./lib/choiceStatements";
 import {
@@ -671,6 +672,7 @@ function App() {
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const [statsSheetOpen, setStatsSheetOpen] = useState(false);
   const [numbersSheetOpen, setNumbersSheetOpen] = useState(false);
+  const [kozarieOpen, setKozarieOpen] = useState(false);
   // 肢別○×モードの画面。
   const [choiceQuizOpen, setChoiceQuizOpen] = useState(false);
   // 夜間バッチの推定（誤答の原因・混同ペア・メモ照合・根拠の採点）。ログイン時に読む。
@@ -2691,6 +2693,21 @@ function App() {
                 解かずに覚える最新の数字
               </span>
             </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left sm:col-span-3"
+              onClick={() => {
+                trackMetric("kozarie_quiz_open", {});
+                setKozarieOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-amber-800">
+                こざりえ 一問一答
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                動画の○×と2026年改正点
+              </span>
+            </button>
           </div>
         </section>
 
@@ -3885,6 +3902,8 @@ function App() {
       {statsSheetOpen && (
         <StatsSheet onClose={() => setStatsSheetOpen(false)} />
       )}
+
+      {kozarieOpen && <KozarieQuiz onClose={() => setKozarieOpen(false)} />}
 
       {cheatSheetOpen && (
         <CheatSheet
