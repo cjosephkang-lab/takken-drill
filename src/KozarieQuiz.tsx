@@ -1,28 +1,46 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   kozarieQuestions,
   kozarieVideos,
   type KozarieQuestion,
 } from "./data/kozarieQuiz";
+import { weakSpotGroups, weakSpotQuestions } from "./data/weakSpotQuiz";
 
 type Props = {
   onClose: () => void;
 };
 
-const STORAGE_KEY = "takken-kozarie-learned";
+/** ○×クイズの1グループ（動画、または弱点の仮説）。 */
+export type OxGroup = {
+  id: string;
+  label: string;
+  /** 仮説の中身と根拠。解説の下に出す。 */
+  detail?: string;
+};
 
-const loadLearned = (): Set<string> => {
+type OxQuizProps = Props & {
+  title: string;
+  description: string;
+  questions: KozarieQuestion[];
+  groups: OxGroup[];
+  /** 選択欄の「すべての○○」。 */
+  groupNoun: string;
+  storageKey: string;
+  source: (item: KozarieQuestion) => ReactNode;
+};
+
+const loadLearned = (storageKey: string): Set<string> => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey);
     return new Set(raw ? (JSON.parse(raw) as string[]) : []);
   } catch {
     return new Set();
   }
 };
 
-const saveLearned = (learned: Set<string>) => {
+const saveLearned = (storageKey: string, learned: Set<string>) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...learned]));
+    localStorage.setItem(storageKey, JSON.stringify([...learned]));
   } catch {
     // 保存できなくても、この画面を開いている間は使える
   }
@@ -39,15 +57,92 @@ const videoTitle = (id: string) =>
 
 // こざりえ先生の一問一答動画を○×で1問ずつ解く。公式過去問の出題フローとは混ぜない。
 export function KozarieQuiz({ onClose }: Props) {
+  return (
+    <OxQuiz
+      description="YouTubeの一問一答動画と2026年改正点の動画から作った○×問題。問題文は動画の解説から組み立て直したもので、本試験の原文ではない。"
+      groupNoun="動画"
+      groups={kozarieVideos}
+      onClose={onClose}
+      questions={kozarieQuestions}
+      source={(item) => (
+        <>
+          <a
+            className="underline"
+            href={videoUrl(item)}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {videoTitle(item.video)} {item.t}
+          </a>
+          {item.sourceUrl && (
+            <>
+              {" ／ "}
+              <a
+                className="underline"
+                href={item.sourceUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                一次情報
+              </a>
+            </>
+          )}
+        </>
+      )}
+      storageKey="takken-kozarie-learned"
+      title="こざりえ 一問一答"
+    />
+  );
+}
+
+// 回答記録から立てた弱点の仮説ごとに、その知識を別の角度から問う○×。AIが作り、条文で確認したもの。
+export function WeakSpotQuiz({ onClose }: Props) {
+  return (
+    <OxQuiz
+      description="今の回答記録（何度も間違えた・解き直し待ち・確認待ち）と誤答の原因分析から、欠けているかもしれない知識を仮説にして、別の角度から問う○×。AIが作成し、条文（2026年4月1日時点）で確認した。"
+      groupNoun="仮説"
+      groups={weakSpotGroups}
+      onClose={onClose}
+      questions={weakSpotQuestions}
+      source={(item) =>
+        item.sourceUrl ? (
+          <a
+            className="underline"
+            href={item.sourceUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            条文
+          </a>
+        ) : null
+      }
+      storageKey="takken-weakspot-learned"
+      title="弱点の仮説 ○×"
+    />
+  );
+}
+
+function OxQuiz({
+  onClose,
+  title,
+  description,
+  questions,
+  groups,
+  groupNoun,
+  storageKey,
+  source,
+}: OxQuizProps) {
   const [video, setVideo] = useState<string>("");
   const [mode, setMode] = useState<"quiz" | "list">("quiz");
-  const [learned, setLearned] = useState<Set<string>>(loadLearned);
+  const [learned, setLearned] = useState<Set<string>>(() =>
+    loadLearned(storageKey),
+  );
   const [queue, setQueue] = useState<KozarieQuestion[] | null>(null);
   const [picked, setPicked] = useState<boolean | null>(null);
 
   const items = useMemo(
-    () => kozarieQuestions.filter((item) => !video || item.video === video),
-    [video],
+    () => questions.filter((item) => !video || item.video === video),
+    [questions, video],
   );
   const remaining = items.filter((item) => !learned.has(item.id));
 
@@ -62,7 +157,7 @@ export function KozarieQuiz({ onClose }: Props) {
     if (picked === current.a) {
       const nextLearned = new Set(learned).add(current.id);
       setLearned(nextLearned);
-      saveLearned(nextLearned);
+      saveLearned(storageKey, nextLearned);
       setQueue(rest);
     } else {
       // 間違えた問題は後ろに回して、もう一度出す
@@ -76,7 +171,7 @@ export function KozarieQuiz({ onClose }: Props) {
     const nextLearned = new Set(learned);
     items.forEach((item) => nextLearned.delete(item.id));
     setLearned(nextLearned);
-    saveLearned(nextLearned);
+    saveLearned(storageKey, nextLearned);
     setQueue([...items].sort(() => Math.random() - 0.5));
     setPicked(null);
   };
@@ -87,9 +182,7 @@ export function KozarieQuiz({ onClose }: Props) {
     <div className="fixed inset-0 z-30 flex items-end justify-center bg-slate-950/60 px-4 pb-4 sm:items-center">
       <div className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-2xl bg-white p-5 shadow-xl">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-bold text-slate-950">
-            こざりえ 一問一答
-          </h2>
+          <h2 className="text-lg font-bold text-slate-950">{title}</h2>
           <button
             className="rounded-full px-3 py-1 text-sm font-bold text-slate-500 hover:bg-slate-100"
             type="button"
@@ -98,9 +191,7 @@ export function KozarieQuiz({ onClose }: Props) {
             閉じる
           </button>
         </div>
-        <p className="mt-2 text-sm leading-6 text-slate-600">
-          YouTubeの一問一答動画と2026年改正点の動画から作った○×問題。問題文は動画の解説から組み立て直したもので、本試験の原文ではない。
-        </p>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
 
         <div className="mt-3 flex gap-2">
           <select
@@ -112,12 +203,12 @@ export function KozarieQuiz({ onClose }: Props) {
             }}
           >
             <option value="">
-              すべての動画（{kozarieQuestions.length}問）
+              すべての{groupNoun}（{questions.length}問）
             </option>
-            {kozarieVideos.map((item) => (
+            {groups.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.label}（
-                {kozarieQuestions.filter((q) => q.video === item.id).length}問）
+                {questions.filter((q) => q.video === item.id).length}問）
               </option>
             ))}
           </select>
@@ -148,7 +239,7 @@ export function KozarieQuiz({ onClose }: Props) {
                   <p className="mt-1 text-sm font-bold text-slate-950">
                     {item.a ? "○" : "×"}
                   </p>
-                  <ItemNotes item={item} />
+                  <ItemNotes groups={groups} item={item} source={source} />
                 </li>
               ))}
             </ol>
@@ -215,7 +306,7 @@ export function KozarieQuiz({ onClose }: Props) {
                     {picked === current.a ? "正解" : "不正解"}　答えは
                     {current.a ? "○" : "×"}
                   </p>
-                  <ItemNotes item={current} />
+                  <ItemNotes groups={groups} item={current} source={source} />
                   <button
                     className="mt-4 min-h-12 w-full rounded-lg bg-slate-900 text-sm font-bold text-white"
                     type="button"
@@ -253,7 +344,16 @@ export function KozarieQuiz({ onClose }: Props) {
   );
 }
 
-function ItemNotes({ item }: { item: KozarieQuestion }) {
+function ItemNotes({
+  item,
+  groups,
+  source,
+}: {
+  item: KozarieQuestion;
+  groups: OxGroup[];
+  source: (item: KozarieQuestion) => ReactNode;
+}) {
+  const detail = groups.find((group) => group.id === item.video)?.detail;
   return (
     <>
       <p className="mt-2 text-sm leading-6 text-slate-700">{item.why}</p>
@@ -262,29 +362,13 @@ function ItemNotes({ item }: { item: KozarieQuestion }) {
           注意: {item.note}
         </p>
       )}
+      {detail && (
+        <p className="mt-2 rounded bg-sky-50 p-2 text-xs leading-5 text-sky-900">
+          仮説: {detail}
+        </p>
+      )}
       <p className="mt-1 text-xs leading-5 text-slate-400 [overflow-wrap:anywhere]">
-        出典:{" "}
-        <a
-          className="underline"
-          href={videoUrl(item)}
-          rel="noreferrer"
-          target="_blank"
-        >
-          {videoTitle(item.video)} {item.t}
-        </a>
-        {item.sourceUrl && (
-          <>
-            {" ／ "}
-            <a
-              className="underline"
-              href={item.sourceUrl}
-              rel="noreferrer"
-              target="_blank"
-            >
-              一次情報
-            </a>
-          </>
-        )}
+        出典: {source(item)}
       </p>
     </>
   );

@@ -28,7 +28,7 @@ import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
 import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
-import { KozarieQuiz } from "./KozarieQuiz";
+import { KozarieQuiz, WeakSpotQuiz } from "./KozarieQuiz";
 import {
   isUnsettledRepeatedWrong,
   SETTLED_STREAK,
@@ -703,6 +703,7 @@ function App() {
   const [statsSheetOpen, setStatsSheetOpen] = useState(false);
   const [numbersSheetOpen, setNumbersSheetOpen] = useState(false);
   const [kozarieOpen, setKozarieOpen] = useState(false);
+  const [weakSpotOpen, setWeakSpotOpen] = useState(false);
   // 肢別○×モードの画面。
   const [choiceQuizOpen, setChoiceQuizOpen] = useState(false);
   // 夜間バッチの推定（誤答の原因・混同ペア・メモ照合・根拠の採点）。ログイン時に読む。
@@ -2757,6 +2758,21 @@ function App() {
               </span>
             </button>
             <button
+              className="col-span-2 min-h-12 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-left sm:col-span-3"
+              onClick={() => {
+                trackMetric("weak_spot_quiz_open", {});
+                setWeakSpotOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-sky-800">
+                弱点の仮説 ○×
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                回答記録から欠けていそうな知識を別の角度で
+              </span>
+            </button>
+            <button
               className="col-span-2 min-h-12 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-left disabled:opacity-50 sm:col-span-3"
               disabled={wrongCount === 0}
               onClick={() => startFocusedSet(WRONG)}
@@ -4052,6 +4068,9 @@ function App() {
       )}
 
       {kozarieOpen && <KozarieQuiz onClose={() => setKozarieOpen(false)} />}
+      {weakSpotOpen && (
+        <WeakSpotQuiz onClose={() => setWeakSpotOpen(false)} />
+      )}
 
       {cheatSheetOpen && (
         <CheatSheet
