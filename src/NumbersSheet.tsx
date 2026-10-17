@@ -1,38 +1,24 @@
 import { useMemo, useState } from "react";
 import { fixedSlotNumbers, type NumberItem } from "./data/fixedSlotNumbers";
+import type { ChoiceRecord } from "./lib/progressExtras";
+import { numberRecordKey } from "./lib/studyRecords";
 
 type Props = {
   onClose: () => void;
-};
-
-const STORAGE_KEY = "takken-numbers-learned";
-
-const loadLearned = (): Set<string> => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
-  } catch {
-    return new Set();
-  }
-};
-
-const saveLearned = (learned: Set<string>) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...learned]));
-  } catch {
-    // 保存できなくても、この画面を開いている間は使える
-  }
+  /** 同期される解答記録（キーは numberRecordKey）。 */
+  records: Record<string, ChoiceRecord>;
+  onRecord: (key: string, ok: boolean) => void;
 };
 
 const itemKey = (item: NumberItem) => `${item.slot}:${item.q}`;
+const recordKey = (item: NumberItem) => numberRecordKey(itemKey(item));
 
 const slots = [...new Set(fixedSlotNumbers.map((item) => item.slot))];
 
 // 毎年同じ番号で出る枠（問11〜24）の数字だけを、1問ずつ思い出して確かめる。
-export function NumbersSheet({ onClose }: Props) {
+export function NumbersSheet({ onClose, records, onRecord }: Props) {
   const [slot, setSlot] = useState<string>("");
   const [mode, setMode] = useState<"quiz" | "list">("quiz");
-  const [learned, setLearned] = useState<Set<string>>(loadLearned);
   const [queue, setQueue] = useState<NumberItem[] | null>(null);
   const [shown, setShown] = useState(false);
 
@@ -40,7 +26,8 @@ export function NumbersSheet({ onClose }: Props) {
     () => fixedSlotNumbers.filter((item) => !slot || item.slot === slot),
     [slot],
   );
-  const remaining = items.filter((item) => !learned.has(itemKey(item)));
+  // 最後に「覚えた」を押していれば覚えた扱い。記録は端末をまたいで同期される。
+  const remaining = items.filter((item) => !records[recordKey(item)]?.ok);
 
   const startQuiz = () => {
     setQueue([...remaining].sort(() => Math.random() - 0.5));
@@ -50,10 +37,8 @@ export function NumbersSheet({ onClose }: Props) {
   const answer = (ok: boolean) => {
     if (!queue) return;
     const [current, ...rest] = queue;
+    onRecord(recordKey(current), ok);
     if (ok) {
-      const next = new Set(learned).add(itemKey(current));
-      setLearned(next);
-      saveLearned(next);
       setQueue(rest);
     } else {
       // 「まだ」は後ろに回して、もう一度出す
@@ -62,12 +47,10 @@ export function NumbersSheet({ onClose }: Props) {
     setShown(false);
   };
 
-  const resetLearned = () => {
-    const next = new Set(learned);
-    items.forEach((item) => next.delete(itemKey(item)));
-    setLearned(next);
-    saveLearned(next);
-    setQueue(null);
+  // 全問をもう一周する。「覚えた」は消さず、解き直した結果で上書きされる。
+  const startNewLap = () => {
+    setQueue([...items].sort(() => Math.random() - 0.5));
+    setShown(false);
   };
 
   const current = queue?.[0];
@@ -155,9 +138,9 @@ export function NumbersSheet({ onClose }: Props) {
                 <button
                   className="mt-2 min-h-10 w-full text-xs text-slate-500"
                   type="button"
-                  onClick={resetLearned}
+                  onClick={startNewLap}
                 >
-                  この範囲の「覚えた」を消して最初からやり直す
+                  全{items.length}問をもう一周する
                 </button>
               )}
             </div>

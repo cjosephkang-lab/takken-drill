@@ -5,9 +5,14 @@ import {
   type KozarieQuestion,
 } from "./data/kozarieQuiz";
 import { weakSpotGroups, weakSpotQuestions } from "./data/weakSpotQuiz";
+import type { ChoiceRecord } from "./lib/progressExtras";
+import { oxRecordKey } from "./lib/studyRecords";
 
 type Props = {
   onClose: () => void;
+  /** 同期される解答記録（キーは oxRecordKey）。 */
+  records: Record<string, ChoiceRecord>;
+  onRecord: (key: string, ok: boolean) => void;
 };
 
 /** ○×クイズの1グループ（動画、または弱点の仮説）。 */
@@ -25,25 +30,7 @@ type OxQuizProps = Props & {
   groups: OxGroup[];
   /** 選択欄の「すべての○○」。 */
   groupNoun: string;
-  storageKey: string;
   source: (item: KozarieQuestion) => ReactNode;
-};
-
-const loadLearned = (storageKey: string): Set<string> => {
-  try {
-    const raw = localStorage.getItem(storageKey);
-    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
-  } catch {
-    return new Set();
-  }
-};
-
-const saveLearned = (storageKey: string, learned: Set<string>) => {
-  try {
-    localStorage.setItem(storageKey, JSON.stringify([...learned]));
-  } catch {
-    // 保存できなくても、この画面を開いている間は使える
-  }
 };
 
 const toSeconds = (t: string) =>
@@ -56,13 +43,13 @@ const videoTitle = (id: string) =>
   kozarieVideos.find((video) => video.id === id)?.label ?? id;
 
 // こざりえ先生の一問一答動画を○×で1問ずつ解く。公式過去問の出題フローとは混ぜない。
-export function KozarieQuiz({ onClose }: Props) {
+export function KozarieQuiz(props: Props) {
   return (
     <OxQuiz
       description="YouTubeの一問一答動画と2026年改正点の動画から作った○×問題。問題文は動画の解説から組み立て直したもので、本試験の原文ではない。"
       groupNoun="動画"
       groups={kozarieVideos}
-      onClose={onClose}
+      {...props}
       questions={kozarieQuestions}
       source={(item) => (
         <>
@@ -89,20 +76,19 @@ export function KozarieQuiz({ onClose }: Props) {
           )}
         </>
       )}
-      storageKey="takken-kozarie-learned"
       title="こざりえ 一問一答"
     />
   );
 }
 
 // 回答記録から立てた弱点の仮説ごとに、その知識を別の角度から問う○×。AIが作り、条文で確認したもの。
-export function WeakSpotQuiz({ onClose }: Props) {
+export function WeakSpotQuiz(props: Props) {
   return (
     <OxQuiz
       description="今の回答記録（何度も間違えた・解き直し待ち・確認待ち）と誤答の原因分析から、欠けているかもしれない知識を仮説にして、別の角度から問う○×。AIが作成し、条文（2026年4月1日時点）で確認した。"
       groupNoun="仮説"
       groups={weakSpotGroups}
-      onClose={onClose}
+      {...props}
       questions={weakSpotQuestions}
       source={(item) =>
         item.sourceUrl ? (
@@ -116,7 +102,6 @@ export function WeakSpotQuiz({ onClose }: Props) {
           </a>
         ) : null
       }
-      storageKey="takken-weakspot-learned"
       title="弱点の仮説 ○×"
     />
   );
@@ -124,57 +109,65 @@ export function WeakSpotQuiz({ onClose }: Props) {
 
 function OxQuiz({
   onClose,
+  records,
+  onRecord,
   title,
   description,
   questions,
   groups,
   groupNoun,
-  storageKey,
   source,
 }: OxQuizProps) {
   const [video, setVideo] = useState<string>("");
   const [mode, setMode] = useState<"quiz" | "list">("quiz");
-  const [learned, setLearned] = useState<Set<string>>(() =>
-    loadLearned(storageKey),
-  );
   const [queue, setQueue] = useState<KozarieQuestion[] | null>(null);
   const [picked, setPicked] = useState<boolean | null>(null);
 
+  const recordOf = (item: KozarieQuestion) => records[oxRecordKey(item.id)];
   const items = useMemo(
     () => questions.filter((item) => !video || item.video === video),
     [questions, video],
   );
-  const remaining = items.filter((item) => !learned.has(item.id));
+  // 最後に解いた時に正解していれば「正解済み」。記録は端末をまたいで同期される。
+  const remaining = items.filter((item) => !recordOf(item)?.ok);
+  // 一度でも外したことがある問題。欠けている知識の手がかり。
+  const missed = items.filter((item) => (recordOf(item)?.lapses ?? 0) > 0);
 
-  const startQuiz = () => {
-    setQueue([...remaining].sort(() => Math.random() - 0.5));
+  const shuffle = (list: KozarieQuestion[]) =>
+    [...list].sort(() => Math.random() - 0.5);
+
+  const startWith = (list: KozarieQuestion[]) => {
+    setQueue(shuffle(list));
     setPicked(null);
+  };
+
+  const pick = (choice: boolean) => {
+    if (!queue || picked !== null) return;
+    setPicked(choice);
+    onRecord(oxRecordKey(queue[0].id), choice === queue[0].a);
   };
 
   const next = () => {
     if (!queue || picked === null) return;
     const [current, ...rest] = queue;
-    if (picked === current.a) {
-      const nextLearned = new Set(learned).add(current.id);
-      setLearned(nextLearned);
-      saveLearned(storageKey, nextLearned);
-      setQueue(rest);
-    } else {
-      // 間違えた問題は後ろに回して、もう一度出す
-      setQueue([...rest, current]);
-    }
+    // 間違えた問題は後ろに回して、もう一度出す
+    setQueue(picked === current.a ? rest : [...rest, current]);
     setPicked(null);
   };
 
-  // この範囲の正解済みを消して、全問をもう一周する。
-  const startNewLap = () => {
-    const nextLearned = new Set(learned);
-    items.forEach((item) => nextLearned.delete(item.id));
-    setLearned(nextLearned);
-    saveLearned(storageKey, nextLearned);
-    setQueue([...items].sort(() => Math.random() - 0.5));
-    setPicked(null);
-  };
+  // 仮説（動画）ごとの成績。外した問題が多い順。
+  const groupStats = groups
+    .map((group) => {
+      const inGroup = questions.filter((q) => q.video === group.id);
+      return {
+        group,
+        total: inGroup.length,
+        answered: inGroup.filter((q) => recordOf(q)).length,
+        missed: inGroup.filter((q) => (recordOf(q)?.lapses ?? 0) > 0).length,
+      };
+    })
+    .filter((stat) => stat.answered > 0)
+    .sort((a, b) => b.missed - a.missed);
 
   const current = queue?.[0];
 
@@ -238,6 +231,11 @@ function OxQuiz({
                   <p className="mt-1 text-sm text-slate-700">{item.q}</p>
                   <p className="mt-1 text-sm font-bold text-slate-950">
                     {item.a ? "○" : "×"}
+                    {(recordOf(item)?.lapses ?? 0) > 0 && (
+                      <span className="ml-2 rounded bg-rose-50 px-1.5 py-0.5 text-xs text-rose-800">
+                        外した {recordOf(item)!.lapses}回
+                      </span>
+                    )}
                   </p>
                   <ItemNotes groups={groups} item={item} source={source} />
                 </li>
@@ -248,15 +246,24 @@ function OxQuiz({
               <p>
                 この範囲は {items.length}問。正解済み{" "}
                 {items.length - remaining.length}問 ／ 残り {remaining.length}
-                問。
+                問。外したことがある問題 {missed.length}問。
               </p>
               {remaining.length > 0 && (
                 <button
                   className="mt-3 min-h-12 w-full rounded-lg bg-slate-900 px-3 text-sm font-bold text-white"
                   type="button"
-                  onClick={startQuiz}
+                  onClick={() => startWith(remaining)}
                 >
                   残り{remaining.length}問を解く
+                </button>
+              )}
+              {missed.length > 0 && (
+                <button
+                  className="mt-2 min-h-12 w-full rounded-lg border border-rose-300 bg-rose-50 px-3 text-sm font-bold text-rose-800"
+                  type="button"
+                  onClick={() => startWith(missed)}
+                >
+                  外したことがある{missed.length}問だけ解く
                 </button>
               )}
               {items.length - remaining.length > 0 && (
@@ -267,10 +274,43 @@ function OxQuiz({
                       : "border border-slate-300 bg-white text-slate-800"
                   }`}
                   type="button"
-                  onClick={startNewLap}
+                  onClick={() => startWith(items)}
                 >
                   全{items.length}問をもう一周する
                 </button>
+              )}
+              {!video && groupStats.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-xs font-bold text-slate-500">
+                    {groupNoun}ごとの成績（外した問題が多い順）
+                  </p>
+                  <ul className="mt-1 space-y-1">
+                    {groupStats.map((stat) => (
+                      <li
+                        key={stat.group.id}
+                        className="flex justify-between gap-2 text-xs"
+                      >
+                        <span className="text-slate-700">
+                          {stat.group.label}
+                        </span>
+                        <span
+                          className={`shrink-0 font-bold ${
+                            stat.missed >= 2
+                              ? "text-rose-700"
+                              : stat.missed === 1
+                                ? "text-amber-700"
+                                : "text-emerald-700"
+                          }`}
+                        >
+                          外した {stat.missed} ／ 解いた {stat.answered}
+                          {stat.answered < stat.total
+                            ? `（全${stat.total}）`
+                            : ""}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
           ) : current ? (
@@ -288,7 +328,7 @@ function OxQuiz({
                       key={String(choice)}
                       className="min-h-14 rounded-lg border border-slate-300 bg-white text-2xl font-bold text-slate-900"
                       type="button"
-                      onClick={() => setPicked(choice)}
+                      onClick={() => pick(choice)}
                     >
                       {choice ? "○" : "×"}
                     </button>
@@ -325,7 +365,7 @@ function OxQuiz({
               <button
                 className="mt-3 block min-h-12 w-full rounded-lg bg-emerald-700 text-sm text-white"
                 type="button"
-                onClick={startNewLap}
+                onClick={() => startWith(items)}
               >
                 全{items.length}問をもう一周する
               </button>
@@ -334,7 +374,7 @@ function OxQuiz({
                 type="button"
                 onClick={() => setQueue(null)}
               >
-                戻る（動画を選び直す）
+                戻る（{groupNoun}を選び直す）
               </button>
             </div>
           )}

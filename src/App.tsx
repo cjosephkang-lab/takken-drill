@@ -30,6 +30,10 @@ import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
 import { KozarieQuiz, WeakSpotQuiz } from "./KozarieQuiz";
 import {
+  LEGACY_LEARNED_STORES,
+  legacyLearnedRecords,
+} from "./lib/studyRecords";
+import {
   isUnsettledRepeatedWrong,
   SETTLED_STREAK,
 } from "./lib/repeatedWrong";
@@ -959,6 +963,43 @@ function App() {
     progress.studyLogExports,
     syncReady,
   ]);
+
+  // 以前その端末の localStorage にだけ置いていた「正解済み・覚えた」を、同期の記録へ移す。
+  // ログイン中はクラウドの記録を取り込んだ後（syncReady）、未ログインならログイン状態が分かった後に行い、
+  // 移したら localStorage から消す。未ログインで移した分は、ログインした時に同期される。
+  useEffect(() => {
+    if (!syncReady && (authLoading || authUser)) return;
+    const read = (key: string) => {
+      try {
+        return window.localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    };
+    const additions = legacyLearnedRecords(
+      progress.choiceRecords,
+      read,
+      new Date().toISOString(),
+    );
+    if (additions) {
+      updateProgress((previous) => ({
+        ...previous,
+        choiceRecords: { ...additions, ...previous.choiceRecords },
+      }));
+      trackMetric("legacy_learned_migrated", {
+        count: Object.keys(additions).length,
+      });
+    }
+    for (const store of LEGACY_LEARNED_STORES) {
+      try {
+        window.localStorage.removeItem(store.storageKey);
+      } catch {
+        // 消せなくても、記録済みの項目は二重に足さないので害はない
+      }
+    }
+    // 準備ができた時だけ。progress を依存に入れると毎回走る（2回目以降は移すものがなく何もしない）。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [syncReady, authLoading, authUser]);
 
   const categories = allCategories;
 
@@ -1934,6 +1975,22 @@ function App() {
         ...previous.choiceRecords,
         [statement.key]: updateChoiceRecord(
           previous.choiceRecords[statement.key],
+          ok,
+          new Date().toISOString(),
+        ),
+      },
+    }));
+  };
+
+  // こざりえ一問一答・弱点の仮説○×・数字シートの1回ごとの正誤（キーは src/lib/studyRecords.ts）。
+  const recordStudyAnswer = (key: string, ok: boolean) => {
+    trackMetric("study_record_answer", { correct: ok, key });
+    updateProgress((previous) => ({
+      ...previous,
+      choiceRecords: {
+        ...previous.choiceRecords,
+        [key]: updateChoiceRecord(
+          previous.choiceRecords[key],
           ok,
           new Date().toISOString(),
         ),
@@ -4060,16 +4117,30 @@ function App() {
       ) : null}
 
       {numbersSheetOpen && (
-        <NumbersSheet onClose={() => setNumbersSheetOpen(false)} />
+        <NumbersSheet
+          onClose={() => setNumbersSheetOpen(false)}
+          onRecord={recordStudyAnswer}
+          records={progress.choiceRecords}
+        />
       )}
 
       {statsSheetOpen && (
         <StatsSheet onClose={() => setStatsSheetOpen(false)} />
       )}
 
-      {kozarieOpen && <KozarieQuiz onClose={() => setKozarieOpen(false)} />}
+      {kozarieOpen && (
+        <KozarieQuiz
+          onClose={() => setKozarieOpen(false)}
+          onRecord={recordStudyAnswer}
+          records={progress.choiceRecords}
+        />
+      )}
       {weakSpotOpen && (
-        <WeakSpotQuiz onClose={() => setWeakSpotOpen(false)} />
+        <WeakSpotQuiz
+          onClose={() => setWeakSpotOpen(false)}
+          onRecord={recordStudyAnswer}
+          records={progress.choiceRecords}
+        />
       )}
 
       {cheatSheetOpen && (
