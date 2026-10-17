@@ -29,7 +29,10 @@ import { CheatSheet } from "./CheatSheet";
 import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
 import { KozarieQuiz } from "./KozarieQuiz";
-import { isUnsettledRepeatedWrong } from "./lib/repeatedWrong";
+import {
+  isUnsettledRepeatedWrong,
+  SETTLED_STREAK,
+} from "./lib/repeatedWrong";
 import {
   shuffledChoiceOrder,
   shuffledQuestionText,
@@ -142,6 +145,8 @@ const UNSURE = "unsure";
 const CONFIDENT_WRONG = "confident-wrong";
 /** 通算で2回以上間違えた問題のうち、まだ定着していないもの（判定は src/lib/repeatedWrong.ts）。 */
 const REPEATED_WRONG = "repeated-wrong";
+/** 1回だけ間違えて、その後まだ1回しか正解していない問題（2回続けて正解すると外れる）。 */
+const ONCE_WRONG_UNCONFIRMED = "once-wrong-unconfirmed";
 const RECENT_WRONG_OPTIONS = [
   { value: "wrong-1d", days: 2, label: "間違えた問題（今日・昨日）" },
   { value: "wrong-3d", days: 3, label: "間違えた問題（直近3日）" },
@@ -157,6 +162,7 @@ const STATUS_LABELS: Record<string, string> = {
   [UNSURE]: "自信がなかった問題",
   [CONFIDENT_WRONG]: "自信があったのに間違えた問題",
   [REPEATED_WRONG]: "何度も間違えた問題（未定着）",
+  [ONCE_WRONG_UNCONFIRMED]: "1回間違えた問題（直した後の確認待ち）",
   [DUE]: "復習する問題",
 };
 
@@ -252,6 +258,12 @@ const matchesStatusFilter = (
   if (statusValue === CONFIDENT_WRONG) return isConfidentWrong(record);
   if (statusValue === REPEATED_WRONG)
     return isUnsettledRepeatedWrong(question, record, choiceRecords);
+  if (statusValue === ONCE_WRONG_UNCONFIRMED)
+    return (
+      Boolean(record?.correct) &&
+      record!.lapses === 1 &&
+      record!.streak < SETTLED_STREAK
+    );
 
   const days = recentWrongDays(statusValue);
   if (days !== null) {
@@ -520,6 +532,7 @@ const loadSettings = (): UiSettings => {
           parsed.statusFilter === DUE ||
           parsed.statusFilter === UNSURE ||
           parsed.statusFilter === REPEATED_WRONG ||
+          parsed.statusFilter === ONCE_WRONG_UNCONFIRMED ||
           recentWrongDays(parsed.statusFilter) !== null)
           ? parsed.statusFilter
           : ALL,
@@ -1152,7 +1165,8 @@ function App() {
   // 絞り込みで決める（問題の状態で決めると、正解して定着した瞬間に並びが元に戻って画面が揺れる）。
   const choiceOrder = useMemo(
     () =>
-      statusFilter === REPEATED_WRONG
+      statusFilter === REPEATED_WRONG ||
+      statusFilter === ONCE_WRONG_UNCONFIRMED
         ? shuffledChoiceOrder(currentQuestion, todayKey)
         : null,
     [currentQuestion, statusFilter, todayKey],
@@ -1183,6 +1197,14 @@ function App() {
   ).length;
   const wrongCount = takkenQuestions.filter(
     (question) => progress.answers[question.id]?.correct === false,
+  ).length;
+  const onceWrongUnconfirmedCount = takkenQuestions.filter((question) =>
+    matchesStatusFilter(
+      ONCE_WRONG_UNCONFIRMED,
+      progress.answers[question.id],
+      question,
+      progress.choiceRecords,
+    ),
   ).length;
   const unsettledRepeatedCount = takkenQuestions.filter((question) =>
     isUnsettledRepeatedWrong(
@@ -1749,7 +1771,12 @@ function App() {
   };
 
   // ホームのボタンから、絞り込みを全部外して「解き直し待ち」か「何度も間違えた（未定着）」だけを出す。
-  const startFocusedSet = (status: typeof WRONG | typeof REPEATED_WRONG) => {
+  const startFocusedSet = (
+    status:
+      | typeof WRONG
+      | typeof REPEATED_WRONG
+      | typeof ONCE_WRONG_UNCONFIRMED,
+  ) => {
     const first = takkenQuestions.find((question) =>
       matchesStatusFilter(
         status,
@@ -2756,6 +2783,19 @@ function App() {
               </span>
             </button>
             <button
+              className="col-span-2 min-h-12 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-left disabled:opacity-50 sm:col-span-3"
+              disabled={onceWrongUnconfirmedCount === 0}
+              onClick={() => startFocusedSet(ONCE_WRONG_UNCONFIRMED)}
+              type="button"
+            >
+              <span className="text-sm font-bold text-rose-800">
+                1回間違えた・確認待ち {onceWrongUnconfirmedCount}問
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                直した後まだ1回しか正解していない
+              </span>
+            </button>
+            <button
               className="col-span-2 min-h-12 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left sm:col-span-3"
               onClick={() => {
                 trackMetric("numbers_sheet_open", {});
@@ -3044,6 +3084,9 @@ function App() {
                   <option value={WRONG}>間違えた問題（すべて）</option>
                   <option value={REPEATED_WRONG}>
                     何度も間違えた問題（未定着）
+                  </option>
+                  <option value={ONCE_WRONG_UNCONFIRMED}>
+                    1回間違えた問題（直した後の確認待ち）
                   </option>
                   {RECENT_WRONG_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
