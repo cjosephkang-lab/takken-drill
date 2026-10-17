@@ -10,7 +10,13 @@ import type { ChoiceRecord } from "./progressExtras";
 
 export type QueueAnswerInput = Record<
   string,
-  { correct: boolean; lapses: number; unsure?: boolean }
+  {
+    correct: boolean;
+    lapses: number;
+    unsure?: boolean;
+    streak?: number;
+    answeredAt?: string;
+  }
 >;
 
 /** 文字列から決定的な擬似乱数（0〜1）。同じ肢は同じ位置に来るので並びが安定する。 */

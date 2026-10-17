@@ -30,10 +30,12 @@ from note_facts import check_note  # noqa: E402
 from coach_rules import (  # noqa: E402
     HOUREI_BREAKDOWN,
     REPEATED_MISTAKE_LAPSES,
+    SETTLED_STREAK,
     TANADA_TARGET_ATTEMPTS,
     TARGET_ACCURACY,
     accuracy_gap,
     exam_day_plan,
+    is_unsettled_repeated_mistake,
     next_topic_advice,
     verdict_for,
 )
@@ -512,12 +514,13 @@ def format_report(
     repeated = [
         question_id
         for question_id, record in progress["answers"].items()
-        if record.get("lapses", 0) >= REPEATED_MISTAKE_LAPSES
+        if is_unsettled_repeated_mistake(record)
     ]
     if repeated:
-        add(f"### 何度も間違えている問題 {len(repeated)}問")
+        add(f"### 何度も間違えている問題（未定着） {len(repeated)}問")
         add("")
-        add(f"{REPEATED_MISTAKE_LAPSES}回以上間違えた問題。"
+        add(f"{REPEATED_MISTAKE_LAPSES}回以上間違えた問題のうち、"
+            f"その後{SETTLED_STREAK}回続けて正解していないもの。"
             "直前期はこれだけを繰り返すのが伊藤塾の薦める型。")
         add("")
         by_category: dict[str, int] = defaultdict(int)
@@ -771,7 +774,7 @@ def build_coaching(
     repeated = [
         question_id
         for question_id, record in progress["answers"].items()
-        if record.get("lapses", 0) >= REPEATED_MISTAKE_LAPSES
+        if is_unsettled_repeated_mistake(record)
     ]
 
     # 復習の期限が来ている数。復習は新規より優先する（期限があるため）。
@@ -867,9 +870,9 @@ def build_coaching(
     if repeated:
         tasks.append({
             "label": f"何度も間違えた{len(repeated)}問を回す",
-            "detail": f"{REPEATED_MISTAKE_LAPSES}回以上落とした問題。"
-                      "状態→「間違えた問題（すべて）」。"
-                      "直前期はここだけを繰り返すのが予備校の型。",
+            "detail": f"{REPEATED_MISTAKE_LAPSES}回以上落として、まだ定着していない問題。"
+                      "肢別○×で「何度も間違えた問題・未定着」を選ぶと、"
+                      "答えの番号を覚えていても解けない形で確認できる。",
         })
 
     # 見出しと本文は、今日いちばん効くことを1つだけ言う。

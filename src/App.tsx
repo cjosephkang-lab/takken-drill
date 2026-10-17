@@ -29,6 +29,7 @@ import { CheatSheet } from "./CheatSheet";
 import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
 import { KozarieQuiz } from "./KozarieQuiz";
+import { isUnsettledRepeatedWrong } from "./lib/repeatedWrong";
 import { ChoiceQuiz } from "./ChoiceQuiz";
 import type { ChoiceStatement } from "./lib/choiceStatements";
 import {
@@ -135,7 +136,7 @@ const DUE = "due";
 const UNSURE = "unsure";
 /** 自信あり（自信なし印なし）で間違えた問題。誤った記憶で確信して外した問題なので最優先で復習する。 */
 const CONFIDENT_WRONG = "confident-wrong";
-/** 通算で2回以上間違えた問題。直前期はこれを繰り返す。正解しても回数は減らないので一覧から消えない。 */
+/** 通算で2回以上間違えた問題のうち、まだ定着していないもの（判定は src/lib/repeatedWrong.ts）。 */
 const REPEATED_WRONG = "repeated-wrong";
 const RECENT_WRONG_OPTIONS = [
   { value: "wrong-1d", days: 2, label: "間違えた問題（今日・昨日）" },
@@ -151,7 +152,7 @@ const STATUS_LABELS: Record<string, string> = {
   [WRONG]: "間違えた問題（すべて）",
   [UNSURE]: "自信がなかった問題",
   [CONFIDENT_WRONG]: "自信があったのに間違えた問題",
-  [REPEATED_WRONG]: "何度も間違えた問題（2回以上）",
+  [REPEATED_WRONG]: "何度も間違えた問題（未定着）",
   [DUE]: "復習する問題",
 };
 
@@ -237,13 +238,16 @@ const isDueRecord = (record?: AnswerRecord) => isDue(record?.nextReviewAt);
 const matchesStatusFilter = (
   statusValue: string,
   record: AnswerRecord | undefined,
+  question: TakkenQuestion,
+  choiceRecords: Record<string, ChoiceRecord>,
 ): boolean => {
   if (statusValue === UNANSWERED) return !record;
   if (statusValue === WRONG) return Boolean(record) && !record!.correct;
   if (statusValue === DUE) return isDueRecord(record);
   if (statusValue === UNSURE) return Boolean(record?.unsure);
   if (statusValue === CONFIDENT_WRONG) return isConfidentWrong(record);
-  if (statusValue === REPEATED_WRONG) return (record?.lapses ?? 0) >= 2;
+  if (statusValue === REPEATED_WRONG)
+    return isUnsettledRepeatedWrong(question, record, choiceRecords);
 
   const days = recentWrongDays(statusValue);
   if (days !== null) {
@@ -1018,7 +1022,14 @@ function App() {
         return true;
       }
 
-      if (!matchesStatusFilter(statusFilter, record)) {
+      if (
+        !matchesStatusFilter(
+          statusFilter,
+          record,
+          question,
+          progress.choiceRecords,
+        )
+      ) {
         return false;
       }
 
@@ -1047,6 +1058,7 @@ function App() {
     examFilter,
     pinnedQuestionId,
     progress.answers,
+    progress.choiceRecords,
     statusFilter,
     studyMode,
     todayKey,
@@ -1634,7 +1646,12 @@ function App() {
       if (nextExam !== ALL && question.examId !== nextExam) return false;
       if (nextCategory !== ALL && question.category !== nextCategory)
         return false;
-      return matchesStatusFilter(nextStatus, record);
+      return matchesStatusFilter(
+        nextStatus,
+        record,
+        question,
+        progress.choiceRecords,
+      );
     });
     if (first) goToQuestion(first.id);
   };
@@ -2951,7 +2968,7 @@ function App() {
                   <option value={UNANSWERED}>まだ解いていない</option>
                   <option value={WRONG}>間違えた問題（すべて）</option>
                   <option value={REPEATED_WRONG}>
-                    何度も間違えた問題（2回以上）
+                    何度も間違えた問題（未定着）
                   </option>
                   {RECENT_WRONG_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>

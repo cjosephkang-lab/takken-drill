@@ -8,6 +8,7 @@ import {
 } from "./lib/choiceQueue";
 import type { ChoiceStatement } from "./lib/choiceStatements";
 import type { ChoiceRecord } from "./lib/progressExtras";
+import { isUnsettledRepeatedWrong } from "./lib/repeatedWrong";
 
 type Props = {
   answers: QueueAnswerInput;
@@ -17,6 +18,8 @@ type Props = {
 };
 
 const ALL = "all";
+/** 何度も間違えた問題のうち未定着のもの（4択の絞り込みと同じ判定）。 */
+const REPEATED = "repeated";
 const categories = Array.from(
   new Set(takkenQuestions.map((question) => question.category)),
 );
@@ -48,10 +51,20 @@ export function ChoiceQuiz({
   const [initialAnswers, setInitialAnswers] = useState(answers);
   const queue = useMemo(
     () =>
-      buildChoiceQueue(takkenQuestions, initialAnswers, initialRecords, {
-        category: category === ALL ? undefined : category,
-        salt,
-      }),
+      buildChoiceQueue(
+        category === REPEATED
+          ? takkenQuestions.filter((q) =>
+              isUnsettledRepeatedWrong(q, initialAnswers[q.id], initialRecords),
+            )
+          : takkenQuestions,
+        initialAnswers,
+        initialRecords,
+        {
+          category:
+            category === ALL || category === REPEATED ? undefined : category,
+          salt,
+        },
+      ),
     [category, initialAnswers, initialRecords, salt],
   );
   const [index, setIndex] = useState(0);
@@ -61,6 +74,15 @@ export function ChoiceQuiz({
   const progress = useMemo(
     () => countChoiceProgress(takkenQuestions, choiceRecords),
     [choiceRecords],
+  );
+
+  // 開いた時点の記録で数える。解いている最中に定着して数が減ると、選択肢の表示が揺れる。
+  const repeatedCount = useMemo(
+    () =>
+      takkenQuestions.filter((q) =>
+        isUnsettledRepeatedWrong(q, initialAnswers[q.id], initialRecords),
+      ).length,
+    [initialAnswers, initialRecords],
   );
 
   const finished = queue.length > 0 && index >= queue.length;
@@ -122,6 +144,9 @@ export function ChoiceQuiz({
             value={category}
           >
             <option value={ALL}>すべての科目</option>
+            <option value={REPEATED}>
+              何度も間違えた問題・未定着（{repeatedCount}問）
+            </option>
             {categories.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -241,7 +266,9 @@ export function ChoiceQuiz({
           </div>
         ) : (
           <p className="mt-4 rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-600">
-            この科目には肢別○×にできる問題がありません。
+            {category === REPEATED
+              ? "何度も間違えた問題は、すべて定着しました。"
+              : "この科目には肢別○×にできる問題がありません。"}
           </p>
         )}
       </div>

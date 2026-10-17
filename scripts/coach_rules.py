@@ -81,6 +81,17 @@ MOCK_COUNT_MAX = 3
 # 「何度も間違える問題をピックアップして直前期に繰り返す」（伊藤塾）を、
 # lapses（間違えた回数）で機械的に判定する。
 REPEATED_MISTAKE_LAPSES = 2
+# 何度も間違えた問題でも、その後に2回続けて自信ありで正解したものは定着とみなして外す。
+# 外さないと同じ問題が出続け、答えの番号を覚えてしまう（2026-10-17 CEO指摘）。
+# アプリ側（src/lib/repeatedWrong.ts）は「肢別○×で全肢正解」でも外すが、ここは streak だけで見る。
+SETTLED_STREAK = 2
+
+
+def is_unsettled_repeated_mistake(record: dict) -> bool:
+    return (
+        record.get("lapses", 0) >= REPEATED_MISTAKE_LAPSES
+        and record.get("streak", 0) < SETTLED_STREAK
+    )
 
 # 棚田式の問題集はチェックボックスが4つ＝同じ問題を4回解く前提。
 # アプリの習得判定（3連続正解）とは別に、通算4回を目安として見る。
