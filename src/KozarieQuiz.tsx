@@ -71,12 +71,14 @@ export function KozarieQuiz({ onClose }: Props) {
     setPicked(null);
   };
 
-  const resetLearned = () => {
+  // この範囲の正解済みを消して、全問をもう一周する。
+  const startNewLap = () => {
     const nextLearned = new Set(learned);
     items.forEach((item) => nextLearned.delete(item.id));
     setLearned(nextLearned);
     saveLearned(nextLearned);
-    setQueue(null);
+    setQueue([...items].sort(() => Math.random() - 0.5));
+    setPicked(null);
   };
 
   const current = queue?.[0];
@@ -157,21 +159,26 @@ export function KozarieQuiz({ onClose }: Props) {
                 {items.length - remaining.length}問 ／ 残り {remaining.length}
                 問。
               </p>
-              <button
-                className="mt-3 min-h-12 w-full rounded-lg bg-slate-900 px-3 text-sm font-bold text-white disabled:opacity-40"
-                disabled={remaining.length === 0}
-                type="button"
-                onClick={startQuiz}
-              >
-                残り{remaining.length}問を解く
-              </button>
+              {remaining.length > 0 && (
+                <button
+                  className="mt-3 min-h-12 w-full rounded-lg bg-slate-900 px-3 text-sm font-bold text-white"
+                  type="button"
+                  onClick={startQuiz}
+                >
+                  残り{remaining.length}問を解く
+                </button>
+              )}
               {items.length - remaining.length > 0 && (
                 <button
-                  className="mt-2 min-h-10 w-full text-xs text-slate-500"
+                  className={`mt-2 min-h-12 w-full rounded-lg px-3 text-sm font-bold ${
+                    remaining.length === 0
+                      ? "bg-slate-900 text-white"
+                      : "border border-slate-300 bg-white text-slate-800"
+                  }`}
                   type="button"
-                  onClick={resetLearned}
+                  onClick={startNewLap}
                 >
-                  この範囲の正解済みを消して最初からやり直す
+                  全{items.length}問をもう一周する
                 </button>
               )}
             </div>
@@ -223,13 +230,20 @@ export function KozarieQuiz({ onClose }: Props) {
             </div>
           ) : (
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-900">
-              この範囲はすべて正解した。当日の朝に「一覧で見る」で見直す。
+              この範囲はすべて正解した。
               <button
-                className="mt-3 block min-h-10 w-full rounded-lg border border-emerald-300 bg-white text-sm"
+                className="mt-3 block min-h-12 w-full rounded-lg bg-emerald-700 text-sm text-white"
+                type="button"
+                onClick={startNewLap}
+              >
+                全{items.length}問をもう一周する
+              </button>
+              <button
+                className="mt-2 block min-h-10 w-full rounded-lg border border-emerald-300 bg-white text-sm"
                 type="button"
                 onClick={() => setQueue(null)}
               >
-                戻る
+                戻る（動画を選び直す）
               </button>
             </div>
           )}
