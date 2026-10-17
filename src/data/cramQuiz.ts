@@ -18,6 +18,10 @@ export const cramGroups: OxGroup[] = [
     "label": "不動産取得税と固定資産税"
   },
   {
+    "id": "sozoku",
+    "label": "法定相続分と代襲"
+  },
+  {
     "id": "morido",
     "label": "盛土規制法の数字"
   },
@@ -32,6 +36,138 @@ export const cramGroups: OxGroup[] = [
 ];
 
 export const cramQuestions: KozarieQuestion[] = [
+  {
+    "id": "cr-sozoku-1",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "1億2,000万円の財産を残してAが死亡。配偶者はなく、子B・C・Dがいる。Bは相続を放棄し、Cは欠格で相続人になれない。Bの子E、Cの子Fがいる場合、法定相続分はDが6,000万円、Fが6,000万円である。",
+    "a": true,
+    "why": "放棄したBの子Eは代襲しない。欠格のCの子Fは代襲する。相続人はDとFで各1/2＝6,000万円。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_887"
+  },
+  {
+    "id": "cr-sozoku-2",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "相続を放棄した子に子（被相続人の孫）がいる場合、その孫が代襲して相続人となる。",
+    "a": false,
+    "why": "放棄した者は初めから相続人でなかったものとみなされるので、代襲は起きない。代襲の原因は死亡・欠格・廃除の3つだけ。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_939"
+  },
+  {
+    "id": "cr-sozoku-3",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "被相続人の子が廃除されて相続権を失った場合、その子の子が代襲して相続人となる。",
+    "a": true,
+    "why": "代襲の原因は、相続開始以前の死亡・欠格・廃除。放棄は入らない。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_887"
+  },
+  {
+    "id": "cr-sozoku-4",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "配偶者と子2人が相続人の場合、子の法定相続分はそれぞれ4分の1である。",
+    "a": true,
+    "why": "配偶者1/2、子全体で1/2を2人で分けて各1/4。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_900"
+  },
+  {
+    "id": "cr-sozoku-5",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "配偶者と被相続人の父母が相続人の場合、父母の法定相続分はそれぞれ3分の1である。",
+    "a": false,
+    "why": "配偶者2/3、直系尊属全体で1/3。父母2人なら各1/6。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_900"
+  },
+  {
+    "id": "cr-sozoku-6",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "配偶者と兄弟姉妹2人が相続人の場合、兄弟姉妹の法定相続分はそれぞれ8分の1である。",
+    "a": true,
+    "why": "配偶者3/4、兄弟姉妹全体で1/4を2人で分けて各1/8。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_900"
+  },
+  {
+    "id": "cr-sozoku-7",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "被相続人に子がいる場合でも、父母が生きていれば、父母も配偶者・子とともに相続人となる。",
+    "a": false,
+    "why": "子（第1順位）がいれば、直系尊属（第2順位）と兄弟姉妹（第3順位）は相続人にならない。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_889"
+  },
+  {
+    "id": "cr-sozoku-8",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "子が全員相続を放棄し、配偶者と被相続人の母がいる場合、母が相続人となり、法定相続分は配偶者3分の2、母3分の1である。",
+    "a": true,
+    "why": "子が全員放棄すると、初めから子がいなかった扱いになり、第2順位の直系尊属に移る。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_939"
+  },
+  {
+    "id": "cr-sozoku-9",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "配偶者がなく、相続人が父母の双方を同じくする兄Aと、父のみを同じくする弟Bの場合、Bの法定相続分は2分の1である。",
+    "a": false,
+    "why": "父母の一方だけが同じ兄弟姉妹（半血）は、双方が同じ兄弟姉妹（全血）の1/2。A:B＝2:1なので、Aが2/3、Bが1/3。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_900"
+  },
+  {
+    "id": "cr-sozoku-10",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "嫡出でない子の法定相続分は、嫡出である子の2分の1である。",
+    "a": false,
+    "why": "平成25年の改正で同じになった。現行の900条4号に区別はない。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_900"
+  },
+  {
+    "id": "cr-sozoku-11",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "兄弟姉妹が相続人となるべき場合に、その兄弟姉妹の子（おい・めい）も相続開始以前に死亡していたときは、おい・めいの子が再代襲して相続人となる。",
+    "a": false,
+    "why": "兄弟姉妹の代襲は、おい・めいの1代まで（889条2項は887条2項だけを準用し、再代襲の3項は準用しない）。子の系統は孫・ひ孫と再代襲が続く。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_889"
+  },
+  {
+    "id": "cr-sozoku-12",
+    "video": "sozoku",
+    "t": "",
+    "topic": "法定相続分と代襲",
+    "q": "配偶者はなく、子Bと子Cがいる。BはAより先に死亡しており、Bには子E・Fがいる。この場合の法定相続分は、Cが2分の1、EとFがそれぞれ4分の1である。",
+    "a": true,
+    "why": "Bの取り分1/2をEとFが代襲して分ける（各1/4）。代襲者は親の取り分を引き継ぐだけで、頭数で割り直さない。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_887"
+  },
   {
     "id": "cr-chizei-1",
     "video": "chizei",

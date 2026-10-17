@@ -2827,7 +2827,7 @@ function App() {
                 直前詰め込み ○×
               </span>
               <span className="ml-2 text-xs text-slate-600">
-                統計・取得税と固定資産税・盛土・区分所有・借地借家
+                統計・地方税・相続分・盛土・区分所有・借地借家
               </span>
             </button>
             <button
