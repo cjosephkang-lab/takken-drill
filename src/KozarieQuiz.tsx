@@ -113,7 +113,7 @@ export function CramQuiz(props: Props) {
   return (
     <OxQuiz
       {...props}
-      description="盛土規制法の高さ・区分所有法の決議・借地借家法の期間を○×で詰め込む。数字は2026年4月1日時点の条文で確認済み。「一覧で見る」でチートシートとして読める。"
+      description="統計・盛土規制法の高さ・区分所有法の決議・借地借家法の期間を○×で詰め込む。法律の数字は2026年4月1日時点の条文、統計は国交省・財務省の公表資料で確認済み。「一覧で見る」でチートシートとして読める。"
       groupNoun="分野"
       groups={cramGroups}
       questions={cramQuestions}

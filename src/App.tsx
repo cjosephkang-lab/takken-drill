@@ -2827,7 +2827,7 @@ function App() {
                 直前詰め込み ○×
               </span>
               <span className="ml-2 text-xs text-slate-600">
-                盛土の高さ・区分所有の決議・借地借家の期間
+                統計・盛土の高さ・区分所有の決議・借地借家の期間
               </span>
             </button>
             <button

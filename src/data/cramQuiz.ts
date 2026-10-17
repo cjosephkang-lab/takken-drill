@@ -2,12 +2,17 @@
 //
 // 数字は数字シート（fixedSlotNumbers.ts、e-Gov の2026-04-01時点の条文で確認済み）と同じもの。
 // 区分所有法の招集通知は、2026-10-17 に e-Gov で「規約で伸長できる（短縮は不可）」を確認した。
+// 統計は 2026-10-18 に国交省・財務省の公表PDF（各問の sourceUrl）で数字を確認した。
 // AIが○×の形にしたもので、公式過去問の出題フローには混ぜない。「一覧で見る」がチートシートになる。
 
 import type { OxGroup } from "../KozarieQuiz";
 import type { KozarieQuestion } from "./kozarieQuiz";
 
 export const cramGroups: OxGroup[] = [
+  {
+    "id": "tokei",
+    "label": "統計（2026年試験向け）"
+  },
   {
     "id": "morido",
     "label": "盛土規制法の数字"
@@ -23,6 +28,204 @@ export const cramGroups: OxGroup[] = [
 ];
 
 export const cramQuestions: KozarieQuestion[] = [
+  {
+    "id": "cr-tokei-1",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年地価公示（令和8年1月1日時点）では、全国平均で全用途平均・住宅地・商業地のいずれも5年連続で上昇した。",
+    "a": true,
+    "why": "全国平均は全用途平均+2.8%・住宅地+2.1%・商業地+4.3%。3用途とも5年連続の上昇。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/totikensangyo/content/001985434.pdf"
+  },
+  {
+    "id": "cr-tokei-2",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年地価公示では、全国平均の住宅地は前年より上昇幅が拡大した。",
+    "a": false,
+    "why": "住宅地は+2.1%で前年と同じ上昇幅。上昇幅が拡大したのは全用途平均（2.7→2.8%）と商業地（3.9→4.3%）。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/totikensangyo/content/001985434.pdf"
+  },
+  {
+    "id": "cr-tokei-3",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年地価公示では、全国平均の商業地は前年より上昇幅が縮小した。",
+    "a": false,
+    "why": "商業地は3.9%→4.3%で上昇幅が拡大した。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/totikensangyo/content/001985434.pdf"
+  },
+  {
+    "id": "cr-tokei-4",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年地価公示では、三大都市圏平均で全用途平均・住宅地・商業地のいずれも上昇幅が拡大した。",
+    "a": true,
+    "why": "三大都市圏は3用途とも5年連続上昇・上昇幅拡大。ただし圏域別では名古屋圏だけ縮小。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/totikensangyo/content/001985434.pdf"
+  },
+  {
+    "id": "cr-tokei-5",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年地価公示では、名古屋圏は全用途平均・住宅地・商業地のいずれも上昇幅が拡大した。",
+    "a": false,
+    "why": "名古屋圏はいずれも上昇幅が縮小（全用途2.8→2.3%）。拡大したのは東京圏と大阪圏。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/totikensangyo/content/001985434.pdf"
+  },
+  {
+    "id": "cr-tokei-6",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年地価公示では、地方圏の全用途平均・住宅地・商業地はいずれも5年連続で上昇した。",
+    "a": true,
+    "why": "地方圏も3用途とも5年連続上昇。ただし全用途平均・住宅地は上昇幅が縮小、商業地は前年と同じ。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/totikensangyo/content/001985434.pdf"
+  },
+  {
+    "id": "cr-tokei-7",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年地価公示では、地方四市（札幌・仙台・広島・福岡）は全用途平均・住宅地・商業地のいずれも上昇幅が拡大した。",
+    "a": false,
+    "why": "地方四市はいずれも上昇幅が縮小（全用途5.8→4.5%）。上昇は続いている。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/totikensangyo/content/001985434.pdf"
+  },
+  {
+    "id": "cr-tokei-8",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "建築着工統計（令和7年計）によると、令和7年の新設住宅着工戸数は約74万戸で、3年連続の減少となった。",
+    "a": true,
+    "why": "740,667戸、前年比6.5%減、3年連続の減少。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/kencha25.pdf"
+  },
+  {
+    "id": "cr-tokei-9",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "建築着工統計（令和7年計）によると、令和7年の新設住宅着工戸数は前年比で増加した。",
+    "a": false,
+    "why": "前年比6.5%減。持家・貸家・分譲住宅のすべてが減った。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/kencha25.pdf"
+  },
+  {
+    "id": "cr-tokei-10",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和7年の新設住宅着工のうち、貸家は持家や分譲住宅と異なり前年比で増加した。",
+    "a": false,
+    "why": "貸家も324,991戸・前年比5.0%減（3年連続の減少）。持家7.7%減、分譲住宅7.6%減。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/kencha25.pdf"
+  },
+  {
+    "id": "cr-tokei-11",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和7年の新設住宅着工のうち、持家は4年連続の減少となった。",
+    "a": true,
+    "why": "持家は201,285戸・前年比7.7%減・4年連続の減少。貸家と分譲住宅は3年連続の減少。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/kencha25.pdf"
+  },
+  {
+    "id": "cr-tokei-12",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和7年の新設住宅着工のうち、分譲住宅のマンションは前年比で増加した。",
+    "a": false,
+    "why": "マンションは89,888戸・前年比12.2%減。分譲一戸建も115,935戸・4.3%減。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/kencha25.pdf"
+  },
+  {
+    "id": "cr-tokei-13",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和7年の新設住宅着工床面積は、前年比で減少し、4年連続の減少となった。",
+    "a": true,
+    "why": "56,885千㎡・前年比6.6%減・4年連続の減少（戸数は3年連続、床面積は4年連続）。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/kencha25.pdf"
+  },
+  {
+    "id": "cr-tokei-14",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "法人企業統計（令和6年度）によると、不動産業の売上高は前年度比で増加した。",
+    "a": true,
+    "why": "不動産業の売上高は588,245億円（約58.8兆円）・前年度比4.2%増。前年度（+22.0%）に続き2年連続の増収。",
+    "note": "",
+    "sourceUrl": "https://www.mof.go.jp/pri/reference/ssc/results/r6.pdf"
+  },
+  {
+    "id": "cr-tokei-15",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "法人企業統計（令和6年度）によると、不動産業の経常利益は前年度比で減少した。",
+    "a": false,
+    "why": "経常利益は79,796億円（約8.0兆円）・前年度比8.7%増。2年連続の増益。",
+    "note": "",
+    "sourceUrl": "https://www.mof.go.jp/pri/reference/ssc/results/r6.pdf"
+  },
+  {
+    "id": "cr-tokei-16",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和8年版土地白書によると、令和7年の土地の売買による所有権移転登記の件数は全国で約130万件で、ほぼ横ばいで推移している。",
+    "a": true,
+    "why": "白書本文どおり「約130万件・ほぼ横ばい」。出典は法務省「登記統計月報」。",
+    "note": "",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/002010600.pdf"
+  },
+  {
+    "id": "cr-tokei-17",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "令和6年度末（令和7年3月末）の宅地建物取引業者数は約13万業者で、11年連続で増加した。",
+    "a": true,
+    "why": "132,291業者（大臣3,158・知事129,133）、前年度比1.3%増・11年連続の増加。",
+    "note": "令和8年10月2日公表の令和7年度末は133,727業者・12年連続の増加。試験問題の作成時期から、出るなら令和6年度末の数字の可能性が高い。",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/001913739.pdf"
+  },
+  {
+    "id": "cr-tokei-18",
+    "video": "tokei",
+    "t": "",
+    "topic": "統計（2026年試験向け）",
+    "q": "宅地建物取引業者数は、近年は減少が続いている。",
+    "a": false,
+    "why": "増加が続いている。令和6年度末132,291業者（11年連続増加）。",
+    "note": "令和8年10月2日公表の令和7年度末は133,727業者・12年連続の増加。試験問題の作成時期から、出るなら令和6年度末の数字の可能性が高い。",
+    "sourceUrl": "https://www.mlit.go.jp/report/press/content/001913739.pdf"
+  },
   {
     "id": "cr-morido-1",
     "video": "morido",
