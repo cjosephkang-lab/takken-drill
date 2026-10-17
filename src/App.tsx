@@ -1184,6 +1184,13 @@ function App() {
   const wrongCount = takkenQuestions.filter(
     (question) => progress.answers[question.id]?.correct === false,
   ).length;
+  const unsettledRepeatedCount = takkenQuestions.filter((question) =>
+    isUnsettledRepeatedWrong(
+      question,
+      progress.answers[question.id],
+      progress.choiceRecords,
+    ),
+  ).length;
   const reviewQueue = useMemo(() => {
     return [...takkenQuestions]
       .filter((question) => {
@@ -1739,6 +1746,26 @@ function App() {
     setStatusFilter(DUE);
     setStudyMode(true);
     goToQuestion(reviewQueue[0].id, "question");
+  };
+
+  // ホームのボタンから、絞り込みを全部外して「解き直し待ち」か「何度も間違えた（未定着）」だけを出す。
+  const startFocusedSet = (status: typeof WRONG | typeof REPEATED_WRONG) => {
+    const first = takkenQuestions.find((question) =>
+      matchesStatusFilter(
+        status,
+        progress.answers[question.id],
+        question,
+        progress.choiceRecords,
+      ),
+    );
+    trackMetric("focused_set_start", { status });
+    if (!first) return;
+    setStudyMode(false);
+    setExamFilter(ALL);
+    setCategoryFilter(ALL);
+    setTopicFilter(ALL);
+    setStatusFilter(status);
+    goToQuestion(first.id, "question");
   };
 
   const openQuestionPicker = () => {
@@ -2700,6 +2727,32 @@ function App() {
               </span>
               <span className="mt-1 hidden text-xs leading-5 text-slate-600 sm:block">
                 混同している論点を並べて解く
+              </span>
+            </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-left disabled:opacity-50 sm:col-span-3"
+              disabled={wrongCount === 0}
+              onClick={() => startFocusedSet(WRONG)}
+              type="button"
+            >
+              <span className="text-sm font-bold text-rose-800">
+                解き直し待ち {wrongCount}問
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                最後に間違えたままの問題
+              </span>
+            </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-left disabled:opacity-50 sm:col-span-3"
+              disabled={unsettledRepeatedCount === 0}
+              onClick={() => startFocusedSet(REPEATED_WRONG)}
+              type="button"
+            >
+              <span className="text-sm font-bold text-rose-800">
+                何度も間違えた・未定着 {unsettledRepeatedCount}問
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                肢の並びを入れ替えて出す
               </span>
             </button>
             <button
