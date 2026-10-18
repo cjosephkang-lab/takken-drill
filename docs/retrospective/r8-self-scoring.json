@@ -1,0 +1,412 @@
+{
+ "exam": "令和8年度 宅地建物取引士資格試験（2026-10-18）",
+ "fetched_at": "2026-10-18 16:29 JST",
+ "note": "正解は予備校の速報（独自見解）。公式の正解番号は合格発表で確定する。independent は予備校の答えを見ていないエージェントが問題用紙の写真から解いたもの。",
+ "sources": {
+  "ucan": "https://www.u-can.co.jp/%e5%ae%85%e5%bb%ba/sokuhou/OJA261001.html",
+  "agaroot": "https://www.agaroot.jp/takken/sokuhou/"
+ },
+ "questions": [
+  {
+   "no": 1,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  },
+  {
+   "no": 2,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 3,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  },
+  {
+   "no": 4,
+   "mine": 4,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": false
+  },
+  {
+   "no": 5,
+   "mine": 4,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": true
+  },
+  {
+   "no": 6,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 7,
+   "mine": 2,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": false
+  },
+  {
+   "no": 8,
+   "mine": 2,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": false
+  },
+  {
+   "no": 9,
+   "mine": 4,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": false
+  },
+  {
+   "no": 10,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  },
+  {
+   "no": 11,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 12,
+   "mine": 2,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": false
+  },
+  {
+   "no": 13,
+   "mine": 4,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": true
+  },
+  {
+   "no": 14,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 15,
+   "mine": 4,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": false
+  },
+  {
+   "no": 16,
+   "mine": 4,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": true
+  },
+  {
+   "no": 17,
+   "mine": 3,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": false
+  },
+  {
+   "no": 18,
+   "mine": 2,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": false
+  },
+  {
+   "no": 19,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 20,
+   "mine": 3,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": false
+  },
+  {
+   "no": 21,
+   "mine": 4,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": true
+  },
+  {
+   "no": 22,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 23,
+   "mine": 1,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": false
+  },
+  {
+   "no": 24,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  },
+  {
+   "no": 25,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 26,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 27,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  },
+  {
+   "no": 28,
+   "mine": 4,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": false
+  },
+  {
+   "no": 29,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 30,
+   "mine": 3,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": false
+  },
+  {
+   "no": 31,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 32,
+   "mine": 1,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": false
+  },
+  {
+   "no": 33,
+   "mine": 2,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": false
+  },
+  {
+   "no": 34,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 35,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  },
+  {
+   "no": 36,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 37,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 38,
+   "mine": 2,
+   "ucan": null,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 39,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 40,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 41,
+   "mine": 4,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": false
+  },
+  {
+   "no": 42,
+   "mine": 4,
+   "ucan": null,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": false
+  },
+  {
+   "no": 43,
+   "mine": 1,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": false
+  },
+  {
+   "no": 44,
+   "mine": 4,
+   "ucan": 4,
+   "agaroot": 4,
+   "independent": 4,
+   "correct": true
+  },
+  {
+   "no": 45,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 46,
+   "mine": 2,
+   "ucan": 2,
+   "agaroot": 2,
+   "independent": 2,
+   "correct": true
+  },
+  {
+   "no": 47,
+   "mine": 1,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": true
+  },
+  {
+   "no": 48,
+   "mine": 2,
+   "ucan": 1,
+   "agaroot": 1,
+   "independent": 1,
+   "correct": false
+  },
+  {
+   "no": 49,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  },
+  {
+   "no": 50,
+   "mine": 3,
+   "ucan": 3,
+   "agaroot": 3,
+   "independent": 3,
+   "correct": true
+  }
+ ],
+ "score": 32
+}
