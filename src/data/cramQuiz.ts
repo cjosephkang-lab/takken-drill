@@ -10,6 +10,10 @@ import type { KozarieQuestion } from "./kozarieQuiz";
 
 export const cramGroups: OxGroup[] = [
   {
+    "id": "nokori",
+    "label": "まだ確認していない論点（瑕疵担保履行法・建蔽率・仮換地・共有・譲渡所得）"
+  },
+  {
     "id": "tokei",
     "label": "統計（2026年試験向け）"
   },
@@ -36,6 +40,171 @@ export const cramGroups: OxGroup[] = [
 ];
 
 export const cramQuestions: KozarieQuestion[] = [
+  {
+    "id": "cr-nokori-1",
+    "video": "nokori",
+    "t": "",
+    "topic": "住宅瑕疵担保履行法",
+    "q": "宅建業者が自ら売主として、宅建業者である買主に新築住宅を販売する場合、資力確保措置（保証金の供託または保険契約の締結）を講じなければならない。",
+    "a": false,
+    "why": "買主が宅建業者なら不要。対象は「業者が自ら売主・買主が業者でない・新築住宅」の3つがそろった時だけ。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/419AC0000000066"
+  },
+  {
+    "id": "cr-nokori-2",
+    "video": "nokori",
+    "t": "",
+    "topic": "住宅瑕疵担保履行法",
+    "q": "資力確保措置の状況の届出は、毎年3月31日の基準日から3週間以内に、免許を受けた国土交通大臣または都道府県知事にしなければならない。",
+    "a": true,
+    "why": "基準日は毎年3月31日。届出先は免許権者（国交大臣または知事）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/419AC0000000066"
+  },
+  {
+    "id": "cr-nokori-3",
+    "video": "nokori",
+    "t": "",
+    "topic": "住宅瑕疵担保履行法",
+    "q": "供託と届出をしなかった宅建業者は、基準日の翌日から起算して50日を経過した日以後、新たに自ら売主となる新築住宅の売買契約を締結してはならない。",
+    "a": true,
+    "why": "50日を過ぎると新規の契約ができない（13条）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/419AC0000000066"
+  },
+  {
+    "id": "cr-nokori-4",
+    "video": "nokori",
+    "t": "",
+    "topic": "住宅瑕疵担保履行法",
+    "q": "住宅販売瑕疵担保保証金の供託は、宅建業者の主たる事務所の最寄りの供託所にしなければならない。",
+    "a": true,
+    "why": "営業保証金と同じく主たる事務所の最寄りの供託所（11条6項）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/419AC0000000066"
+  },
+  {
+    "id": "cr-nokori-5",
+    "video": "nokori",
+    "t": "",
+    "topic": "住宅瑕疵担保履行法",
+    "q": "保証金の額を算定する際、床面積の合計が55㎡以下の新築住宅は、2戸をもって1戸と数える。",
+    "a": true,
+    "why": "55㎡以下は2戸で1戸（11条3項・施行令）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/419AC0000000066"
+  },
+  {
+    "id": "cr-nokori-6",
+    "video": "nokori",
+    "t": "",
+    "topic": "建蔽率",
+    "q": "都市計画で定められた建蔽率が10分の8の地域で、防火地域内にある耐火建築物等については、建蔽率の制限は適用されない。",
+    "a": true,
+    "why": "8/10の地域×防火地域×耐火建築物等＝制限なし（53条6項）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/325AC0000000201#Mp-At_53"
+  },
+  {
+    "id": "cr-nokori-7",
+    "video": "nokori",
+    "t": "",
+    "topic": "建蔽率",
+    "q": "準防火地域内にある準耐火建築物等は、建蔽率の緩和（10分の1加算）を受けることができない。",
+    "a": false,
+    "why": "準防火地域内の耐火建築物等・準耐火建築物等も＋1/10を受けられる（53条3項）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/325AC0000000201#Mp-At_53"
+  },
+  {
+    "id": "cr-nokori-8",
+    "video": "nokori",
+    "t": "",
+    "topic": "建蔽率",
+    "q": "特定行政庁が指定する角地内にあり、かつ防火地域内の耐火建築物等である場合、建蔽率は10分の2加算される。",
+    "a": true,
+    "why": "角地＋1/10と防火の＋1/10を合わせて＋2/10。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/325AC0000000201#Mp-At_53"
+  },
+  {
+    "id": "cr-nokori-9",
+    "video": "nokori",
+    "t": "",
+    "topic": "仮換地",
+    "q": "仮換地が指定された場合、従前の宅地の所有者は、換地処分の公告があるまで、仮換地を使用・収益することができる。",
+    "a": true,
+    "why": "使うのは仮換地（99条1項）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/329AC0000000119"
+  },
+  {
+    "id": "cr-nokori-10",
+    "video": "nokori",
+    "t": "",
+    "topic": "仮換地",
+    "q": "仮換地が指定されると、従前の宅地の所有者は、従前の宅地を売却したり、抵当権を設定したりすることができなくなる。",
+    "a": false,
+    "why": "売る・抵当権を設定するのは従前の宅地のまま。できなくなるのは従前の宅地の使用・収益。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/329AC0000000119"
+  },
+  {
+    "id": "cr-nokori-11",
+    "video": "nokori",
+    "t": "",
+    "topic": "仮換地",
+    "q": "換地処分の公告があった場合、換地計画で定められた換地は、公告があった日の翌日から従前の宅地とみなされ、保留地は翌日に施行者が取得する。",
+    "a": true,
+    "why": "換地も保留地も清算金の確定も「翌日」（104条）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/329AC0000000119"
+  },
+  {
+    "id": "cr-nokori-12",
+    "video": "nokori",
+    "t": "",
+    "topic": "共有",
+    "q": "共有物の保存行為は、各共有者が単独ですることができる。",
+    "a": true,
+    "why": "保存は単独、管理は持分価格の過半数、変更は全員（軽微な変更は過半数）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_251"
+  },
+  {
+    "id": "cr-nokori-13",
+    "video": "nokori",
+    "t": "",
+    "topic": "共有",
+    "q": "共有物に変更を加える行為は、その形状または効用の著しい変更を伴わないものであっても、共有者全員の同意が必要である。",
+    "a": false,
+    "why": "形状・効用の著しい変更を伴わない軽微な変更は、持分価格の過半数で決められる（251条1項・252条）。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_251"
+  },
+  {
+    "id": "cr-nokori-14",
+    "video": "nokori",
+    "t": "",
+    "topic": "譲渡所得",
+    "q": "居住用財産を譲渡した場合の3,000万円特別控除は、その居住用財産の所有期間が10年を超えていなければ適用を受けられない。",
+    "a": false,
+    "why": "3,000万円控除は所有期間を問わない。10年超が要るのは軽減税率の特例。両方を併用できる。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/332AC0000000026#Mp-At_35"
+  },
+  {
+    "id": "cr-nokori-15",
+    "video": "nokori",
+    "t": "",
+    "topic": "譲渡所得",
+    "q": "居住用財産を配偶者に譲渡した場合でも、3,000万円特別控除の適用を受けることができる。",
+    "a": false,
+    "why": "配偶者・直系血族・生計を一にする親族など特別な関係の人への譲渡は対象外。",
+    "note": "",
+    "sourceUrl": "https://laws.e-gov.go.jp/law/332AC0000000026#Mp-At_35"
+  },
   {
     "id": "cr-sozoku-1",
     "video": "sozoku",
