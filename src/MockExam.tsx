@@ -3,6 +3,7 @@ import type { TakkenExam, TakkenQuestion } from "./data/questions";
 import { passLine, studyOrder } from "./data/studyGuide";
 import { formatQuestionText } from "./lib/formatQuestionText";
 import { hasUnreadableCorrectChoice } from "./lib/unreadableChoices";
+import { mockMinutes, scaleTarget, toFullScale } from "./lib/mockScale";
 import { trackMetric } from "./firebase";
 
 // 進行中の模試。localStorageに保存してリロードしても再開できるようにする。
@@ -12,8 +13,7 @@ export type MockRun = {
   answers: Record<string, number>;
 };
 
-/** 本番と同じ2時間。 */
-const MOCK_MINUTES = 120;
+// 制限時間は問題数に比例（50問なら本番と同じ2時間）。法改正で外した問題がある年度は50問より少ない。
 
 const elapsedMockSeconds = (startedAt: string) =>
   Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 1000));
@@ -60,7 +60,8 @@ export function MockExam({
   const resumeTrackedRef = useRef(false);
   const timeUpTrackedRef = useRef(false);
 
-  const deadline = new Date(run.startedAt).getTime() + MOCK_MINUTES * 60 * 1000;
+  const minutes = mockMinutes(questions.length);
+  const deadline = new Date(run.startedAt).getTime() + minutes * 60 * 1000;
   const remaining = Math.max(0, deadline - now);
 
   useEffect(() => {
@@ -145,7 +146,7 @@ export function MockExam({
       const correct = inCategory.filter((q) => isCorrect(q)).length;
       return {
         category: cat.category,
-        targetScore: cat.targetScore,
+        targetScore: scaleTarget(cat.targetScore, inCategory.length, cat.fullMarks),
         total: inCategory.length,
         correct,
       };
@@ -154,8 +155,12 @@ export function MockExam({
   }, [questions, run.answers]);
 
   if (showResult) {
-    const passed = score >= passLine.safe;
-    const passedMin = score >= passLine.min;
+    // 50問そろわない年度は50問満点に換算して合格ラインと比べる。
+    const fullScale = toFullScale(score, questions.length);
+    const isPartial = questions.length < 50;
+    const gap = (line: number) => Math.round((line - fullScale) * 10) / 10;
+    const passed = fullScale >= passLine.safe;
+    const passedMin = fullScale >= passLine.min;
 
     return (
       <div className="min-h-screen bg-slate-100 px-4 py-6 text-slate-900">
@@ -179,16 +184,25 @@ export function MockExam({
                 /{questions.length}点
               </span>
             </p>
+            {isPartial ? (
+              <p className="mt-1 text-sm font-bold text-slate-700">
+                50問に換算すると{fullScale}点
+                <span className="block text-xs font-normal text-slate-500">
+                  法改正で今の法律と正誤が変わる{50 - questions.length}
+                  問を除いた{questions.length}問の模試です
+                </span>
+              </p>
+            ) : null}
             <p className="mt-2 text-sm leading-6 text-slate-700">
               {passed
                 ? `目標の${passLine.safe}点を超えています。本番でも合格圏です。`
                 : passedMin
-                  ? `過去10年の合格ライン（${passLine.min}〜${passLine.max}点）の範囲内。目標の${passLine.safe}点まであと${passLine.safe - score}点。`
-                  : `合格ライン（最低${passLine.min}点）まであと${passLine.min - score}点。弱点科目を復習しましょう。`}
+                  ? `過去10年の合格ライン（${passLine.min}〜${passLine.max}点）の範囲内。目標の${passLine.safe}点まであと${gap(passLine.safe)}点。`
+                  : `合格ライン（最低${passLine.min}点）まであと${gap(passLine.min)}点。弱点科目を復習しましょう。`}
             </p>
             {timeUp ? (
               <p className="mt-1 text-xs text-slate-500">
-                （制限時間 {MOCK_MINUTES}分 が経過したため自動採点）
+                （制限時間 {minutes}分 が経過したため自動採点）
               </p>
             ) : null}
           </div>

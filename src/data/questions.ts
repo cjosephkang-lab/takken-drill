@@ -32,7 +32,7 @@ export const takkenExams: TakkenExam[] = [
     "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/12/R7_question_answer.pdf",
     "passScore": 33,
     "questionCount": 50,
-    "extractedCount": 50
+    "extractedCount": 47
   },
   {
     "id": "r6",
@@ -41,7 +41,7 @@ export const takkenExams: TakkenExam[] = [
     "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R6_question_answer.pdf",
     "passScore": 37,
     "questionCount": 50,
-    "extractedCount": 50
+    "extractedCount": 48
   },
   {
     "id": "r5",
@@ -50,7 +50,7 @@ export const takkenExams: TakkenExam[] = [
     "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R5_qestion_answer%E3%80%80.pdf",
     "passScore": 36,
     "questionCount": 50,
-    "extractedCount": 50
+    "extractedCount": 46
   },
   {
     "id": "r4",
@@ -59,7 +59,7 @@ export const takkenExams: TakkenExam[] = [
     "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
     "passScore": 36,
     "questionCount": 50,
-    "extractedCount": 50
+    "extractedCount": 41
   },
   {
     "id": "r3_12",
@@ -68,7 +68,7 @@ export const takkenExams: TakkenExam[] = [
     "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
     "passScore": 34,
     "questionCount": 50,
-    "extractedCount": 50
+    "extractedCount": 42
   },
   {
     "id": "r3_10",
@@ -95,7 +95,7 @@ export const takkenExams: TakkenExam[] = [
     "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R2-question.pdf",
     "passScore": 38,
     "questionCount": 50,
-    "extractedCount": 44
+    "extractedCount": 43
   },
   {
     "id": "r1",
@@ -519,23 +519,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
-    "id": "r7-24",
-    "examId": "r7",
-    "year": "令和7年度",
-    "label": "2025 / 令和7年度",
-    "number": 24,
-    "category": "税・価格評定",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/12/R7_question_answer.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2025kakomon/r07-24/",
-    "questionText": "【問 24】 固定資産税に関する次の記述のうち、正しいものはどれか。\n\n1 住宅用地のうち小規模住宅用地（200 m2 以下） に対して課する固定資産税の課税標準は、当該小規模住宅用地に係る固定資産税の課税標準となるべき価格の 3 分の 1 の額である。\n\n2 市町村長は、納税義務者等の求めに応じ、法令で定めるところにより固定資産課税台帳を閲覧に供しなければならない。ただし、当該部分に記載されている住所が明らかにされることにより人の生命又は身体に危害を及ぼすおそれがある場合、当該住所を削除する等の措置を講じたもの又はその写しを閲覧に供することができる。\n\n3 市町村は、土地、家屋又は償却資産に対して課する固定資産税額が、土地にあっては 30万円、家屋にあっては 20 万円、償却資産にあっては 150 万円に満たない場合においては、原則として固定資産税を課することができない。\n\n4 固定資産税は、固定資産の所有者として、登記簿又は土地補充課税台帳若しくは家屋補充課税台帳に所有者として登記又は登録されている者に対して課されるため、所有者として登記又は登録されている個人が賦課期日前に死亡している場合、固定資産課税台帳に新たな所有者が登録されていなければ何人に対しても固定資産税を課することはできない。",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
-  },
-  {
     "id": "r7-25",
     "examId": "r7",
     "year": "令和7年度",
@@ -682,23 +665,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "externalExplanationName": "宅建レトス",
     "externalExplanationUrl": "https://takken-success.info/2025kakomon/r07-33/",
     "questionText": "【問 33】 宅地建物取引業者Ａが行う業務に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはいくつあるか。なお、この問において「37 条書面」とは、同法第 37 条の規定により交付すべき書面をいうものとする。ア 建物の賃貸借の媒介をするＡは、当該建物の引渡しの時期について、重要事項説明書に記載して説明する必要はないが、37 条書面には記載しなければならない。イ Ａは、自ら売主として建物を売却する場合、重要事項説明書に記載しなければならない契約の解除に関する事項については、契約に定めがなくても 37 条書面に全て記載しなければならない。ウ Ａは、売主を代理して、抵当権が登記されている建物を売却する場合、買主に交付する37 条書面だけでなく、売主に交付する 37 条書面についても、当該抵当権の内容を記載しなければならない。エ 建物の賃貸借の媒介をするＡは、37 条書面を交付するに当たり、宅地建物取引士をして、その内容を説明させなければならない。\n\n1 一つ\n\n2 二つ\n\n3 三つ\n\n4 四つ",
-    "correctChoices": [
-      3
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 3"
-  },
-  {
-    "id": "r7-34",
-    "examId": "r7",
-    "year": "令和7年度",
-    "label": "2025 / 令和7年度",
-    "number": 34,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/12/R7_question_answer.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2025kakomon/r07-34/",
-    "questionText": "【問 34】 宅地建物取引業の免許（以下この問において「免許」という。）に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはいくつあるか。ア Ａ社の政令で定める使用人Ｂは、刑法第 234 条（威力業務妨害）の罪により、懲役 2 年、執行猶予 2 年の刑に処せられた後、Ａ社を退任し、新たにＣ社の政令で定める使用人に就任した。Ｂの執行猶予期間が満了していない場合に、Ｃ社が免許を申請しても、免許を受けることができない。イ Ｄ社は、不正の手段により免許を取得したことによる免許の取消処分に係る聴聞の期日及び場所が公示された日から当該処分がなされるまでの間に、宅地建物取引業法第 11 条の規定による廃業の届出をした。その廃業に相当の理由がなかった場合、当該公示の日の 40 日前にＤ社の取締役を退任したＥは、当該届出から 5 年経過しなければ、免許を申請しても免許を受けることができない。ウ 営業に関し成年者と同一の行為能力を有しない未成年者であるＦの法定代理人であるＧが、刑法第 206 条（現場助勢）の罪により罰金の刑に処せられていた場合、その刑の執行が終わった日から 5 年を経過していなくても、Ｆは免許を申請すれば免許を受けることができる。エ Ｈ社の政令で定める使用人Ｊは、裁判所へＪ自身の破産申し立てを行った後、Ｈ社を退任し、裁判所から破産手続の開始決定を受けるまでの間に、新たにＫ社の政令で定める使用人に就任した。その後、Ｊが復権を得た場合、その日から 5 年を経過しなくても、Ｋ社が免許を申請すれば、免許を受けることができる。\n\n1 一つ\n\n2 二つ\n\n3 三つ\n\n4 四つ",
     "correctChoices": [
       3
     ],
@@ -925,23 +891,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 3"
-  },
-  {
-    "id": "r7-48",
-    "examId": "r7",
-    "year": "令和7年度",
-    "label": "2025 / 令和7年度",
-    "number": 48,
-    "category": "免除科目",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/12/R7_question_answer.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2025kakomon/r07-48/",
-    "questionText": "【問 48】 次の記述のうち、正しいものはどれか。\n\n1 年次別法人企業統計調査（令和 5 年度。令和 6 年 9 月公表）によれば、令和 5 年度における不動産業の営業利益は 7 兆円を超えているが、前年度に比べ減少した。\n\n2 建築着工統計調査報告（令和 6 年計。令和 7 年 1 月公表）によれば、令和 6 年の新設住宅着工戸数は、持家、分譲住宅のいずれにおいても前年に比べ減少した。\n\n3 令和 7 年地価公示（令和 7 年 3 月公表）によれば、令和 6 年 1 月以降の 1 年間の地価変動率は、三大都市圏平均では住宅地、商業地ともに上昇となったものの、地方圏平均では住宅地、商業地ともに下落となった。\n\n4 令和 7 年版土地白書（令和 7 年 5 月公表）によれば、土地取引について、売買による所有権の移転登記の件数でその動向を見ると、令和 6 年の全国の土地取引件数は 200 万件を超えており、前年に比べ大きく増加した。",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r7-49",
@@ -1369,23 +1318,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
-    "id": "r6-24",
-    "examId": "r6",
-    "year": "令和6年度",
-    "label": "2024 / 令和6年度",
-    "number": 24,
-    "category": "税・価格評定",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R6_question_answer.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2024kakomon/r06-24/",
-    "questionText": "【問 24】 不動産取得税に関する次の記述のうち、正しいものはどれか。\n\n1 不動産取得税の課税標準は、不動産を取得した時における当該不動産の売買価格であるから、固定資産税の課税標準である固定資産の評価額とは異なるものである。\n\n2 不動産取得税の課税標準となるべき額が、土地の取得にあっては 10 万円、家屋の取得のうち建築に係るものにあっては 1 戸につき 23 万円、その他のものにあっては 1 戸につき 12万円に満たない場合においては、不動産取得税が課されない。\n\n3 不動産取得税は、不動産の取得に対して課される税であるので、法人の合併により不動産を取得した場合においても、不動産取得税が課される。\n\n4 令和 6 年 4 月に個人が取得した住宅及び住宅用地に係る不動産取得税の税率は 3 ％ であるが、住宅以外の家屋及び土地に係る不動産取得税の税率は 4 ％ である。",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
-  },
-  {
     "id": "r6-25",
     "examId": "r6",
     "year": "令和6年度",
@@ -1777,23 +1709,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
-    "id": "r6-48",
-    "examId": "r6",
-    "year": "令和6年度",
-    "label": "2024 / 令和6年度",
-    "number": 48,
-    "category": "免除科目",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R6_question_answer.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2024kakomon/r06-48/",
-    "questionText": "【問 48】 次の記述のうち、正しいものはどれか。\n\n1 令和 6 年地価公示（令和 6 年 3 月公表）によれば、令和 5 年 1 月以降の 1 年間の地価の動向は、三大都市圏・地方圏ともに、全用途平均・住宅地・商業地のいずれも 3 年連続で上昇した。\n\n2 令和 4 年度宅地建物取引業法の施行状況調査（令和 5 年 10 月公表）によれば、令和 5 年 3 月末における宅地建物取引士の総登録者数は、200 万人を超えている。\n\n3 令和 5 年住宅・土地統計調査住宅数概数集計（速報集計）結果（令和 6 年 4 月公表）によれば、令和 5 年 10 月 1 日現在における賃貸・売却用及び二次的住宅（別荘など）を除く空き家は、900 万戸に達している。\n\n4 建築着工統計（令和 6 年 1 月公表）によれば、令和 5 年の新設住宅着工戸数は 90 万戸を超え、 3 年連続で増加した。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r6-49",
     "examId": "r6",
     "year": "令和6年度",
@@ -2134,23 +2049,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
-    "id": "r5-19",
-    "examId": "r5",
-    "year": "令和5年度",
-    "label": "2023 / 令和5年度",
-    "number": 19,
-    "category": "法令上の制限",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R5_qestion_answer%E3%80%80.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2023kakomon/r05-19/",
-    "questionText": "【問 19】 宅地造成等規制法に関する次の記述のうち、誤っているものはどれか。なお、この問において「都道府県知事」とは、地方自治法に基づく指定都市、中核市及び施行時特例市にあってはその長をいうものとする。\n\n1 都道府県知事は、関係市町村長の意見を聴いて、宅地造成工事規制区域内で、宅地造成に伴う災害で相当数の居住者その他の者に危害を生ずるものの発生のおそれが大きい一団の造成宅地の区域であって、一定の基準に該当するものを、造成宅地防災区域として指定することができる。\n\n2 都道府県知事は、その地方の気候、風土又は地勢の特殊性により、宅地造成等規制法の規定のみによっては宅地造成に伴うがけ崩れ又は土砂の流出の防止の目的を達し難いと認める場合は、都道府県（地方自治法に基づく指定都市、中核市又は施行時特例市の区域にあっては、それぞれ指定都市、中核市又は施行時特例市）の規則で、宅地造成工事規制区域内において行われる宅地造成に関する工事の技術的基準を強化し、又は付加することができる。\n\n3 都道府県知事は、宅地造成工事規制区域内の宅地について、宅地造成に伴う災害を防止するために必要があると認める場合には、その宅地の所有者に対して、擁壁等の設置等の措置をとることを勧告することができる。\n\n4 宅地造成工事規制区域内の宅地において、雨水その他の地表水又は地下水を排除するための排水施設の除却工事を行おうとする場合は、一定の場合を除き、都道府県知事への届出が必要となる。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r5-20",
     "examId": "r5",
     "year": "令和5年度",
@@ -2304,23 +2202,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
-    "id": "r5-29",
-    "examId": "r5",
-    "year": "令和5年度",
-    "label": "2023 / 令和5年度",
-    "number": 29,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R5_qestion_answer%E3%80%80.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2023kakomon/r05-29/",
-    "questionText": "【問 29】 宅地建物取引業の免許（以下この問において「免許」という。）に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。\n\n1 宅地建物取引業者Ａ社の使用人であって、Ａ社の宅地建物取引業を行う支店の代表者であるものが、道路交通法の規定に違反したことにより懲役の刑に処せられたとしても、Ａ社の免許は取り消されることはない。\n\n2 宅地建物取引業者Ｂ社の取締役が、所得税法の規定に違反したことにより罰金の刑に処せられたとしても、Ｂ社の免許は取り消されることはない。\n\n3 宅地建物取引業者である個人Ｃが、宅地建物取引業法の規定に違反したことにより罰金の刑に処せられたとしても、Ｃの免許は取り消されることはない。\n\n4 宅地建物取引業者Ｄ社の非常勤の取締役が、刑法第 222 条（脅迫）の罪を犯したことにより罰金の刑に処せられたとしても、Ｄ社の免許は取り消されることはない。",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
-  },
-  {
     "id": "r5-30",
     "examId": "r5",
     "year": "令和5年度",
@@ -2336,23 +2217,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
-    "id": "r5-31",
-    "examId": "r5",
-    "year": "令和5年度",
-    "label": "2023 / 令和5年度",
-    "number": 31,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R5_qestion_answer%E3%80%80.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2023kakomon/r05-31/",
-    "questionText": "【問 31】 宅地建物取引業者がその業務に関して行う広告に関する次の記述のうち、宅地建物取引業法（以下この問において「法」という。）の規定によれば、正しいものはどれか。なお、この問において「建築確認」とは、建築基準法第 6 条第 1 項の確認をいうものとする。\n\n1 宅地又は建物の売買に関する注文を受けたときは、遅滞なくその注文をした者に対して取引態様の別を明らかにしなければならないが、当該注文者が事前に取引態様の別を明示した広告を見てから注文してきた場合においては、取引態様の別を遅滞なく明らかにする必要はない。\n\n2 既存の住宅に関する広告を行うときは、法第 34 条の 2 第 1 項第 4 号に規定する建物状況調査を実施しているかどうかを明示しなければならない。\n\n3 これから建築工事を行う予定である建築確認申請中の建物については、当該建物の売買の媒介に関する広告をしてはならないが、貸借の媒介に関する広告はすることができる。\n\n4 販売する宅地又は建物の広告に関し、著しく事実に相違する表示をした場合、監督処分の対象となるだけでなく、懲役若しくは罰金に処せられ、又はこれを併科されることもある。",
-    "correctChoices": [
-      4
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r5-32",
@@ -2627,23 +2491,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
-    "id": "r5-48",
-    "examId": "r5",
-    "year": "令和5年度",
-    "label": "2023 / 令和5年度",
-    "number": 48,
-    "category": "免除科目",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2025/03/R5_qestion_answer%E3%80%80.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2023kakomon/r05-48/",
-    "questionText": "【問 48】 次の記述のうち、誤っているものはどれか。\n\n1 令和 3 年度宅地建物取引業法の施行状況調査（令和 4 年 9 月公表）によれば、令和 4 年 3 月末における宅地建物取引業者の全事業者数は 14 万業者を超え、 8 年連続で増加した。\n\n2 令和 5 年地価公示（令和 5 年 3 月公表）によれば、令和 4 年 1 月以降の 1 年間の地価について、地方圏平均では、全用途平均、住宅地、商業地のいずれも 2 年連続で上昇し、工業地は 6 年連続で上昇した。\n\n3 建築着工統計調査報告（令和 4 年計。令和 5 年 1 月公表）によれば、令和 4 年の民間非居住建築物の着工床面積は、前年と比較すると、工場及び倉庫は増加したが、事務所及び店舗が減少したため、全体で減少となった。\n\n4 年次別法人企業統計調査（令和 3 年度。令和 4 年 9 月公表）によれば、令和 3 年度における不動産業の売上高営業利益率は 11.1 ％ と 2 年連続で前年度と比べ上昇し、売上高経常利益率も 12.5 ％ と 2 年連続で前年度と比べ上昇した。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r5-49",
     "examId": "r5",
     "year": "令和5年度",
@@ -2882,23 +2729,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
-    "id": "r4-13",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 13,
-    "category": "権利関係",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-13/",
-    "questionText": "【問 13】 建物の区分所有等に関する法律（以下この問において「法」という。）に関する次の記述のうち、誤っているものはどれか。\n\n1 管理者は、規約により、その職務に関し、区分所有者のために、原告又は被告となったときは、その旨を各区分所有者に通知しなくてよい。\n\n2 管理者がないときは、区分所有者の5分の 1 以上で議決権の 5 分の 1 以上を有するものは、集会を招集することができる。ただし、この定数は、規約で減ずることができる。\n\n3 集会において、管理者の選任を行う場合、規約に別段の定めがない限り、区分所有者及び議決権の各過半数で決する。\n\n4 管理組合（法第 3 条に規定する区分所有者の団体をいう。）は、区分所有者及び議決権の各4分の3 以上の多数による集会の決議で法人となる旨並びにその名称及び事務所を定め、かつ、その主たる事務所の所在地において登記をすることによって法人となる。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r4-14",
     "examId": "r4",
     "year": "令和4年度",
@@ -2982,23 +2812,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 3"
-  },
-  {
-    "id": "r4-19",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 19,
-    "category": "法令上の制限",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-19/",
-    "questionText": "【問 19】 宅地造成等規制法に関する次の記述のうち、誤っているものはどれか。なお、この問において「都道府県知事」とは、地方自治法に基づく指定都市、中核市及び施行時特例市にあってはその長をいうものとする。\n\n1 宅地造成工事規制区域内において、雨水その他の地表水又は地下水を排除するための排水施設の除却工事を行おうとする場合は、一定の場合を除き、都道府県知事への届出が必要となる。\n\n2 宅地造成工事規制区域内において、森林を宅地にするために行う切土であって、高さ3mの崖を生ずることとなるものに関する工事については、造成主は、都市計画法第 29 条第1項又は第 2 項の許可を受けて行われる当該許可の内容に適合した工事を除き、工事に着手する前に、都道府県知事の許可を受けなければならない。\n\n3 宅地造成工事規制区域内で過去に宅地造成に関する工事が行われ、現在は造成主とは異なる者がその工事が行われた宅地を所有している場合において、当該宅地の所有者は宅地造成に伴う災害が生じないよう、その宅地を常時安全な状態に維持するよう努めなければならない。\n\n4 宅地造成工事規制区域外に盛土によって造成された一団の造成宅地の区域において、造成された盛土の高さが5m 未満の場合は、都道府県知事は、当該区域を造成宅地防災区域として指定することができない。",
-    "correctChoices": [
-      4
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-20",
@@ -3120,23 +2933,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
-    "id": "r4-27",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 27,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-27/",
-    "questionText": "【問 27】 宅地建物取引業者A（消費税課税事業者）が受け取ることができる報酬についての次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。\n\n1 Aが、Bから売買の媒介を依頼され、Bからの特別の依頼に基づき、遠隔地への現地調査を実施した。その際、当該調査に要する特別の費用について、Bが負担することを事前に承諾していたので、Aは媒介報酬とは別に、当該調査に要した特別の費用相当額を受領することができる。\n\n2 Aが、居住用建物について、貸主Bから貸借の媒介を依頼され、この媒介が使用貸借に係るものである場合は、当該建物の通常の借賃をもとに報酬の限度額が定まるが、その算定に当たっては、不動産鑑定業者の鑑定評価を求めなければならない。\n\n3 Aが居住用建物の貸主B及び借主Cの双方から媒介の依頼を受けるに当たって、依頼者の一方から受けることのできる報酬の額は、借賃の1か月分の0.55倍に相当する金額以内である。ただし、媒介の依頼を受けるに当たって、依頼者から承諾を得ている場合はこの限りではなく、双方から受けることのできる報酬の合計額は借賃の1か月分の1.1倍に相当する金額を超えてもよい。\n\n4 Aは、土地付建物について、売主Bから媒介を依頼され、代金300万円（消費税等相当額を含み、土地代金は80万円である。）で契約を成立させた。現地調査等の費用については、通常の売買の媒介に比べ5万円（消費税等相当額を含まない。）多く要する旨、Bに対して説明し、合意の上、媒介契約を締結した。この場合、AがBから受領できる報酬の限度額は20万200円である。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r4-28",
     "examId": "r4",
     "year": "令和4年度",
@@ -3152,23 +2948,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
-    "id": "r4-29",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 29,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-29/",
-    "questionText": "【問 29】 宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。\n\n1 宅地建物取引士は、禁錮以上の刑に処せられた場合、刑に処せられた日から30日以内に、その旨を宅地建物取引士の登録を受けた都道府県知事に届け出なければならない。\n\n2 宅地建物取引士は、業務に関して事務禁止の処分を受けた場合、速やかに、宅地建物取引士証をその交付を受けた都道府県知事に提出しなければならず、これを怠った場合には罰則の適用を受けることがある。\n\n3 宅地建物取引士は、有効期間の満了日が到来する宅地建物取引士証を更新する場合、国土交通大臣が指定する講習を受講しなければならず、また、当該宅地建物取引士証の有効期間は5年である。\n\n4 宅地建物取引士は、宅地建物取引士の信用を害するような行為をしてはならず、信用を害するような行為には、宅地建物取引士の職務に必ずしも直接関係しない行為や私的な行為も含まれる。",
-    "correctChoices": [
-      3
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r4-30",
@@ -3205,23 +2984,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
-    "id": "r4-32",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 32,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-32/",
-    "questionText": "【問 32】 宅地建物取引業法第 37 条の規定により交付すべき書面 (以下この問において「37 条書面」という。) に関する次の記述のうち、誤っているものはどれか。\n\n1 宅地建物取引業者である売主Aは、宅地建物取引業者であるBの媒介により、宅地建物取引業者ではないCと宅地の売買契約を令和 4 年 4 月 1 日に締結した。AとBが共同で作成した 37 条書面にBの宅地建物取引士の記名押印がなされていれば、Aは 37 条書面にAの宅地建物取引士をして記名押印をさせる必要はない。\n\n2 宅地建物取引士は、37 条書面を交付する際、買主から請求があったときは、宅地建物取引士証を提示しなければならない。\n\n3 宅地建物取引業者である売主Dと宅地建物取引業者ではないとの建物の売買契約において、手付金の保全措置を講ずる場合、Dはその保全措置の概要を、重要事項説明書に記載し説明する必要があるが、37 条書面には記載する必要はない。\n\n4 宅地建物取引業者である売主と宅地建物取引業者ではない個人との建物の売買において、建物の品質に関して契約の内容に適合しない場合におけるその不適合を担保すべき責任について特約を定めたときは、37 条書面にその内容を記載しなければならない。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r4-33",
     "examId": "r4",
     "year": "令和4年度",
@@ -3237,23 +2999,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 2"
-  },
-  {
-    "id": "r4-34",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 34,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-34/",
-    "questionText": "【問 34】 宅地建物取引業者が建物の売買の媒介の際に行う宅地建物取引業法第 35 条に規定する重要事項の説明に関する次の記述のうち、誤っているものはどれか。なお、説明の相手方は宅地建物取引業者ではないものとする。\n\n1 当該建物が既存の建物であるときは、宅地建物取引業法第 34 条の 2 第 1 項第 4 号に規定する建物状況調査を過去 1 年以内に実施しているかどうか、及びこれを実施している場合におけるその結果の概要を説明しなければならない。\n\n2 当該建物が宅地造成等規制法の規定により指定された造成宅地防災区域内にあるときは、その旨を説明しなければならない。\n\n3 当該建物について、石綿の使用の有無の調査の結果が記録されているときは、その内容を説明しなければならない。\n\n4 当該建物 (昭和56年5月31 日以前に新築の工事に着手したもの) が指定確認検査機関、建築士、登録住宅性能評価機関又は地方公共団体による耐震診断を受けたものであるときは、その旨を説明しなければならない。",
-    "correctChoices": [
-      4
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r4-35",
@@ -3339,40 +3084,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 4"
-  },
-  {
-    "id": "r4-40",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 40,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-40/",
-    "questionText": "【問 40】 建物の貸借の媒介を行う宅地建物取引業者が、その取引の相手方 (宅地建物取引業者を除く。) に対して、次のアからエの発言に続けて宅地建物取引業法第 35 条の規定に基づく重要事項の説明を行った場合のうち、宅地建物取引業法の規定に違反しないものはいくつあるか。\n\nア 本日は重要事項の説明を行うためにお電話しました。お客様はIT環境をお持ちでなく映像を見ることができないとのことですので、宅地建物取引士である私が記名押印した重要事項説明書は現在お住まいの住所に郵送いたしました。このお電話にて重要事項の説明をさせていただきますので、お手元でご覧いただきながらお聞き願います。\n\nイ 建物の貸主が宅地建物取引業者で、代表者が宅地建物取引士であり建物の事情に詳しいことから、その代表者が作成し、記名押印した重要事項説明書がこちらになります。当社の宅地建物取引士は同席しますが、説明は貸主の代表者が担当します。\n\nウ この物件の担当である弊社の宅地建物取引士が本日急用のため対応できなくなりましたが、せっかくお越しいただきましたので、重要事項説明書にある宅地建物取引士欄を訂正の上、宅地建物取引士である私が記名押印をし、代わりに説明をいたします。私の宅地建物取引士証をお見せします。\n\nエ 本日はお客様のご希望ですので、テレビ会議を用いて重要事項の説明を行います。当社の側の音声は聞こえていますでしょうか。十分に聞き取れたとのお返事、こちらにも聞こえました。では、説明を担当する私の宅地建物取引士証をお示ししますので、画面上でご確認をいただき、私の名前を読み上げていただけますでしょうか。そうです、読み方も間違いありません。それでは、双方音声・映像ともやりとりできる状況ですので、説明を始めます。事前にお送りした私が記名押印した重要事項説明書をお手元にご用意ください。\n\n1 一つ\n\n2 二つ\n\n3 三つ\n\n4 四つ",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
-  },
-  {
-    "id": "r4-41",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 41,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-41/",
-    "questionText": "【問 41】 営業保証金及び宅地建物取引業保証協会（以下この問において「保証協会」という。）に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはいくつあるか。\n\nア 宅地建物取引業者の代表者が、その業務に関し刑法第 222 条（脅迫）の罪により懲役の刑に処せられたことを理由に宅地建物取引業の免許を取り消された場合、当該宅地建物取引業者であった者は、当該刑の執行を終わった日から 5 年間は供託した営業保証金を取り戻すことができない。\n\nイ 営業保証金の還付により、営業保証金が政令で定める額に不足することとなったため、国土交通大臣又は都道府県知事から不足額を供託すべき旨の通知書の送付を受けた宅地建物取引業者は、その送付を受けた日から 2 週間以内にその不足額を供託しなければならない。\n\nウ 保証協会の社員は、自らが取り扱った宅地建物取引業に係る取引の相手方から当該取引に関する苦情について解決の申出が保証協会にあり、保証協会から関係する資料の提出を求められたときは、正当な理由がある場合でなければ、これを拒んではならない。\n\nエ 保証協会の社員と宅地建物取引業に関し取引をした者は、その取引により生じた債権に関し、当該社員が納付した弁済業務保証金の額に相当する額の範囲内において弁済を受ける権利を有する。\n\n1 一つ\n\n2 二つ\n\n3 三つ\n\n4 四つ",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r4-42",
@@ -3475,26 +3186,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 4"
-  },
-  {
-    "id": "r4-48",
-    "examId": "r4",
-    "year": "令和4年度",
-    "label": "2022 / 令和4年度",
-    "number": 48,
-    "category": "免除科目",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R4-q_a.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2022kakomon/r04-48/",
-    "questionText": "【問 48】 次の記述のうち、正しいものはどれか。\n\n1 建築着工統計調査報告（令和 3 年計。令和 4 年 1 月公表）によれば、令和 3 年の新設住宅の着工戸数のうち、持家は前年比で増加したが、貸家及び分譲住宅は前年比で減少した。\n\n2 令和 4 年地価公示（令和 4 年 3 月公表）によれば、令和 3 年 1 月以降の 1 年間の住宅地の地価は、三大都市圏平均では下落したものの、それ以外の地方圏平均では上昇した。\n\n3 令和 4 年版土地白書（令和 4 年 6 月公表）によれば、令和 3 年の全国の土地取引件数は約 133 万件となり、土地取引件数の対前年比は令和元年以降減少が続いている。\n\n4 国土交通省の公表する不動産価格指数のうち、全国の商業用不動産総合の季節調整値は、2021 年（令和 3 年）においては第 1 四半期から第 4 四半期まで連続で対前期比増となった。",
-    "correctChoices": [
-      1,
-      2,
-      3,
-      4
-    ],
-    "isAllCorrect": true,
-    "officialExplanation": "公式PDFの正解番号表: 全ての選択肢を正解扱い。"
   },
   {
     "id": "r4-49",
@@ -3837,23 +3528,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
-    "id": "r3_12-19",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 19,
-    "category": "法令上の制限",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-19/",
-    "questionText": "【問 19】 宅地造成等規制法に関する次の記述のうち、誤っているものはどれか。なお、この問において「都道府県知事」とは、地方自治法に基づく指定都市、中核市及び施行時特例市にあってはその長をいうものとする。\n\n1 宅地造成工事規制区域外において行われる宅地造成に関する工事について、造成主は、工事に着手する前に都道府県知事に届け出なければならない。\n\n2 都道府県知事は、宅地造成工事規制区域内における宅地の所有者、管理者又は占有者に対して、当該宅地又は当該宅地において行われている工事の状況について報告を求めることができる。\n\n3 宅地造成工事規制区域内において宅地造成に関する工事を行う場合、宅地造成に伴う災害を防止するために行う高さ5mを超える擁壁に係る工事については、政令で定める資格を有する者の設計によらなければならない。\n\n4 都道府県知事は、偽りその他不正な手段によって宅地造成工事規制区域内において行われる宅地造成に関する工事の許可を受けた者に対して、その許可を取り消すことができる。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r3_12-20",
     "examId": "r3_12",
     "year": "令和3年度12月",
@@ -3954,23 +3628,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 2"
-  },
-  {
-    "id": "r3_12-26",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 26,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-26/",
-    "questionText": "【問 26】 宅地建物取引業者が宅地建物取引業法第 37 条の規定により交付すべき書面（以下この問において「37 条書面」という。）に関する次の記述のうち、正しいものはどれか。\n\n1 宅地建物取引業者は、その媒介により建物の売買の契約を成立させた場合において、当該建物の引渡しの時期又は移転登記の申請の時期のいずれかを 37 条書面に記載し、当該契約の各当事者に交付しなければならない。\n\n2 宅地建物取引業者は、その媒介により建物の貸借の契約を成立させた場合において、当該建物が既存の建物であるときは、建物の構造耐力上主要な部分等の状況について当事者の双方が確認した事項を 37 条書面に記載し、当該契約の各当事者に交付しなければならない。\n\n3 宅地建物取引業者は、その媒介により建物の貸借の契約を成立させた場合において、借賃以外の金銭の授受に関する定めがあるときは、その額や当該金銭の授受の時期だけでなく、当該金銭の授受の目的についても 37 条書面に記載し、当該契約の各当事者に交付しなければならない。\n\n4 宅地建物取引業者は、37 条書面を交付するに当たり、宅地建物取引士をして、その書面に記名押印の上、その内容を説明させなければならない。",
-    "correctChoices": [
-      3
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 3"
   },
   {
     "id": "r3_12-27",
@@ -4109,23 +3766,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
-    "id": "r3_12-35",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 35,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-35/",
-    "questionText": "【問 35】 宅地建物取引業者が宅地及び建物の売買の媒介を行う場合における宅地建物取引業法第 35 条に規定する重要事項の説明及び重要事項説明書の交付に関する次の記述のうち、正しいものはどれか。\n\n1 宅地建物取引士は、テレビ会議等のITを活用して重要事項の説明を行うときは、相手方の承諾があれば宅地建物取引士証の提示を省略することができる。\n\n2 宅地建物取引業者は、その媒介により売買契約が成立したときは、当該契約の各当事者に、遅滞なく、重要事項説明書を交付しなければならない。\n\n3 宅地建物取引業者は、重要事項説明書の交付に当たり、専任の宅地建物取引士をして当該書面に記名押印させるとともに、売買契約の各当事者にも当該書面に記名押印させなければならない。\n\n4 宅地建物取引業者は、買主が宅地建物取引業者であっても、重要事項説明書を交付しなければならない。",
-    "correctChoices": [
-      4
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 4"
-  },
-  {
     "id": "r3_12-36",
     "examId": "r3_12",
     "year": "令和3年度12月",
@@ -4141,23 +3781,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 4"
-  },
-  {
-    "id": "r3_12-37",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 37,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-37/",
-    "questionText": "【問 37】 宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。なお、この問において「登録」とは、宅地建物取引士の登録をいうものとする。\n\n1 甲県知事の登録を受けている宅地建物取引士は、乙県に主たる事務所を置く宅地建物取引業者の専任の宅地建物取引士となる場合、乙県知事に登録の移転を申請しなければならない。\n\n2 宅地建物取引士の氏名等が登載されている宅地建物取引士資格登録簿は一般の閲覧に供されることとはされていないが、専任の宅地建物取引士は、その氏名が宅地建物取引業者名簿に登載され、当該名簿が一般の閲覧に供される。\n\n3 宅地建物取引士が、刑法第 204 条 (傷害) の罪により罰金の刑に処せられ、登録が消除された場合、当該登録が消除された日から5 年を経過するまでは、新たな登録を受けることができない。\n\n4 未成年者は、宅地建物取引業に係る営業に関し成年者と同一の行為能力を有していたとしても、成年に達するまでは登録を受けることができない。",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
   },
   {
     "id": "r3_12-38",
@@ -4192,40 +3815,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 3"
-  },
-  {
-    "id": "r3_12-40",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 40,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-40/",
-    "questionText": "【問 40】 宅地建物取引業法第 37 条の規定により交付すべき書面 (以下この問において「37 条書面」という。) についての宅地建物取引業者Aの義務に関する次の記述のうち、正しいものはどれか。\n\n1 Aは、自ら売主として、宅地建物取引業者Bの媒介により、Cと宅地の売買契約を締結した。Bが宅地建物取引士をして 37 条書面に記名押印させている場合、Aは宅地建物取引士をして当該書面に記名押印させる必要はない。\n\n2 Aは、Dを売主としEを買主とする宅地の売買契約を媒介した。当該売買契約に、当該宅地が種類又は品質に関して契約の内容に適合しない場合においてその不適合を担保すべき責任に関する特約があるときは、Aは、当該特約について記載した 37 条書面をD及びに交付しなければならない。\n\n3 Aは、自ら買主として、Fと宅地の売買契約を締結した。この場合、Fに対して 37 条書面を交付する必要はない。\n\n4 Aは、自ら貸主として、Gと事業用建物の定期賃貸借契約を締結した。この場合において、借賃の支払方法についての定めがあるときは、Aはその内容を 37 条書面に記載しなければならず、Gに対して当該書面を交付しなければならない。",
-    "correctChoices": [
-      2
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 2"
-  },
-  {
-    "id": "r3_12-41",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 41,
-    "category": "宅建業法",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-41/",
-    "questionText": "【問 41】 宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。\n\n1 宅地建物取引業者Aは、一団の宅地建物の分譲をするため設置した案内所には、契約を締結することなく、かつ、契約の申込みを受けることがないときでも、1 名以上の専任の宅地建物取引士を置かなければならない。\n\n2 宅地建物取引業者Bは、その主たる事務所に従事する唯一の専任の宅地建物取引士が退職したときは、2週間以内に、宅地建物取引業法第 31 条の3第1項の規定に適合させるため必要な措置を執らなければならない。\n\n3 宅地建物取引業者Cが、20戸の一団の分譲建物の売買契約の申込みのみを受ける案内所甲を設置した場合、売買契約の締結は事務所乙で行うとしても、甲にも専任の宅地建物取引士を置かなければならない。\n\n4 法人である宅地建物取引業者D社の従業者であり、宅地建物取引業に係る営業に関し成年者と同一の行為能力を有する 20 歳未満の婚姻歴のない宅地建物取引士Eは、D社の役員であるときを除き、D社の専任の宅地建物取引士となることができない。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
   },
   {
     "id": "r3_12-42",
@@ -4297,23 +3886,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
-    "id": "r3_12-46",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 46,
-    "category": "免除科目",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-46/",
-    "questionText": "【問 46】 独立行政法人住宅金融支援機構（以下この問において「機構」という。）に関する次の記述のうち、誤っているものはどれか。\n\n1 機構は、子どもを育成する家庭又は高齢者の家庭に適した良好な居住性能及び居住環境を有する賃貸住宅の建設に必要な資金の貸付けを業務として行っていない。\n\n2 機構は、災害により住宅が滅失した場合において、それに代わるべき建築物の建設又は購入に必要な資金の貸付けを業務として行っている。\n\n3 機構が証券化支援事業（買取型）により譲り受ける貸付債権は、自ら居住する住宅又は自ら居住する住宅以外の親族の居住の用に供する住宅を建設し、又は購入する者に対する貸付けに係るものでなければならない。\n\n4 機構は、マンション管理組合や区分所有者に対するマンション共用部分の改良に必要な資金の貸付けを業務として行っている。",
-    "correctChoices": [
-      1
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 1"
-  },
-  {
     "id": "r3_12-47",
     "examId": "r3_12",
     "year": "令和3年度12月",
@@ -4324,23 +3896,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     "externalExplanationName": "宅建レトス",
     "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-47/",
     "questionText": "【問 47】 宅地建物取引業者が行う広告に関する次の記述のうち、不当景品類及び不当表示防止法（不動産の表示に関する公正競争規約を含む。）の規定によれば、正しいものはどれか。\n\n1 新築分譲マンションの販売広告において、近隣のデパート、スーパーマーケット、商店等の商業施設は、将来確実に利用できる施設であっても、現に利用できるものでなければ表示することができない。\n\n2 有名な旧跡から直線距離で 1,100 m の地点に所在する新築分譲マンションの名称に当該旧跡の名称を用いることができる。\n\n3 土地の販売価格については、1 区画当たりの価格並びに 1 m2 当たりの価格及び1区画当たりの土地面積のいずれも表示しなければならない。\n\n4 新築分譲マンションの修繕積立金が住戸により異なる場合、広告スペースの関係で全ての住戸の修繕積立金を示すことが困難であっても、修繕積立金について全住戸の平均額で表示することはできない。",
-    "correctChoices": [
-      4
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 4"
-  },
-  {
-    "id": "r3_12-48",
-    "examId": "r3_12",
-    "year": "令和3年度12月",
-    "label": "2021 / 令和3年度12月",
-    "number": 48,
-    "category": "免除科目",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question_002.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2021-12kakomon/r032-48/",
-    "questionText": "【問 48】 次の記述のうち、正しいものはどれか。\n\n1 令和3年版国土交通白書（令和 3 年 6 月公表）によれば、宅地建物取引業者数は、令和元年度末において 10 万業者を下回っている。\n\n2 令和3年地価公示（令和 3 年 3 月公表）によれば、令和 2 年 1 月以降の 1 年間の地価の変動を見ると、全国平均の用途別では、住宅地、商業地及び工業地のいずれの用途も下落に転じた。\n\n3 令和3年版土地白書（令和 3年6 月公表）によれば、令和元年における我が国の国土面積は約 3,780 万 ha であり、このうち住宅地、工業用地等の宅地は約 197 万 ha となっており、宅地及び農地の合計面積は、森林の面積を超えている。\n\n4 建築着工統計（令和3年1月公表）によれば、令和 2年1月から令和2年12月までのマンション着工戸数は、「三大都市圏計」及び「その他の地域」のいずれにおいても前年を下回っている。",
     "correctChoices": [
       4
     ],
@@ -6216,23 +5771,6 @@ export const takkenQuestions: TakkenQuestion[] = [
     ],
     "isAllCorrect": false,
     "officialExplanation": "公式PDFの正解番号表: 正解 3"
-  },
-  {
-    "id": "r2_10-24",
-    "examId": "r2_10",
-    "year": "令和2年度10月",
-    "label": "2020 / 令和2年度10月",
-    "number": 24,
-    "category": "税・価格評定",
-    "sourceUrl": "https://www.retio.or.jp/wp-content/uploads/2024/10/R2-question.pdf",
-    "externalExplanationName": "宅建レトス",
-    "externalExplanationUrl": "https://takken-success.info/2020-10kakomon/r02-24/",
-    "questionText": "【問 24】 不動産取得税に関する次の記述のうち、正しいものはどれか。\n\n1 令和2年4月に個人が取得した住宅及び住宅用地に係る不動産取得税の税率は3％であるが、住宅用以外の土地に係る不動産取得税の税率は4％である。\n\n2 一定の面積に満たない土地の取得に対しては、狭小な不動産の取得者に対する税負担の排除の観点から、不動産取得税を課することができない。\n\n3 不動産取得税は、不動産の取得に対して課される税であるので、家屋を改築したことにより、当該家屋の価格が増加したとしても、不動産取得税は課されない。\n\n4 共有物の分割による不動産の取得については、当該不動産の取得者の分割前の当該共有物に係る持分の割合を超えない部分の取得であれば、不動産取得税は課されない。",
-    "correctChoices": [
-      4
-    ],
-    "isAllCorrect": false,
-    "officialExplanation": "公式PDFの正解番号表: 正解 4"
   },
   {
     "id": "r2_10-25",

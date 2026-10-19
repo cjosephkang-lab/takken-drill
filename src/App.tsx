@@ -2306,7 +2306,7 @@ function App() {
   const openMockPicker = () => {
     trackMetric("mock_picker_open", {
       eligible_exam_count: takkenExams.filter(
-        (exam) => exam.extractedCount === exam.questionCount,
+        (exam) => exam.extractedCount > 0,
       ).length,
     });
     setMockPicker(true);
@@ -4251,10 +4251,10 @@ function App() {
           >
             <h2 className="text-base font-bold text-slate-950">模試を開始</h2>
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              本番同様の50問・2時間。途中の正解・不正解は表示されず、採点後にまとめて学習履歴に残ります。50問そろっている年度だけ選べます。
+              本番同様の50問・2時間。途中の正解・不正解は表示されず、採点後にまとめて学習履歴に残ります。法改正で今の法律と正誤が変わる問題は載せていないため、50問に満たない年度は時間と合格点を問題数に比例させて採点します。
             </p>
             {takkenExams
-              .filter((exam) => exam.extractedCount === exam.questionCount)
+              .filter((exam) => exam.extractedCount > 0)
               .map((exam) => {
                 const unreadable = countUnreadableCorrectChoices(
                   takkenQuestions,
@@ -4267,7 +4267,7 @@ function App() {
                     onClick={() => startMock(exam.id)}
                     type="button"
                   >
-                    {exam.year}（{exam.questionCount}問）
+                    {exam.year}（{exam.extractedCount}問）
                     {unreadable ? (
                       <span className="mt-0.5 block text-xs font-normal text-rose-700">
                         うち{unreadable}

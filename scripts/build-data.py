@@ -496,6 +496,14 @@ def is_unstable_ocr_text(text: str) -> bool:
     return bool(long_latin_words or residual_ocr_terms or symbol_noise)
 
 RESTORED = ROOT / 'src' / 'data' / 'restoredQuestions.json'
+LAW_EXCLUDED = ROOT / 'src' / 'data' / 'lawExcluded.json'
+
+def load_law_excluded() -> dict:
+    # 法改正で今の法律と正誤や用語が変わるので載せない問題（問題ID → 理由）。2026-10-19 本人の決定。
+    # 公式PDFから文字を取り出している年度（r5〜r7）にも使う。restored の excludedReason と同じ扱い。
+    if not LAW_EXCLUDED.exists():
+        return {}
+    return json.loads(LAW_EXCLUDED.read_text(encoding='utf-8'))
 
 def load_restored() -> dict:
     # Scanned-PDF years are recovered from OCR by hand and committed as data,
@@ -569,6 +577,8 @@ def build_dataset():
                     })
                 else:
                     questions.append({'number': n, 'text': f'公式PDFの問{n}を確認して解答してください。'})
+        law_excluded = load_law_excluded()
+        questions = [q for q in questions if f"{exam['id']}-{q['number']:02d}" not in law_excluded]
         answers = ANSWER_OVERRIDES[exam['id']]
         extracted_count = sum(1 for q in questions if not q['text'].startswith('公式PDFの問'))
         exam_summaries.append({

@@ -20,7 +20,7 @@ coach = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(coach)
 
 # src/data/questions.ts の収録数。問題を足したらここも変える。
-TOTAL_QUESTIONS = 493  # 250問＋平成29年〜令和3年10月の243問（2026-10-19。法改正で正誤が変わる57問は載せない）
+TOTAL_QUESTIONS = 466  # 平成29年〜令和7年の550問から、法改正で今の法律と正誤が変わる84問を除いた数（2026-10-19）
 
 
 class TestLoadQuestionCategories(unittest.TestCase):
@@ -47,11 +47,11 @@ class TestLoadQuestionCategories(unittest.TestCase):
         self.assertEqual(
             dict(tally),
             {
-                "権利関係": 137,
-                "宅建業法": 196,
-                "法令上の制限": 81,
-                "税・価格評定": 32,
-                "免除科目": 47,
+                "権利関係": 136,
+                "宅建業法": 182,
+                "法令上の制限": 78,
+                "税・価格評定": 29,
+                "免除科目": 41,
             },
         )
 
