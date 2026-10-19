@@ -20,7 +20,7 @@ coach = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(coach)
 
 # src/data/questions.ts の収録数。問題を足したらここも変える。
-TOTAL_QUESTIONS = 250
+TOTAL_QUESTIONS = 493  # 250問＋平成29年〜令和3年10月の243問（2026-10-19。法改正で正誤が変わる57問は載せない）
 
 
 class TestLoadQuestionCategories(unittest.TestCase):
@@ -37,7 +37,7 @@ class TestLoadQuestionCategories(unittest.TestCase):
 
     def test_試験メタデータが混入しない(self):
         # "r7"・"r6" は試験そのもののIDで、問題のIDではない。
-        for meta_id in ("r7", "r6", "r5", "r4", "r3_12"):
+        for meta_id in ("r7", "r6", "r5", "r4", "r3_12", "r3_10", "r2_12", "r2_10", "r1", "h30", "h29"):
             self.assertNotIn(meta_id, self.categories)
 
     def test_科目の内訳(self):
@@ -47,11 +47,11 @@ class TestLoadQuestionCategories(unittest.TestCase):
         self.assertEqual(
             dict(tally),
             {
-                "権利関係": 70,
-                "宅建業法": 100,
-                "法令上の制限": 40,
-                "税・価格評定": 15,
-                "免除科目": 25,
+                "権利関係": 137,
+                "宅建業法": 196,
+                "法令上の制限": 81,
+                "税・価格評定": 32,
+                "免除科目": 47,
             },
         )
 
@@ -67,7 +67,7 @@ class TestLoadQuestionLabels(unittest.TestCase):
         self.assertEqual(self.labels.get("r7-01"), {"year": "令和7年度", "number": 1})
 
     def test_試験メタデータが混入しない(self):
-        for meta_id in ("r7", "r6", "r5", "r4", "r3_12"):
+        for meta_id in ("r7", "r6", "r5", "r4", "r3_12", "r3_10", "r2_12", "r2_10", "r1", "h30", "h29"):
             self.assertNotIn(meta_id, self.labels)
 
 

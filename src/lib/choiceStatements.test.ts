@@ -144,7 +144,7 @@ describe("各肢の真偽", () => {
 });
 
 describe("実データでの検証", () => {
-  it("250問すべてで4肢に分割できる", () => {
+  it("全問で4肢に分割できる", () => {
     for (const q of takkenQuestions) {
       expect(splitChoices(q.questionText), q.id).not.toBeNull();
     }

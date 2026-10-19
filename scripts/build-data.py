@@ -45,6 +45,50 @@ EXAMS = [
         'mode': 'ocr', 'passScore': 34,
         'explanationBaseUrl': 'https://takken-success.info/2021-12kakomon/r032-',
     },
+    # 以下は公式PDF（スキャン画像）のページ画像からAIが書き写し、宅建レトスと照合した年度（2026-10-19）。
+    # 問題文は src/data/restoredQuestions.json だけが正（中間ファイルは build/transcribe/、gitignore）。
+    {
+        'id': 'r3_10', 'year': '令和3年度10月', 'label': '2021 / 令和3年度10月',
+        'pdf': 'R3_10_question_answer.pdf',
+        'url': 'https://www.retio.or.jp/wp-content/uploads/2024/12/R3-question.pdf',
+        'mode': 'restored', 'passScore': 34,
+        'explanationBaseUrl': 'https://takken-success.info/2021-10kakomon/r031-',
+    },
+    {
+        'id': 'r2_12', 'year': '令和2年度12月', 'label': '2020 / 令和2年度12月',
+        'pdf': 'R2_12_question_answer.pdf',
+        'url': 'https://www.retio.or.jp/wp-content/uploads/2024/10/R2-question_002.pdf',
+        'mode': 'restored', 'passScore': 36,
+        'explanationBaseUrl': 'https://takken-success.info/2020-12kakomon/r022-',
+    },
+    {
+        'id': 'r2_10', 'year': '令和2年度10月', 'label': '2020 / 令和2年度10月',
+        'pdf': 'R2_10_question_answer.pdf',
+        'url': 'https://www.retio.or.jp/wp-content/uploads/2024/10/R2-question.pdf',
+        'mode': 'restored', 'passScore': 38,
+        'explanationBaseUrl': 'https://takken-success.info/2020-10kakomon/r02-',
+    },
+    {
+        'id': 'r1', 'year': '令和元年度', 'label': '2019 / 令和元年度',
+        'pdf': 'R1_question_answer.pdf',
+        'url': 'https://www.retio.or.jp/wp-content/uploads/2024/10/R1-q_a.pdf',
+        'mode': 'restored', 'passScore': 35,
+        'explanationBaseUrl': 'https://takken-success.info/2019kakomon/r01-',
+    },
+    {
+        'id': 'h30', 'year': '平成30年度', 'label': '2018 / 平成30年度',
+        'pdf': 'H30_question_answer.pdf',
+        'url': 'https://www.retio.or.jp/wp-content/uploads/2024/10/H30-q_a.pdf',
+        'mode': 'restored', 'passScore': 37,
+        'explanationBaseUrl': 'https://takken-success.info/2018kakomon/30-',
+    },
+    {
+        'id': 'h29', 'year': '平成29年度', 'label': '2017 / 平成29年度',
+        'pdf': 'H29_question_answer.pdf',
+        'url': 'https://www.retio.or.jp/wp-content/uploads/2024/10/H29-q_a.pdf',
+        'mode': 'restored', 'passScore': 35,
+        'explanationBaseUrl': 'https://takken-success.info/2017kakomon/29-',
+    },
 ]
 
 ANSWER_OVERRIDES = {
@@ -53,6 +97,13 @@ ANSWER_OVERRIDES = {
     'r5': [1,1,2,4,4,3,3,3,2,3,4,3,2,2,4,1,3,1,1,4,2,1,1,4,4,3,4,3,2,1,4,4,1,3,4,3,3,2,2,4,2,3,4,1,4,2,2,1,2,3],
     'r4': [3,3,4,1,2,3,4,3,1,2,3,1,1,2,3,2,3,3,4,1,4,3,3,2,2,2,1,1,3,3,1,1,2,4,4,1,2,4,4,2,2,2,2,4,3,1,4,'ALL',2,4],
     'r3_12': [4,3,2,4,3,1,4,2,3,1,3,2,2,2,4,3,3,2,1,1,4,1,2,1,2,3,4,1,3,3,2,1,2,1,4,4,2,3,3,2,1,3,1,[2,3],4,1,4,4,2,4],
+    # 以下は公式PDFの正解番号表から（2026-10-19）。r2_10 問42 は公式に「1又は4」。
+    'h29': [3, 4, 3, 2, 4, 3, 3, 2, 3, 1, 2, 4, 2, 3, 4, 1, 2, 4, 1, 4, 4, 1, 1, 3, 3, 1, 1, 4, 4, 1, 4, 1, 2, 3, 3, 4, 3, 2, 2, 3, 2, 4, 1, 4, 2, 3, 4, 2, 4, 1],
+    'h30': [4, 4, 3, 2, 3, 1, 2, 1, 3, 4, 2, 3, 1, 4, 1, 4, 4, 3, 2, 4, 3, 1, 2, 3, 1, 2, 4, 1, 2, 4, 3, 1, 4, 2, 3, 3, 2, 1, 4, 2, 3, 4, 1, 2, 3, 1, 2, 3, 4, 3],
+    'r1': [1, 4, 1, 4, 2, 2, 1, 2, 4, 1, 3, 4, 3, 3, 4, 1, 4, 2, 3, 1, 1, 3, 2, 4, 3, 4, 1, 4, 3, 4, 1, 4, 3, 2, 4, 2, 3, 2, 3, 2, 1, 1, 2, 3, 1, 1, 4, 2, 3, 4],
+    'r2_10': [1, 4, 2, 3, 1, 3, 2, 2, 3, 2, 4, 3, 4, 1, 4, 2, 1, 3, 3, 2, 1, 1, 3, 4, 4, 3, 2, 3, 3, 4, 1, 1, 1, 4, 3, 4, 1, 4, 2, 2, 3, [1, 4], 2, 4, 2, 2, 1, 3, 4, 3],
+    'r2_12': [3, 1, 4, 2, 2, 1, 2, 3, 1, 4, 4, 3, 3, 2, 2, 2, 1, 4, 1, 3, 3, 4, 1, 3, 1, 2, 3, 1, 3, 2, 3, 4, 4, 4, 3, 3, 1, 1, 1, 4, 2, 1, 4, 2, 4, 4, 2, 2, 3, 3],
+    'r3_10': [1, 2, 4, 1, 4, 2, 3, 1, 1, 2, 3, 2, 4, 3, 3, 2, 4, 2, 4, 3, 3, 4, 1, 1, 3, 2, 4, 4, 4, 2, 3, 1, 1, 2, 3, 1, 3, 4, 1, 3, 1, 2, 4, 2, 3, 1, 2, 3, 4, 3],
 }
 
 CATEGORY = [
@@ -491,7 +542,16 @@ def build_dataset():
     exam_summaries = []
     for exam in EXAMS:
         pdf = PDF_DIR / exam['pdf']
-        if exam['mode'] == 'ocr':
+        if exam['mode'] == 'restored':
+            # excludedReason がある問題は、法改正で今の法律と正誤が変わるので載せない（2026-10-19 本人の決定）。
+            # 載せない問題がある年度は extractedCount < 50 になり、模試の対象から自動で外れる。
+            restored = load_restored().get(exam['id'], {})
+            questions = [
+                {'number': n, 'text': restored.get(str(n), {}).get('text') or official_pdf_fallback(n)}
+                for n in range(1, 51)
+                if not restored.get(str(n), {}).get('excludedReason')
+            ]
+        elif exam['mode'] == 'ocr':
             text_path = ROOT / 'build' / 'ocr' / f"{pdf.stem}.txt"
             text = text_path.read_text(encoding='utf-8')
             questions = fallback_by_pages(exam['id'], text)
