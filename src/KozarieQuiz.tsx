@@ -6,6 +6,7 @@ import {
 } from "./data/kozarieQuiz";
 import { weakSpotGroups, weakSpotQuestions } from "./data/weakSpotQuiz";
 import { cramGroups, cramQuestions } from "./data/cramQuiz";
+import { ruleGroups, ruleQuestions } from "./data/ruleQuiz";
 import type { ChoiceRecord } from "./lib/progressExtras";
 import { oxRecordKey } from "./lib/studyRecords";
 
@@ -130,6 +131,33 @@ export function CramQuiz(props: Props) {
         ) : null
       }
       title="直前詰め込み ○×"
+    />
+  );
+}
+
+// 過去10年で2回以上出た規則ごとの○×（2026-10-20）。本番で「境界・例外を知らずに落とした」反省から、
+// 主体・数字・範囲・例外を1か所変えた誤りの文で問う。AIが作り、別のAIが条文で1問ずつ確かめたものだけ。
+export function RuleQuiz(props: Props) {
+  return (
+    <OxQuiz
+      {...props}
+      description="平成29年〜令和8年の過去問で2回以上出た規則ごとに、正しい文と、主体・数字・範囲・例外を1か所変えた誤りの文を○×で解く。AIが2027年4月1日時点の条文・一次情報で作り、別のAIが1問ずつ独立に確かめて正しいと確認できた問だけを載せている。"
+      groupNoun="論点"
+      groups={ruleGroups}
+      questions={ruleQuestions}
+      source={(item) =>
+        item.sourceUrl ? (
+          <a
+            className="underline"
+            href={item.sourceUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            条文・一次情報
+          </a>
+        ) : null
+      }
+      title="規則の一問一答 ○×"
     />
   );
 }

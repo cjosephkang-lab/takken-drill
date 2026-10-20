@@ -28,7 +28,8 @@ import { MockExam, type MockRun } from "./MockExam";
 import { CheatSheet } from "./CheatSheet";
 import { StatsSheet } from "./StatsSheet";
 import { NumbersSheet } from "./NumbersSheet";
-import { CramQuiz, KozarieQuiz, WeakSpotQuiz } from "./KozarieQuiz";
+import { CramQuiz, KozarieQuiz, RuleQuiz, WeakSpotQuiz } from "./KozarieQuiz";
+import { ruleQuestions } from "./data/ruleQuiz";
 import {
   LEGACY_LEARNED_STORES,
   legacyLearnedRecords,
@@ -742,6 +743,7 @@ function App() {
   const [kozarieOpen, setKozarieOpen] = useState(false);
   const [weakSpotOpen, setWeakSpotOpen] = useState(false);
   const [cramOpen, setCramOpen] = useState(false);
+  const [ruleOpen, setRuleOpen] = useState(false);
   // 肢別○×モードの画面。
   const [choiceQuizOpen, setChoiceQuizOpen] = useState(false);
   // 夜間バッチの推定（誤答の原因・混同ペア・メモ照合・根拠の採点）。ログイン時に読む。
@@ -2876,6 +2878,21 @@ function App() {
             <button
               className="col-span-2 min-h-12 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-left sm:col-span-3"
               onClick={() => {
+                trackMetric("rule_quiz_open", {});
+                setRuleOpen(true);
+              }}
+              type="button"
+            >
+              <span className="text-sm font-bold text-sky-800">
+                規則の一問一答 ○×（{ruleQuestions.length}問）
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                過去10年で2回以上出た規則を、主体・数字・範囲・例外を変えて
+              </span>
+            </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-left sm:col-span-3"
+              onClick={() => {
                 trackMetric("cram_quiz_open", {});
                 setCramOpen(true);
               }}
@@ -4240,6 +4257,13 @@ function App() {
       {kozarieOpen && (
         <KozarieQuiz
           onClose={() => setKozarieOpen(false)}
+          onRecord={recordStudyAnswer}
+          records={progress.choiceRecords}
+        />
+      )}
+      {ruleOpen && (
+        <RuleQuiz
+          onClose={() => setRuleOpen(false)}
           onRecord={recordStudyAnswer}
           records={progress.choiceRecords}
         />
