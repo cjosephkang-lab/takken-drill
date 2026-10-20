@@ -27,7 +27,7 @@ OUT_DIR = ROOT / "docs" / "study-story"
 JST = timezone(timedelta(hours=9))
 
 # src/App.tsx の DEFAULT_EXAM_DATE と揃える。
-EXAM_DATE = date(2026, 10, 18)
+EXAM_DATE = date(2027, 10, 17)  # 例年10月第3日曜。公式発表前の見込み
 # src/App.tsx の MASTER_STREAK と揃える（この回数連続正解で習得済み）。
 MASTER_STREAK = 3
 

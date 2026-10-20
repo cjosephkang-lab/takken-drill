@@ -102,16 +102,19 @@ TANADA_TARGET_ATTEMPTS = 4
 FINAL_PHASE_DAYS = 30
 
 
-def verdict_for(predicted: float, days_left: int) -> tuple[str, str]:
+def verdict_for(predicted: float, days_left: int, low: float | None = None) -> tuple[str, str]:
     """予想点と残日数から、信号と一行の判定を返す。
 
     合格ラインは伊藤塾の過去10年データ（最低33 / 平均35.5 / 安全圏38）。
     残日数が少ないほど同じ点数でも厳しく見る。
+    「安全圏」は予測の80%範囲の下限（low）で判定する。中心だけで判定すると、
+    データが少ない時や水増しがある時に安全圏と出てしまう（2026年は予想48点で本番32点）。
     """
-    if predicted >= 38:
+    floor = low if low is not None else predicted
+    if floor >= 38:
         return "green", f"安全圏。残り{days_left}日はこの水準を維持する"
     if predicted >= 33:
-        if days_left >= FINAL_PHASE_DAYS:
+        if days_left >= FINAL_PHASE_DAYS and floor >= 33:
             return "green", f"合格ライン上。残り{days_left}日で上積みできる"
         return "yellow", f"合格ラインぎりぎり。残り{days_left}日で+5点を狙う"
     if predicted >= 25:
@@ -150,3 +153,70 @@ def exam_day_plan() -> list[str]:
     start = f"{clock // 60}:{clock % 60:02d}"
     lines.append(f"{start}-15:00 マークと見直し {EXAM_REVIEW_MINUTES}分")
     return lines
+
+
+# ---- 初見換算の予測得点（2026-10-19） ----
+# アプリの src/lib/masteryScore.ts と同じ定義。2026年はドリルの予想48.3点に対して本番32点だった。
+# 「最後の1回の正誤」で予想すると、同じ問題を繰り返すほど水増しされるため、初めて解いた時の正誤だけを使う。
+# コーチは解答記録（answers）だけを読むので、初回は firstCorrect か、解答回数1回の問題の正誤で取る。
+PRIOR_WEIGHT = 3
+Z80 = 1.2816
+
+
+def first_attempt(record: dict):
+    """初めて解いた時の正誤。特定できなければ None。"""
+    if isinstance(record.get("firstCorrect"), bool):
+        return record["firstCorrect"]
+    if record.get("attempts") == 1:
+        return bool(record.get("correct"))
+    return None
+
+
+def predict_first_attempt(
+    answers: dict, categories: dict, topics: dict, full_marks: dict
+) -> dict:
+    """論点ごとの初回正答率 × 出題数で50問に積み上げた予測と、80%の範囲。
+
+    categories: 問題ID→科目、topics: 問題ID→論点、full_marks: 科目→配点。
+    """
+    import math
+
+    mean = 0.0
+    variance = 0.0
+    evidence = 0
+    by_category = {}
+    for category, marks in full_marks.items():
+        ids = [q for q, c in categories.items() if c == category]
+        groups: dict = {}
+        for q in ids:
+            g = groups.setdefault(topics.get(q, "_"), {"count": 0, "tried": 0, "ok": 0})
+            g["count"] += 1
+            record = answers.get(q)
+            first = first_attempt(record) if record else None
+            if first is not None:
+                g["tried"] += 1
+                g["ok"] += 1 if first else 0
+        tried = sum(g["tried"] for g in groups.values())
+        ok = sum(g["ok"] for g in groups.values())
+        evidence += tried
+        if not ids or tried == 0:
+            by_category[category] = None
+            continue
+        prior = (ok + 1) / (tried + 2)
+        cat_mean = 0.0
+        for g in groups.values():
+            w = marks * g["count"] / len(ids)
+            p = (g["ok"] + PRIOR_WEIGHT * prior) / (g["tried"] + PRIOR_WEIGHT)
+            cat_mean += w * p
+            variance += w * p * (1 - p) + w * w * p * (1 - p) / (g["tried"] + PRIOR_WEIGHT)
+        mean += cat_mean
+        by_category[category] = cat_mean
+    sd = math.sqrt(variance)
+    full = sum(full_marks.values())
+    return {
+        "mean": mean,
+        "low": max(0.0, mean - Z80 * sd),
+        "high": min(full, mean + Z80 * sd),
+        "by_category": by_category,
+        "evidence": evidence,
+    }

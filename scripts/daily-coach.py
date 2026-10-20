@@ -37,6 +37,7 @@ from coach_rules import (  # noqa: E402
     exam_day_plan,
     is_unsettled_repeated_mistake,
     next_topic_advice,
+    predict_first_attempt,
     verdict_for,
 )
 
@@ -51,7 +52,7 @@ FIRESTORE_URL = (
 )
 
 # 試験日。src/App.tsx の DEFAULT_EXAM_DATE と揃える。
-EXAM_DATE = date(2026, 10, 18)
+EXAM_DATE = date(2027, 10, 17)  # 例年10月第3日曜。公式発表前の見込み
 # 直前に模試と総復習のために空けておく日数。
 # 直前に模試・総復習へ充てる日数。App.tsx の逆算ペースが14日を確保しており、
 # ここが7日だとアプリと日次コーチで必要ペースが食い違う（2026-09-06 codex指摘）。
@@ -376,7 +377,14 @@ def format_report(
     add("| 科目 | 着手/在庫 | 正答率 | 目標% | 差 | 予想点 | 目標 |")
     add("|---|---:|---:|---:|---:|---:|---:|")
 
-    predicted_total = 0.0
+    # 予想点は初見換算の予測（coach_rules.predict_first_attempt）。最後の正誤の正答率は使わない。
+    prediction = predict_first_attempt(
+        progress["answers"],
+        categories,
+        load_question_topics(),
+        {c: TARGETS[c][0] for c in CATEGORIES},
+    )
+    predicted_total = prediction["mean"]
     target_total = 0
     gaps = {}
     predicted_by_category: dict[str, float] = {}
@@ -385,9 +393,8 @@ def format_report(
         held = stock.get(category, 0)
         full_marks, target = TARGETS[category]
         accuracy = entry["correct"] / entry["touched"] if entry["touched"] else 0.0
-        predicted = full_marks * accuracy
+        predicted = prediction["by_category"].get(category) or 0.0
         predicted_by_category[category] = predicted
-        predicted_total += predicted
         target_total += target
         gaps[category] = target - predicted
 
@@ -409,8 +416,9 @@ def format_report(
         "権利関係は他科目で30点取れる前提の8点＝57%。"
         "出典は scripts/coach_rules.py に記載。")
     add("")
-    add("予想点 = 科目の本番配点 × いまの正答率。着手0の科目は0点として扱う"
-        "（未着手は本番で取れないため）。")
+    add("予想点は、各問題を初めて解いた時の正誤だけから、論点ごとの出題数で50問に積み上げた予測"
+        f"（80%の範囲 {prediction['low']:.1f}〜{prediction['high']:.1f}点、根拠の初回解答 {prediction['evidence']}問）。"
+        "正答率の列は最後の1回の正誤で、予想点とは別物。")
     add("")
     for label, line in [
         ("合格最低ライン", PASS_MIN),
@@ -480,7 +488,7 @@ def format_report(
         add("")
 
     # --- 予備校の方針に照らした判定 ---
-    verdict, verdict_line = verdict_for(predicted_total, days_left)
+    verdict, verdict_line = verdict_for(predicted_total, days_left, low=prediction["low"])
     add("## コーチの見立て")
     add("")
     add(f"**{verdict_line}**")
@@ -671,6 +679,7 @@ def format_report(
     add("")
     return "\n".join(lines), {
         "predicted": predicted_total,
+        "predicted_low": prediction["low"],
         "byCategory": predicted_by_category,
         "days_left": days_left,
         "priority": priority,
@@ -753,13 +762,14 @@ def build_coaching(
     priority: list,
     remaining: dict,
     base_pace: float,
+    predicted_low: float | None = None,
 ) -> dict:
     """アプリの「今日の学習アドバイス」枠に出す内容を組む。
 
     予備校の無料コラムに書かれた方針を判定条件にしたもので、
     コラム本文は使わない（scripts/coach_rules.py に出典を明記）。
     """
-    verdict, verdict_line = verdict_for(predicted, days_left)
+    verdict, verdict_line = verdict_for(predicted, days_left, low=predicted_low)
 
     topics_map = load_question_topics()
     topic_touched: dict[str, int] = defaultdict(int)
@@ -961,6 +971,7 @@ def main() -> None:
         metrics["priority"],
         metrics["remaining"],
         metrics["base_pace"],
+        metrics["predicted_low"],
     )
     if args.push:
         push_coaching(progress["uid"], coaching)

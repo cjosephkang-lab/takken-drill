@@ -33,14 +33,14 @@ import {
   LEGACY_LEARNED_STORES,
   legacyLearnedRecords,
 } from "./lib/studyRecords";
+import { isUnsettledRepeatedWrong, SETTLED_STREAK } from "./lib/repeatedWrong";
+import { isWeeklyReviewTarget } from "./lib/weeklyReview";
+import { predictScore } from "./lib/masteryScore";
 import {
-  isUnsettledRepeatedWrong,
-  SETTLED_STREAK,
-} from "./lib/repeatedWrong";
-import {
-  shuffledChoiceOrder,
-  shuffledQuestionText,
-} from "./lib/choiceShuffle";
+  isConfidentRetestDue,
+  nextConfidentWrongAt,
+} from "./lib/confidentWrong";
+import { shuffledChoiceOrder, shuffledQuestionText } from "./lib/choiceShuffle";
 import { ChoiceQuiz } from "./ChoiceQuiz";
 import type { ChoiceStatement } from "./lib/choiceStatements";
 import {
@@ -97,6 +97,13 @@ type AnswerRecord = {
    * 正解でもこれが立っている間は習得済みにせず、復習に残す。
    */
   unsure?: boolean;
+  /**
+   * 自信ありで間違えた時刻（覚え違いの記録）。直後に正解しても消さず、
+   * 7日以上空けて自信ありで正解した時に消す（判定は src/lib/confidentWrong.ts）。
+   */
+  confidentWrongAt?: string;
+  /** 初めて解いた時の正誤（2026-10-19以降の記録）。予測得点は最後の正誤ではなくこれで出す。 */
+  firstCorrect?: boolean;
 };
 
 /** Daily study volume used by streak, calendar, and today's work. */
@@ -151,6 +158,10 @@ const CONFIDENT_WRONG = "confident-wrong";
 const REPEATED_WRONG = "repeated-wrong";
 /** 1回だけ間違えて、その後まだ1回しか正解していない問題（2回続けて正解すると外れる）。 */
 const ONCE_WRONG_UNCONFIRMED = "once-wrong-unconfirmed";
+/** 週1回の復習: 本番で落とした論点のうち未定着の問題と、何度も間違えた問題（src/lib/weeklyReview.ts）。 */
+const WEEKLY_REVIEW = "weekly-review";
+/** 自信ありで間違えてから7日以上たった問題。覚え違いが戻っていないかを確かめる（src/lib/confidentWrong.ts）。 */
+const CONFIDENT_RETEST = "confident-retest";
 const RECENT_WRONG_OPTIONS = [
   { value: "wrong-1d", days: 2, label: "間違えた問題（今日・昨日）" },
   { value: "wrong-3d", days: 3, label: "間違えた問題（直近3日）" },
@@ -167,13 +178,15 @@ const STATUS_LABELS: Record<string, string> = {
   [CONFIDENT_WRONG]: "自信があったのに間違えた問題",
   [REPEATED_WRONG]: "何度も間違えた問題（未定着）",
   [ONCE_WRONG_UNCONFIRMED]: "1回間違えた問題（直した後の確認待ち）",
+  [WEEKLY_REVIEW]: "週1回の復習（本番で落とした論点・未定着）",
+  [CONFIDENT_RETEST]: "自信ありの誤答の再テスト（1週間後）",
   [DUE]: "復習する問題",
 };
 
 /** この回数連続で正解したら「習得済み」とみなす。 */
 const MASTER_STREAK = 3;
-/** 宅建試験は例年10月の第3日曜。2026年は10月18日。 */
-const DEFAULT_EXAM_DATE = "2026-10-18";
+/** 宅建試験は例年10月の第3日曜。2027年は10月17日の見込み（公式発表前）。 */
+const DEFAULT_EXAM_DATE = "2027-10-17";
 /** Maximum daily target to avoid overloading the learner. */
 const MISSION_CAP = 50;
 
@@ -260,6 +273,9 @@ const matchesStatusFilter = (
   if (statusValue === DUE) return isDueRecord(record);
   if (statusValue === UNSURE) return Boolean(record?.unsure);
   if (statusValue === CONFIDENT_WRONG) return isConfidentWrong(record);
+  if (statusValue === CONFIDENT_RETEST) return isConfidentRetestDue(record);
+  if (statusValue === WEEKLY_REVIEW)
+    return isWeeklyReviewTarget(question, record, choiceRecords);
   if (statusValue === REPEATED_WRONG)
     return isUnsettledRepeatedWrong(question, record, choiceRecords);
   if (statusValue === ONCE_WRONG_UNCONFIRMED)
@@ -289,6 +305,12 @@ const buildAnswerRecord = (
   // 自信がないまま当てた正解は連続正解に数えない。4択は勘でも25%当たるので、
   // まぐれ当たりを習得済みに積み上げると実力を過大評価する。
   const streak = correct && !unsure ? (previous?.streak ?? 0) + 1 : 0;
+  const confidentWrongAt = nextConfidentWrongAt(
+    previous?.confidentWrongAt,
+    correct,
+    unsure,
+    answeredAt,
+  );
 
   return {
     selected,
@@ -299,6 +321,14 @@ const buildAnswerRecord = (
     lapses: (previous?.lapses ?? 0) + (correct ? 0 : 1),
     nextReviewAt: nextReviewAtForStreak(answeredAt, streak),
     unsure,
+    // undefined のまま保存すると Firestore が拒否するので、値がある時だけ持たせる。
+    ...(confidentWrongAt ? { confidentWrongAt } : {}),
+    // 初回の正誤は最初の解答で決まり、以後は変えない（旧記録には無いので引き継がない）。
+    ...(!previous
+      ? { firstCorrect: correct }
+      : typeof previous.firstCorrect === "boolean"
+        ? { firstCorrect: previous.firstCorrect }
+        : {}),
   };
 };
 
@@ -535,6 +565,9 @@ const loadSettings = (): UiSettings => {
           parsed.statusFilter === WRONG ||
           parsed.statusFilter === DUE ||
           parsed.statusFilter === UNSURE ||
+          parsed.statusFilter === CONFIDENT_WRONG ||
+          parsed.statusFilter === CONFIDENT_RETEST ||
+          parsed.statusFilter === WEEKLY_REVIEW ||
           parsed.statusFilter === REPEATED_WRONG ||
           parsed.statusFilter === ONCE_WRONG_UNCONFIRMED ||
           recentWrongDays(parsed.statusFilter) !== null)
@@ -1209,7 +1242,9 @@ function App() {
   const choiceOrder = useMemo(
     () =>
       statusFilter === REPEATED_WRONG ||
-      statusFilter === ONCE_WRONG_UNCONFIRMED
+      statusFilter === ONCE_WRONG_UNCONFIRMED ||
+      statusFilter === WEEKLY_REVIEW ||
+      statusFilter === CONFIDENT_RETEST
         ? shuffledChoiceOrder(currentQuestion, todayKey)
         : null,
     [currentQuestion, statusFilter, todayKey],
@@ -1248,6 +1283,16 @@ function App() {
       question,
       progress.choiceRecords,
     ),
+  ).length;
+  const weeklyReviewCount = takkenQuestions.filter((question) =>
+    isWeeklyReviewTarget(
+      question,
+      progress.answers[question.id],
+      progress.choiceRecords,
+    ),
+  ).length;
+  const confidentRetestCount = takkenQuestions.filter((question) =>
+    isConfidentRetestDue(progress.answers[question.id]),
   ).length;
   const unsettledRepeatedCount = takkenQuestions.filter((question) =>
     isUnsettledRepeatedWrong(
@@ -1449,6 +1494,17 @@ function App() {
 
   // 科目別の得点ダッシュボード: 各科目の正答率を出し、1回分の試験(満点)に
   // 換算した「想定得点」を出して、目標点・合格ラインまであと何点かを可視化する。
+  const prediction = useMemo(
+    () =>
+      predictScore({
+        questions: takkenQuestions,
+        answers: progress.answers,
+        events: progress.events,
+        topicOf: (id) => questionTopics[id],
+        categories: studyOrder,
+      }),
+    [progress.answers, progress.events],
+  );
   const categoryStats = useMemo(() => {
     return studyOrder.map((cat) => {
       const inCategory = takkenQuestions.filter(
@@ -1460,8 +1516,10 @@ function App() {
         (q) => (progress.answers[q.id]?.streak ?? 0) >= MASTER_STREAK,
       );
       const rate = answered.length ? correct.length / answered.length : 0;
-      // 正答率を本番1回分の満点に換算した想定得点。
-      const projected = Math.round(rate * cat.fullMarks);
+      // 予想点は初見換算の予測（src/lib/masteryScore.ts）。最後の正誤の正答率は使わない。
+      const projected =
+        prediction.byCategory.find((c) => c.category === cat.category)
+          ?.expected ?? null;
 
       return {
         ...cat,
@@ -1469,17 +1527,16 @@ function App() {
         masteredCount: mastered.length,
         totalCount: inCategory.length,
         ratePercent: Math.round(rate * 100),
-        projectedScore: answered.length ? projected : null,
+        projectedScore: projected,
       };
     });
-  }, [progress.answers]);
+  }, [progress.answers, prediction]);
 
-  // 全科目の想定得点合計（未着手の科目は0点扱い）と、合格ラインまでの差。
-  const projectedTotal = categoryStats.reduce(
-    (sum, c) => sum + (c.projectedScore ?? 0),
-    0,
-  );
-  const gapToSafe = passLine.safe - projectedTotal;
+  // 予測得点の合計と、合格ラインまでの差。「合格目安クリア」は80%範囲の下限で判定する
+  // （予測の中心だけで判定すると、データが少ない時に安全圏と出てしまう。2026年の反省）。
+  const projectedTotal = prediction.total;
+  const gapToSafe = Math.round((passLine.safe - projectedTotal) * 10) / 10;
+  const clearsSafe = prediction.low >= passLine.safe;
 
   // 年度別の達成状況ダッシュボード: 「どの年度をどこまでやったか」の実感を出す。
   // 解いた問題数・正答数・習得済み数を年度ごとに集計し、全問習得で「クリア」バッジを出す。
@@ -1818,7 +1875,9 @@ function App() {
     status:
       | typeof WRONG
       | typeof REPEATED_WRONG
-      | typeof ONCE_WRONG_UNCONFIRMED,
+      | typeof ONCE_WRONG_UNCONFIRMED
+      | typeof WEEKLY_REVIEW
+      | typeof CONFIDENT_RETEST,
   ) => {
     const first = takkenQuestions.find((question) =>
       matchesStatusFilter(
@@ -2305,9 +2364,8 @@ function App() {
 
   const openMockPicker = () => {
     trackMetric("mock_picker_open", {
-      eligible_exam_count: takkenExams.filter(
-        (exam) => exam.extractedCount > 0,
-      ).length,
+      eligible_exam_count: takkenExams.filter((exam) => exam.extractedCount > 0)
+        .length,
     });
     setMockPicker(true);
   };
@@ -2846,6 +2904,32 @@ function App() {
               </span>
             </button>
             <button
+              className="col-span-2 min-h-12 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-left disabled:opacity-50 sm:col-span-3"
+              disabled={weeklyReviewCount === 0}
+              onClick={() => startFocusedSet(WEEKLY_REVIEW)}
+              type="button"
+            >
+              <span className="text-sm font-bold text-indigo-800">
+                週1回の復習 {weeklyReviewCount}問
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                本番で落とした論点と、何度も間違えた問題
+              </span>
+            </button>
+            <button
+              className="col-span-2 min-h-12 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-left disabled:opacity-50 sm:col-span-3"
+              disabled={confidentRetestCount === 0}
+              onClick={() => startFocusedSet(CONFIDENT_RETEST)}
+              type="button"
+            >
+              <span className="text-sm font-bold text-indigo-800">
+                覚え違いの再テスト {confidentRetestCount}問
+              </span>
+              <span className="ml-2 text-xs text-slate-600">
+                自信ありで間違えてから1週間たった問題
+              </span>
+            </button>
+            <button
               className="col-span-2 min-h-12 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-left disabled:opacity-50 sm:col-span-3"
               disabled={wrongCount === 0}
               onClick={() => startFocusedSet(WRONG)}
@@ -3176,6 +3260,12 @@ function App() {
                   </option>
                   <option value={ONCE_WRONG_UNCONFIRMED}>
                     1回間違えた問題（直した後の確認待ち）
+                  </option>
+                  <option value={WEEKLY_REVIEW}>
+                    週1回の復習（本番で落とした論点・未定着）
+                  </option>
+                  <option value={CONFIDENT_RETEST}>
+                    自信ありの誤答の再テスト（1週間後）
                   </option>
                   {RECENT_WRONG_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -3771,11 +3861,9 @@ function App() {
               成績を見る
             </span>
             <span className="text-right text-sm text-slate-500">
-              学習状況 {totalAnswered}/{takkenQuestions.length}・予想{" "}
-              {projectedTotal}/{passLine.fullMarks}点
-              {projectedTotal >= passLine.safe
-                ? "・合格目安クリア"
-                : `・あと${gapToSafe}点`}
+              学習状況 {totalAnswered}/{takkenQuestions.length}・予測{" "}
+              {prediction.evidenceCount ? `${projectedTotal}点` : "—"}
+              {clearsSafe ? "・合格目安クリア" : ""}
               <span className="ml-2 text-slate-400">
                 {boardOpen ? "▲" : "▼"}
               </span>
@@ -3847,21 +3935,26 @@ function App() {
               </div>
 
               <p className="mt-3 text-xs leading-5 text-slate-500">
-                正答率を本番1回（50問）に置き換えた予想点です（累計正答率
-                {accuracy}%）。合格ラインは過去10年で
-                33〜38点（平均35.5点）。まずは {passLine.safe}点を目指します。
+                予測は、各問題を初めて解いた時の正誤だけから、論点ごとの出題数で
+                50問に積み上げたものです（同じ問題を繰り返した正解は数えません）。
+                80%の確率で {prediction.low}〜{prediction.high}点の範囲。
+                根拠にした初回の解答は {prediction.evidenceCount}問（累計正答率
+                {accuracy}%とは別物です）。合格ラインは過去10年で
+                33〜38点（平均35.5点）。範囲の下限が {passLine.safe}点を超えたら合格目安クリアです。
                 「定着確認済み」は、3回連続正解し、次回復習の期限内にある問題です。
               </p>
               <div
                 className={`mt-2 rounded-lg border px-3 py-2 text-sm font-bold ${
-                  projectedTotal >= passLine.safe
+                  clearsSafe
                     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                     : "border-amber-200 bg-amber-50 text-amber-700"
                 }`}
               >
-                {projectedTotal >= passLine.safe
-                  ? `合格目安クリア。予想${projectedTotal}点で合格ラインを越えています。`
-                  : `目標の${passLine.safe}点まであと ${gapToSafe} 点。`}
+                {!prediction.evidenceCount
+                  ? "初めて解いた問題の記録がまだありません。"
+                  : clearsSafe
+                    ? `合格目安クリア。予測${projectedTotal}点（下限${prediction.low}点）で目標を越えています。`
+                    : `予測${projectedTotal}点（80%で${prediction.low}〜${prediction.high}点）。目標の${passLine.safe}点まであと ${gapToSafe} 点。`}
               </div>
 
               <div className="mt-4">
