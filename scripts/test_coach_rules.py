@@ -24,6 +24,23 @@ class Test初見換算の予測(unittest.TestCase):
         self.assertEqual(r["evidence"], 0)
         self.assertIsNone(r["by_category"]["宅建業法"])
 
+    def test_解答履歴が全回そろっていれば最初の回を初回とする(self):
+        # 2026-10-21: コーチが解答履歴を読まず、1回しか解いていない問題（正解に偏る）だけで44点と出した。
+        answers = {q: {"correct": True, "attempts": 3} for q in self.categories}
+        events = [
+            {"q": q, "at": f"2026-10-0{n}T00:00:00Z", "ok": n > 1, "src": "drill"}
+            for q in self.categories for n in (1, 2, 3)
+        ]
+        r = coach_rules.predict_first_attempt(answers, self.categories, self.topics, self.marks, events)
+        self.assertEqual(r["evidence"], 10)
+        self.assertLess(r["mean"], 5)
+
+    def test_解答履歴が欠けている問題は初回とみなさない(self):
+        answers = {q: {"correct": True, "attempts": 3} for q in self.categories}
+        events = [{"q": q, "at": "2026-10-02T00:00:00Z", "ok": True, "src": "drill"} for q in self.categories]
+        r = coach_rules.predict_first_attempt(answers, self.categories, self.topics, self.marks, events)
+        self.assertEqual(r["evidence"], 0)
+
     def test_初回全問正解でも満点にはせず範囲の下限は中心より低い(self):
         answers = {q: {"correct": True, "attempts": 1} for q in self.categories}
         r = coach_rules.predict_first_attempt(answers, self.categories, self.topics, self.marks)

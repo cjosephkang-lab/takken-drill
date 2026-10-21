@@ -158,28 +158,38 @@ def exam_day_plan() -> list[str]:
 # ---- 初見換算の予測得点（2026-10-19） ----
 # アプリの src/lib/masteryScore.ts と同じ定義。2026年はドリルの予想48.3点に対して本番32点だった。
 # 「最後の1回の正誤」で予想すると、同じ問題を繰り返すほど水増しされるため、初めて解いた時の正誤だけを使う。
-# コーチは解答記録（answers）だけを読むので、初回は firstCorrect か、解答回数1回の問題の正誤で取る。
+# 初回は firstCorrect、解答回数1回の問題の正誤、または解答履歴（events）が全回そろっている問題の最初の回で取る。
+# アプリの src/lib/masteryScore.ts と同じ規則。2026-10-21 までコーチは events を読まず、1回しか解いていない
+# 問題（間違えた問題は解き直すので正解に偏る。37問中35問正解）だけで予想し、44点と水増ししていた。
 PRIOR_WEIGHT = 3
 Z80 = 1.2816
 
 
-def first_attempt(record: dict):
+def first_attempt(record: dict, events_for_question=()):
     """初めて解いた時の正誤。特定できなければ None。"""
     if isinstance(record.get("firstCorrect"), bool):
         return record["firstCorrect"]
     if record.get("attempts") == 1:
         return bool(record.get("correct"))
+    if events_for_question and len(events_for_question) == record.get("attempts"):
+        return bool(min(events_for_question, key=lambda e: e["at"])["ok"])
     return None
 
 
 def predict_first_attempt(
-    answers: dict, categories: dict, topics: dict, full_marks: dict
+    answers: dict, categories: dict, topics: dict, full_marks: dict, events=()
 ) -> dict:
     """論点ごとの初回正答率 × 出題数で50問に積み上げた予測と、80%の範囲。
 
-    categories: 問題ID→科目、topics: 問題ID→論点、full_marks: 科目→配点。
+    categories: 問題ID→科目、topics: 問題ID→論点、full_marks: 科目→配点、events: 解答履歴。
     """
     import math
+
+    events_by_question: dict = {}
+    for e in events:
+        if e.get("src") == "mock":  # 模試は時刻をずらして入れているので初回の判定に使わない
+            continue
+        events_by_question.setdefault(e["q"], []).append(e)
 
     mean = 0.0
     variance = 0.0
@@ -192,7 +202,7 @@ def predict_first_attempt(
             g = groups.setdefault(topics.get(q, "_"), {"count": 0, "tried": 0, "ok": 0})
             g["count"] += 1
             record = answers.get(q)
-            first = first_attempt(record) if record else None
+            first = first_attempt(record, events_by_question.get(q, ())) if record else None
             if first is not None:
                 g["tried"] += 1
                 g["ok"] += 1 if first else 0

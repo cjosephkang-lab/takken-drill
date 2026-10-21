@@ -151,6 +151,8 @@ def unwrap(value):
             key: unwrap(item)
             for key, item in value["mapValue"].get("fields", {}).items()
         }
+    if "arrayValue" in value:
+        return [unwrap(item) for item in value["arrayValue"].get("values", [])]
     return None
 
 
@@ -176,6 +178,7 @@ def fetch_progress() -> dict:
         "answers": unwrap(fields.get("answers", {"mapValue": {}})) or {},
         "dailyLog": unwrap(fields.get("dailyLog", {"mapValue": {}})) or {},
         "notes": unwrap(fields.get("notes", {"mapValue": {}})) or {},
+        "events": unwrap(fields.get("events", {"arrayValue": {}})) or [],
         "updatedAt": unwrap(fields.get("updatedAt", {"stringValue": ""})),
     }
 
@@ -383,6 +386,7 @@ def format_report(
         categories,
         load_question_topics(),
         {c: TARGETS[c][0] for c in CATEGORIES},
+        progress.get("events") or [],
     )
     predicted_total = prediction["mean"]
     target_total = 0
@@ -418,7 +422,9 @@ def format_report(
     add("")
     add("予想点は、各問題を初めて解いた時の正誤だけから、論点ごとの出題数で50問に積み上げた予測"
         f"（80%の範囲 {prediction['low']:.1f}〜{prediction['high']:.1f}点、根拠の初回解答 {prediction['evidence']}問）。"
-        "正答率の列は最後の1回の正誤で、予想点とは別物。")
+        "正答率の列は最後の1回の正誤で、予想点とは別物。"
+        "令和8年度の試験前日までの記録で計算すると22.7点（80%の範囲 18.0〜27.4点）で、本番の32点より9.3点低かった。"
+        "初めて解いた後に覚えた分が入らないことが一因の可能性はあるが、本番1回だけでは原因も、いつも低く出るかも確かめられていない。")
     add("")
     for label, line in [
         ("合格最低ライン", PASS_MIN),
