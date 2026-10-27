@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3行解説の試作</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap">
+<style>
+/* 1列のカード。過去問の肢 → 自分で判定 → 3行 → ○×2問 → くわしく（畳む）。アプリの画面に近い縦の流れ */
+:root {
+  color-scheme: light;
+  --paper: #f6f8fa;
+  --card: #ffffff;
+  --ink: #17212b;
+  --muted: #5b6876;
+  --line: #d9e0e7;
+  --accent: #1f6f9f;
+  --accent-soft: #e3f0f8;
+  --ok: #1d7a4e;
+  --ok-soft: #e2f4ea;
+  --ng: #b3342b;
+  --ng-soft: #fbe6e4;
+  --warn: #8a5a00;
+  --warn-soft: #fdf1d8;
+  --f-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --f-head: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #10161c;
+    --card: #18212a;
+    --ink: #e6edf3;
+    --muted: #9aa8b6;
+    --line: #2c3946;
+    --accent: #6fb6e3;
+    --accent-soft: #1b3343;
+    --ok: #5fc796;
+    --ok-soft: #173427;
+    --ng: #f08a80;
+    --ng-soft: #3b1f1c;
+    --warn: #e6b65c;
+    --warn-soft: #3a2e15;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #10161c;
+  --card: #18212a;
+  --ink: #e6edf3;
+  --muted: #9aa8b6;
+  --line: #2c3946;
+  --accent: #6fb6e3;
+  --accent-soft: #1b3343;
+  --ok: #5fc796;
+  --ok-soft: #173427;
+  --ng: #f08a80;
+  --ng-soft: #3b1f1c;
+  --warn: #e6b65c;
+  --warn-soft: #3a2e15;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.75;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 640px; margin: 0 auto; padding-block: 28px 64px; display: grid; gap: 20px; }
+header { display: grid; gap: 10px; }
+h1 { font-family: var(--f-head); font-weight: 900; font-size: 26px; line-height: 1.35; margin: 0; text-wrap: balance; }
+.lead { margin: 0; color: var(--ink); }
+.note { margin: 0; font-size: 14px; color: var(--muted); background: var(--warn-soft); border-radius: 8px; padding: 10px 12px; }
+.note b { color: var(--warn); }
+.flow { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--muted); margin: 0; padding: 0; list-style: none; }
+.flow li { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 16px; display: grid; gap: 14px; }
+.src { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.src .topic { color: var(--accent); font-weight: 700; }
+.facts { font-size: 14px; color: var(--muted); border-left: 3px solid var(--line); padding-left: 10px; margin: 0; }
+.stmt { margin: 0; font-size: 16px; }
+.choose { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+button { font: inherit; cursor: pointer; }
+.big { font-family: var(--f-head); font-weight: 900; font-size: 22px; padding: 10px 0; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
+.big:hover { border-color: var(--accent); }
+button:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.big[disabled] { cursor: default; opacity: .55; }
+.big.picked { opacity: 1; border-color: var(--ink); }
+.result { display: none; gap: 12px; }
+.card.done .result { display: grid; }
+.verdict { font-weight: 700; border-radius: 8px; padding: 8px 12px; }
+.verdict.ok { background: var(--ok-soft); color: var(--ok); }
+.verdict.ng { background: var(--ng-soft); color: var(--ng); }
+.three { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.three li { display: grid; grid-template-columns: 5.5em 1fr; gap: 8px; align-items: baseline; }
+.three .k { font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 1px 6px; text-align: center; letter-spacing: .04em; }
+.three .k.change { color: var(--warn); background: var(--warn-soft); }
+.oxs { display: grid; gap: 10px; }
+.oxs h3 { margin: 0; font-size: 14px; color: var(--muted); font-weight: 700; }
+.ox { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; }
+.ox p { margin: 0; font-size: 15px; }
+.ox .btns { display: flex; gap: 8px; }
+.ox .btns button { flex: 1; font-weight: 700; font-size: 18px; padding: 4px 0; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+.ox .btns button[disabled] { cursor: default; opacity: .55; }
+.ox .ans { display: none; font-size: 14px; }
+.ox.answered .ans { display: block; }
+.ox .ans.ok { color: var(--ok); }
+.ox .ans.ng { color: var(--ng); }
+details { border-top: 1px dashed var(--line); padding-top: 10px; }
+summary { cursor: pointer; font-size: 14px; color: var(--accent); font-weight: 700; }
+details .body { font-size: 14px; color: var(--ink); padding-top: 8px; display: grid; gap: 6px; }
+details .body p { margin: 0; }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { border: 1px solid var(--line); padding: 5px 8px; text-align: left; vertical-align: top; }
+th { background: var(--paper); white-space: nowrap; font-weight: 700; }
+.honbu { font-size: 14px; background: var(--paper); border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; }
+.honbu .h { font-weight: 700; }
+.pill { display: inline-block; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 0 8px; margin-left: 6px; }
+.pill.yes { background: var(--ok-soft); color: var(--ok); }
+.pill.part { background: var(--warn-soft); color: var(--warn); }
+.count { font-size: 13px; color: var(--muted); text-align: right; }
+footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+footer p { margin: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .card.done .result { animation: rise .25s ease-out; }
+  @keyframes rise { from { transform: translateY(4px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>3行解説の試作</h1>
+    <p class="lead">今年落とした問題に近い、ドリルの過去問7つの肢です。○か×で答えると、3行の解説と、隣の要素を問う○×が2問出ます。くわしい表は、押した時だけ開きます。</p>
+    <ul class="flow" aria-label="使い方">
+      <li>肢に○×で答える</li><li>3行を読む（10秒）</li><li>○×を2問</li><li>迷ったら「くわしく」</li>
+    </ul>
+    <p class="note"><b>割り引いて見てほしい点</b>　解説の中身と○×は、今年の問題を見せない担当が、e-Govの条文（2027年4月1日時点）で書いたものです。3行に縮める時にどの点を残すかは、今年の問題を知っている私（Claude）が選びました。判例の一部は原文を確かめていません。</p>
+  </header>
+
+  <main id="cards" class="wrap" style="padding:0"></main>
+
+  <footer>
+    <p>元の解説（1肢あたり約1,070字）と評価: docs/kaisetsu-proto/、docs/retrospective/2026-10-27-kaisetsu-proto-eval.md</p>
+    <p>過去問の文は、不動産適正取引推進機構の公式の問題PDFから。</p>
+  </footer>
+</div>
+
+<script>
+const CARDS = [
+  {
+    src: "令和3年12月 問20 肢1", topic: "土地区画整理法",
+    stmt: "土地区画整理組合が施行する土地区画整理事業に係る施行地区内の宅地について借地権のみを有する者は、その土地区画整理組合の組合員とはならない。",
+    answer: false,
+    key: "組合員は、施行地区内の宅地の所有者と借地権者の全員（区画整理法25条1項）。借地権だけの人も組合員になる。",
+    change: "建物を借りているだけの人（借家人）は入らない／未登記の借地権は、申告しないと入らない（25条2項）",
+    why: "区画整理で動くのは土地の権利なので、土地に権利を持つ人だけが組合員になる。",
+    ox: [
+      { q: "組合施行の施行地区内で、宅地上の建物を借りているだけの人も、組合員になる。", a: false, r: "組合員は宅地の所有者と借地権者（25条1項）" },
+      { q: "未登記の借地権者は、申告をしなくても組合員として扱われる。", a: false, r: "申告がなければ、ないものとみなす（25条2項）" }
+    ],
+    detail: { rows: [["対象", "施行地区内の「宅地」の所有権者・借地権者"], ["要件", "その権利を持っていること。同意は要らない（強制加入）"], ["例外", "未登記の借地権は、申告がなければないものとみなす（25条2項）"], ["追加", "機構・地方住宅供給公社などで定款で定めた者は参加組合員（25条の2）"], ["承継", "所有権・借地権を引き継いだ人に、組合への権利義務も移る（26条1項）"]],
+      extra: "組合を作る時の同意（18条：所有者・借地権者それぞれ3分の2以上、地積も3分の2以上）は、組合員の範囲とは別の規則。" },
+    honbu: { q: "令和8年 問20", hit: "yes", text: "「借家人も組合員になる」が誤りの肢で、本番で落とした。2行目にそのまま書いてある。" }
+  },
+  {
+    src: "令和6年 問12 肢3", topic: "借地借家法（借家）",
+    facts: "居住目的・期間3年の建物賃貸借。契約①は定期建物賃貸借、契約②は普通建物賃貸借。",
+    stmt: "Bが契約期間中に相続人なしで死亡した場合において、婚姻はしていないが事実上夫婦と同様の関係にあった同居者Dがあるときは、契約①の場合も契約②の場合も、Aに反対の意思表示をしないDは、建物の賃貸借契約に関し、Bの権利義務を承継する。",
+    answer: true,
+    key: "居住用の建物の借主が相続人なしに死亡すると、事実上の夫婦・養親子だった同居者が権利義務を引き継ぐ（借地借家法36条1項）。定期でも普通でも同じ。",
+    change: "相続人がいれば36条は使わない／特約で外せるか：特約で借主に不利に変えられない規定（37条）に、36条は入っていない",
+    why: "一緒に暮らしていた人が住まいを失わないようにするため。",
+    ox: [
+      { q: "居住用の建物の借主が死亡し、相続人がいる場合でも、同居の内縁の妻は36条により権利義務を承継する。", a: false, r: "36条は相続人がいない場合だけ" },
+      { q: "店舗用の建物の借主が相続人なしに死亡した場合も、同居の内縁の夫は36条により承継する。", a: false, r: "36条は居住用の建物だけ" }
+    ],
+    detail: { rows: [["対象", "居住用の建物の賃貸借（定期・普通とも。一時使用は対象外）"], ["要件", "①相続人なしに死亡 ②事実上の夫婦・養親子 ③同居"], ["例外", "死亡を知ってから1か月以内に、貸主に反対の意思表示をすれば承継しない"], ["付随", "未払いの賃料や敷金も、承継した人に移る（36条2項）"]],
+      extra: "書き手は「承継を外す特約の効力は、条文に書いておらず判例も確かめられなかった」として、有効とは言い切らなかった。" },
+    honbu: { q: "令和8年 問12", hit: "part", text: "決め手は「承継しない特約は有効」。この解説は「37条に36条は入っていない」までで、有効とは言い切っていない（一部）。" }
+  },
+  {
+    src: "令和6年 問27 肢1", topic: "営業保証金",
+    stmt: "Aが主たる事務所を移転したことにより、その最寄りの供託所が変更した場合において、金銭のみをもって営業保証金を供託しているときは、遅滞なく営業保証金を移転後の主たる事務所の最寄りの供託所に新たに供託しなければならない。",
+    answer: false,
+    key: "金銭だけなら、新たに供託せず、今の供託所に「保管替え」を請求する（宅建業法29条1項）。新たに供託するのは、有価証券を含むとき。",
+    change: "保管替えは、費用を予納して請求する／新たに供託した時、元の供託所の分は公告なしで取り戻せる（30条2項）",
+    why: "営業保証金をいつも本店の最寄りの供託所に置くため。新しい供託所に全額があるので、元の分を返しても困る人はいない。",
+    ox: [
+      { q: "有価証券だけで供託している業者が主たる事務所を移し、最寄りの供託所が変わった。遅滞なく保管替えを請求しなければならない。", a: false, r: "保管替えは金銭だけの時（29条1項）" },
+      { q: "有価証券を含むため新たに供託した業者は、移転前の供託所の営業保証金を、公告をしないで取り戻せる。", a: true, r: "30条1項後段・2項かっこ書" }
+    ],
+    detail: { rows: [["きっかけ", "主たる事務所を移し、最寄りの供託所が変わった（支店の移転では働かない）"], ["分かれ目", "金銭のみ → 保管替え／有価証券を含む → 新たに供託"], ["請求先", "今供託している（移転前の）供託所"], ["期限", "どちらも「遅滞なく」（2週間は不足額の供託の数字）"], ["済んだ後", "供託書正本の写しを付けて免許権者に届け出る"]] },
+    honbu: { q: "令和8年 問30", hit: "yes", text: "決め手は「二重に供託した時の元の分の取戻しは公告不要」。本人は「予納は知らなかった」。2行目に両方ある。" }
+  },
+  {
+    src: "令和5年 問32 肢4", topic: "案内所等の届出",
+    stmt: "宅地建物取引業者G（丁県知事免許）が、その業務に関し展示会を丁県内で実施する場合、展示会を実施する場所において売買契約の締結（予約を含む。）又は売買契約の申込みの受付を行うときは、Gは展示会での業務を開始する日の5日前までに展示会を実施する場所について丁県知事に届け出なければならない。",
+    answer: false,
+    key: "届出は、業務を始める日の10日前まで（宅建業法50条2項、施行規則19条3項）。「5日前」が誤り。",
+    change: "届出先は、免許権者と所在地の知事の両方（同じ県なら1か所）／役員の変更の届出は、非常勤の役員も対象（同じ問の肢1）",
+    why: "事務所以外で契約を結ぶ場所にも、始まる前に役所の目が届くようにするため。",
+    ox: [
+      { q: "甲県知事免許の業者が、乙県で申込みを受ける展示会を開く。業務を始める日の10日前までに、甲県知事と乙県知事の両方に届け出る。", a: true, r: "50条2項、施行規則19条3項" },
+      { q: "法人の業者が非常勤の取締役を新しく選んだ。30日以内に免許権者に届け出なければならない。", a: true, r: "9条1項・4条1項2号（常勤に限らない）" }
+    ],
+    detail: { rows: [["対象の場所", "契約の締結か申込みの受付をする、事務所以外の継続的な施設・分譲の案内所・展示会など"], ["届け出ること", "所在地・業務の内容・期間・専任の宅建士の氏名"], ["期限", "業務を始める日の10日前まで"], ["届出先", "免許権者と、その場所の所在地の知事"], ["要らない場合", "契約も申込みの受付もしない案内所は、届出は不要。ただし標識は要る"]] },
+    honbu: { q: "令和8年 問41", hit: "yes", text: "決め手は案内所の届出先。本人は「非常勤の役員も届出」を知らなかった。2行目に両方ある。" }
+  },
+  {
+    src: "令和3年10月 問9 肢2", topic: "相続人と相続分",
+    facts: "Dが死亡。Dの妻A（再婚）、Aと亡夫Bの子C（Dと養子縁組なし）、Dと前妻Eの子F・G。",
+    stmt: "Aが2分の1、Cが6分の1、Fが6分の1、Gが6分の1",
+    answer: false,
+    key: "CはAの連れ子で、Dと養子縁組をしていないので、Dの相続人ではない（民法727条・809条）。正しくはA 2分の1、F・G 各4分の1。",
+    change: "縁組をしていれば子は3人で、各6分の1（この肢の数字）／非嫡出子は子として相続し、割合も嫡出子と同じ（父の場合は認知が要る）",
+    why: "相続できるのは、配偶者と、血のつながりか養子縁組でできた親子だけ。",
+    ox: [
+      { q: "DがCと養子縁組をしていた場合、Cの法定相続分は6分の1である。", a: true, r: "民法809条・900条1号・4号" },
+      { q: "嫡出でない子の相続分は、嫡出である子の2分の1である。", a: false, r: "区別はない（民法900条4号）" }
+    ],
+    detail: { rows: [["配偶者＋子", "配偶者1/2、子1/2を均等に"], ["配偶者＋直系尊属", "2/3 と 1/3"], ["配偶者＋兄弟姉妹", "3/4 と 1/4（父母の一方だけ同じ兄弟姉妹は半分）"], ["再婚で生じるもの", "姻族の関係（DとCは姻族1親等）。姻族は相続人にならない"], ["代襲", "子が先に死亡・欠格・廃除なら、その子が代わりに相続し、親の相続分を分ける（民法887条・901条）"]] },
+    honbu: { q: "令和8年 問4", hit: "yes", text: "本人は「連れ子と非嫡出子を同じと思って数えた」。1行目と2行目で区別している。決め手の「代襲の相続分」は、くわしくの表にある。" }
+  },
+  {
+    src: "平成30年 問6 肢1", topic: "法定地上権",
+    facts: "A所有の甲土地にBが乙建物を建てて登記。AがBから乙建物を買い取り、その後Aが甲土地にCのために抵当権を設定。",
+    stmt: "Aが乙建物の登記をA名義に移転する前に甲土地に抵当権を設定登記していた場合、甲土地の抵当権が実行されたとしても、乙建物のために法定地上権は成立しない。",
+    answer: false,
+    key: "抵当権を設定した時に、土地と建物が同じ人のものなら成立する。登記の名義ではなく、実際の所有で見る（判例）。",
+    change: "抵当権を設定した時に建物がなければ成立しない（同じ問の肢2）／抵当権が2つある時は、1番抵当権を設定した時点で判断する",
+    why: "抵当権者は設定の時に現地を見て「建物付きの土地」として評価しているので、地上権を認めても不意打ちにならない。",
+    ox: [
+      { q: "抵当権を設定した時に土地と建物の所有者が別で、その後同じ人のものになってから抵当権が実行された場合、法定地上権は成立する。", a: false, r: "設定時に同じ所有者であることが要件（判例）" },
+      { q: "土地と建物が同じ所有者で、建物だけに抵当権が設定されて実行された場合も、法定地上権は成立しうる。", a: true, r: "民法388条「土地又は建物につき」" }
+    ],
+    detail: { rows: [["①建物", "抵当権を設定した時に、土地の上に建物がある"], ["②所有者", "設定した時に、土地と建物が同じ所有者（登記名義は問わない）"], ["③抵当権", "土地・建物のどちらか、または両方"], ["④実行", "競売で土地と建物の所有者が別になった"], ["地代", "当事者の請求で裁判所が決める"]],
+      extra: "「1番抵当権の時点で判断」の判例（最判平成2年1月22日）は、書き手が原文を確かめていない。" },
+    honbu: { q: "令和8年 問9", hit: "part", text: "決め手は「1番抵当権の時に建物がなければ不成立」。2行目の2つを合わせれば判断できるが、そのものは書いていない（一部）。" }
+  },
+  {
+    src: "令和4年 問38 肢2", topic: "クーリング・オフ",
+    facts: "業者が自ら売主の宅地の売買。買受けの申込みは喫茶店。",
+    stmt: "買受けの申込みをした者が宅地建物取引業者であった場合、クーリング・オフについて告げられていなくても、申込みを行った日から起算して8日を経過するまでは、書面により買受けの申込みの撤回をすることができる。",
+    answer: false,
+    key: "業者どうしの取引には、クーリング・オフは使えない（宅建業法78条2項）。告げられたかどうかも8日も関係ない。",
+    change: "売主が業者でなければ、そもそも対象外（買主が業者でも一般の人でも）／撤回・解除は書面で。メールではできない",
+    why: "8種制限は、プロの業者と一般の人の力の差を埋めるためのもの。業者どうしなら自分で身を守れる。",
+    ox: [
+      { q: "業者でない個人Cが売主、業者Dが買主の売買で、Dは喫茶店で申込みをした。Dはクーリング・オフができる。", a: false, r: "自ら売主の業者がいない（37条の2第1項）" },
+      { q: "業者Aが自ら売主、業者Bが買主の売買で、手付を代金の3割とする定めは有効である。", a: true, r: "業者どうしには39条が使われない（78条2項）" }
+    ],
+    detail: { rows: [["業者どうしで使われない規定", "自分のものでない物件の売買の制限、クーリング・オフ、損害賠償額の予定の制限、手付の制限、契約不適合責任の特約の制限、手付金等の保全、割賦販売の解除の制限、所有権留保の禁止"], ["対象外の取引", "売主が業者でない取引、業者が媒介・代理だけをする取引"]] },
+    honbu: { q: "令和8年 問42", hit: "yes", text: "本人は「売主が個人ならクーリング・オフなし、と冷静に判断できなかった」。2行目と1問目の○×にそのまま書いてある。" }
+  }
+];
+
+const mark = (b) => (b ? "○" : "×");
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const root = document.getElementById("cards");
+
+CARDS.forEach((c, i) => {
+  const el = document.createElement("article");
+  el.className = "card";
+  el.innerHTML = `
+    <div class="src"><span>${esc(c.src)}</span><span class="topic">${esc(c.topic)}</span></div>
+    ${c.facts ? `<p class="facts">${esc(c.facts)}</p>` : ""}
+    <p class="stmt">${esc(c.stmt)}</p>
+    <div class="choose" role="group" aria-label="この肢は正しいか">
+      <button class="big" id="c${i}-o" data-v="1">○</button>
+      <button class="big" id="c${i}-x" data-v="0">×</button>
+    </div>
+    <div class="result">
+      <div class="verdict"></div>
+      <ul class="three">
+        <li><span class="k">決め手</span><span>${esc(c.key)}</span></li>
+        <li><span class="k change">ここが変わる</span><span>${esc(c.change)}</span></li>
+        <li><span class="k">なぜ</span><span>${esc(c.why)}</span></li>
+      </ul>
+      <div class="oxs">
+        <h3>続けて○×（隣の要素）</h3>
+        ${c.ox.map((o, j) => `
+          <div class="ox" data-a="${o.a ? 1 : 0}">
+            <p>${esc(o.q)}</p>
+            <div class="btns"><button id="c${i}-q${j}-o" data-v="1">○</button><button id="c${i}-q${j}-x" data-v="0">×</button></div>
+            <div class="ans"></div>
+          </div>`).join("")}
+      </div>
+      <details>
+        <summary>くわしく（規則の表）</summary>
+        <div class="body">
+          <div class="tbl"><table><tbody>${c.detail.rows.map((r) => `<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td></tr>`).join("")}</tbody></table></div>
+          ${c.detail.extra ? `<p>${esc(c.detail.extra)}</p>` : ""}
+        </div>
+      </details>
+      <div class="honbu">
+        <span class="h">今年の本番との対応：${esc(c.honbu.q)}<span class="pill ${c.honbu.hit}">${c.honbu.hit === "yes" ? "書いてあった" : "一部"}</span></span>
+        <span>${esc(c.honbu.text)}</span>
+      </div>
+      <div class="count"></div>
+    </div>`;
+  root.appendChild(el);
+
+  const bigs = el.querySelectorAll(".choose .big");
+  bigs.forEach((b) => b.addEventListener("click", () => {
+    const pick = b.dataset.v === "1";
+    const ok = pick === c.answer;
+    bigs.forEach((x) => { x.disabled = true; });
+    b.classList.add("picked");
+    const v = el.querySelector(".verdict");
+    v.className = "verdict " + (ok ? "ok" : "ng");
+    v.textContent = (ok ? "正解　" : "不正解　") + "この肢は " + mark(c.answer);
+    el.classList.add("done");
+    const chars = (c.key + c.change + c.why).length;
+    el.querySelector(".count").textContent = `3行の長さ ${chars}字`;
+  }));
+
+  el.querySelectorAll(".ox").forEach((box) => {
+    const a = box.dataset.a === "1";
+    const btns = box.querySelectorAll("button");
+    btns.forEach((b) => b.addEventListener("click", () => {
+      const ok = (b.dataset.v === "1") === a;
+      btns.forEach((x) => { x.disabled = true; });
+      const ans = box.querySelector(".ans");
+      const o = c.ox[[...el.querySelectorAll(".ox")].indexOf(box)];
+      ans.className = "ans " + (ok ? "ok" : "ng");
+      ans.textContent = (ok ? "正解　" : "不正解　") + mark(a) + "：" + o.r;
+      box.classList.add("answered");
+    }));
+  });
+});
+</script>
+</body>
+</html>
